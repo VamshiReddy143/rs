@@ -1,0 +1,53 @@
+import React from 'react'
+import Hero from "@/components/AI/Hero"
+import Navbar from '@/components/Navbar'
+import Tools from '@/components/AI/Tools'
+import Portfolio from '@/components/AI/Portfolio'
+import Team from '@/components/AI/Team'
+import Capabilities from '@/components/AI/Capabilities'
+import Us from '@/components/AI/Us'
+import Footer from '@/components/Footer'
+
+
+const page = () => {
+  return (
+    <div className='text-white bg-black'>
+
+      <div className=' px-20 py-1'>
+        <Navbar />
+      </div>
+
+      <div className=' pl-20 py-1'>
+        <Hero />
+      </div>
+
+
+      <div className=' px-20 py-1'>
+        <Tools />
+      </div>
+
+
+      <div className=' px-20 py-1'>
+        <Portfolio />
+      </div>
+
+      <div className=' px-20 py-1'>
+        <Team />
+      </div>
+
+      <div className=' px-20 py-1'>
+        <Capabilities />
+      </div>
+
+      <div className=' px-20 py-1'>
+        <Us />
+      </div>
+
+      <div className=' px-20 py-1'>
+       <Footer/>
+      </div>
+    </div>
+  )
+}
+
+export default page
