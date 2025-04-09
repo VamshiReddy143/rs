@@ -108,26 +108,26 @@ const Team = () => {
   return (
     <div id="team" className='min-h-screen mt-30'>
       <div className='flex flex-col items-center justify-center gap-4 text-center'>
-        <h1 className='text-[3em] font-bold'>The Team Behind The Products You Know</h1>
+        <h1 className='lg:text-[3em] text-[2em] font-bold'>The Team Behind The Products You Know</h1>
         <p className='text-[20px] text-gray-400'>We have partnered with 10+ billion-dollar companies on their flagship products.</p>
       </div>
 
-      <div className='mt-10 flex gap-10'>
-        <div className='relative w-[70%]' >
+      <div className='mt-10 lg:flex gap-10'>
+        <div className='relative lg:w-[70%] w-full' >
           <Image src={img1} alt="team" width={900} height={900} className='h-[40em] w-full object-cover relative' />
           <div className='absolute top-0 left-0 w-full h-full bg-black opacity-50 hover:opacity-0' />
-          <h1 className='absolute bottom-0 left-0 transform -translate-x-1/70 pl-10 text-[2em] font-bold text-white'>Building The Most Premium Learning Experience On the The Planet</h1>
+          <h1 className='absolute bottom-0 left-0 transform -translate-x-1/70 lg:pl-10 p-5 lg:text-[2em] text-[1.8em] font-bold text-white'>Building The Most Premium Learning Experience On the The Planet</h1>
         </div>
 
-        <div className='relative w-[30%]'>
+        <div className='relative lg:w-[30%]'>
           <Image src={img2} alt="team" width={900} height={900} className='h-[40em] object-cover relative ' />
           <div className='absolute top-0 left-0 w-full h-full bg-black opacity-50 hover:opacity-0' />
-          <h1 className='absolute bottom-0 left-0 transform -translate-x-1/70 pl-3 text-[1.6em] font-bold text-white'>Building The Most Premium Learning Experience On the The Planet</h1>
+          <h1 className='absolute bottom-0 left-0 transform -translate-x-1/70 lg:pl-3 p-5 text-[1.6em] font-bold text-white'>Building The Most Premium Learning Experience On the The Planet</h1>
         </div>
       </div>
 
-      <div className='flex justify-center gap-7 text-center'>
-        <div className='flex flex-col gap-10 w-[30%] mx-auto mt-10 relative'>
+      <div className='lg:flex justify-center gap-7 text-center'>
+        <div className='flex flex-col gap-10 lg:w-[30%] mx-auto mt-10 relative'>
           <div className='relative'>
             <Image src={img3} alt="team" width={900} height={900} />
             <div className='absolute top-0 left-0 w-full h-full bg-black opacity-50 hover:opacity-0' />
@@ -141,7 +141,7 @@ const Team = () => {
           </div>
         </div>
 
-        <div className='relative w-[70%] aspect-[3/2] mt-10 overflow-hidden rounded-xl'>
+        <div className='relative lg:w-[70%] aspect-[3/2] mt-10 overflow-hidden rounded-xl'>
           <Image
             src={img5}
             alt="team"
@@ -149,9 +149,9 @@ const Team = () => {
             className='object-cover'
           />
           <div className='absolute top-0 left-0 w-full h-full bg-black opacity-50 hover:opacity-0' />
-          <h1 className='absolute bottom-0 left-0 pl-10 text-[1.7em] font-bold text-white'>
+          <h1 className='absolute bottom-0 left-0 pl-10 lg:text-[1.7em] font-bold text-white'>
             Combining saas, Consumer & Payments into The industry's
-            <span className='block'>#1 Platform For Early Education</span>
+            <span className='lg:block'>#1 Platform For Early Education</span>
           </h1>
         </div>
       </div>
@@ -167,7 +167,7 @@ const Team = () => {
       </div>
       <div 
         ref={scrollSectionRef}
-        className="relative flex w-full flex-col items-center justify-center overflow-hidden py-12 gap-12"
+        className="relative hidden md:flex flex w-full flex-col items-center justify-center overflow-hidden py-12 gap-12"
       >
         <ParallaxText direction="left" targetRef={scrollSectionRef}>
           <ScrollNames investors={teamTopInvestors} />

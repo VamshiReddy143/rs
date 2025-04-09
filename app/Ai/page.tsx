@@ -13,16 +13,13 @@ const page = () => {
   return (
     <div className='text-white bg-black'>
 
-      <div className=' px-20 py-1'>
-        <Navbar />
-      </div>
 
-      <div className=' pl-20 py-1'>
+      <div className=' lg:pl-[10%] md:pl-[5%]  px-2 py-1'>
         <Hero />
       </div>
 
 
-      <div className=' px-20 py-1'>
+      {/* <div className=' px-20 py-1'>
         <Tools />
       </div>
 
@@ -41,9 +38,9 @@ const page = () => {
 
       <div className=' px-20 py-1'>
         <Us />
-      </div>
+      </div> */}
 
-      <div className=' px-20 py-1'>
+      <div className=' lg:px-20 px-2 py-1'>
        <Footer/>
       </div>
     </div>

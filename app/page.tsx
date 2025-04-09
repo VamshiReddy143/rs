@@ -10,8 +10,7 @@ import React from 'react'
 
 const page = () => {
   return (
-    <div className='px-20 py-1 bg-black text-white'>
-      <Navbar />
+    <div className='lg:px-[10%] px-2  py-10 bg-black text-white'>
       <Hero/>
       <Capabilities/>
       <Team/>

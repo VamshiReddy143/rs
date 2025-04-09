@@ -139,22 +139,22 @@ interface VelocityScrollProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const Hero = () => {
   return (
-    <div id="hero">
-      <div className='min-h-screen flex items-center justify-between'>
-        <div className='w-[36%]'>
-          <h1 className='text-[3em] font-extrabold leading-tight'>
-            Accelerate Your <span className='block'>Development</span> & Drive Innovation
+    <div id="hero" className="">
+      <div className='lg:min-h-screen  flex flex-col-reverse lg:flex-row items-center lg:justify-between'>
+        <div className='lg:w-[36%]'>
+          <h1 className='lg:text-[3em] mt-10 lg:mt-0 text-[2em] md:text-[2.5em] font-extrabold leading-tight'>
+            Accelerate Your <span className='lg:block'>Development</span> & Drive Innovation
           </h1>
           <p className='text-[19px] text-gray-400 mt-4 mr-2 leading-[33px]'>
-            We are a data-driven, nearshore software agency that values speed, performance, and scalability. That's why we consistently surpass benchmarks for client retention after 750+ product launches and 13 years in business.
+            We are a data-driven, nearshore software agency that values speed, performance, and scalability. That&lsquo;s why we consistently surpass benchmarks for client retention after 750+ product launches and 13 years in business.
           </p>
           <button className='text-[18px] bg-transparent text-white px-4 py-2 rounded-xl cursor-pointer border mt-10'>
             Get in Touch ➔
           </button>
         </div>
 
-        <div className='w-[60%] relative'>
-          <video autoPlay muted loop className="w-[60em] h-[35em] object-cover rounded-xl">
+        <div className='lg:w-[60%] w-full relative pt-10 lg:pt-0'>
+          <video autoPlay muted loop className="w-[60em] lg:h-[35em] object-cover rounded-xl">
             <source src="/videos/homevideo.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
@@ -170,13 +170,15 @@ const Hero = () => {
         </div>
       </div>
 
-      <div className="flex flex-col items-center justify-center mb-10">
+      <div className="flex flex-col items-center justify-center mb-10 mt-5 lg:mt-0">
         <p className="rounded-lg bg-gray-800 px-4 py-2">Trusted By 100s of High-Growth Startups & Industry Leaders</p>
       </div>
       
-      <div className="relative flex w-full flex-col items-center justify-center overflow-hidden py-12">
+      <div className="hidden md:block relative flex w-full flex-col items-center justify-center overflow-hidden py-12">
         <VelocityScroll />
       </div>
+
+      
     </div>
   );
 };

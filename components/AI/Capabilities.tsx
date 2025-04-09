@@ -1,5 +1,5 @@
 import React from 'react';
-import line1 from "../public/lineimg1.png";
+
 
 const Capabilities = () => {
     return (
@@ -9,9 +9,9 @@ const Capabilities = () => {
                 <p className='text-gray-400 text-[1.5em]'>We&apos;re proud to offer exceptional talent across a variety of digital disciplines.</p>
             </div>
 
-            <div className="grid grid-cols-3 items-center justify-center gap-5 mt-20">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center justify-center gap-5 mt-20">
                 <div
-                    className="card h-[500px] w-[400px] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
+                    className="card h-[450px] lg:w-[25em]   group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
                     style={{
                         backgroundImage: "url('/lineimg1.png')",
                         backgroundSize: 'cover', // Default size
@@ -19,7 +19,7 @@ const Capabilities = () => {
                         backgroundRepeat: 'no-repeat',
                     }}
                 >
-                    <div 
+                    {/* <div 
                         className="absolute inset-0 transition-all duration-500 group-hover:scale-110"
                         style={{
                             backgroundImage: "url('/lineimg1.png')",
@@ -27,21 +27,21 @@ const Capabilities = () => {
                             backgroundPosition: 'center',
                             backgroundRepeat: 'no-repeat',
                         }}
-                    ></div>
+                    ></div> */}
 
                     {/* Text content */}
                     <div className="flex flex-col items-center justify-end bg-gray-800 absolute bottom-0 right-0 p-6 z-10">
                         <div className="text-white font-nunito flex flex-col gap-4">
-                            <h2 className="text-[2em] font-bold">
+                            <h2 className="lg:text-[1.5em] text-[1.5em] md:text-[1.9em] font-bold">
                                 Artificial Intelligence
                             </h2>
-                            <p className="text-lg">
+                            <p className="lg:text-[0.9em] text-[1em]">
                                 Gen AI, Custom LLMs, Machine Learning & Computer Vision
                             </p>
                         </div>
 
                         {/* Hover section */}
-                        <div className="relative overflow-hidden h-0 group-hover:h-[12em] transition-all duration-500 z-[2] w-full mt-10">
+                        <div className="relative lg:overflow-hidden  lg:group-hover:h-[12em] md:h-[12em] h-[12em] lg:h-0  transition-all duration-500 z-[2] w-full mt-10">
                             <div>
                                 <ul className='flex flex-col items-start gap-4'>
                                     <div className='flex gap-3 items-center'>
@@ -63,7 +63,7 @@ const Capabilities = () => {
                 </div>
 
                 <div
-                    className="card h-[500px] w-[400px] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
+                    className="card h-[450px] lg:w-[25em] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
                     style={{
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
@@ -83,15 +83,15 @@ const Capabilities = () => {
                     {/* Text content */}
                     <div className="flex flex-col items-center justify-end bg-gray-800 absolute bottom-0 right-0 p-6 z-10">
                         <div className="text-white font-nunito flex flex-col gap-4">
-                            <h2 className="text-[2em] font-bold">
+                            <h2 className="lg:text-[1.5em] text-[1.5em] md:text-[1.9em] font-bold">
                                 Data
                             </h2>
-                            <p className="text-lg">
+                            <p className="lg:text-[1em] text-[1em]">
                                 ETL & Storage, Visualization, Processing & Enrichment
                             </p>
                         </div>
 
-                        <div className="relative overflow-hidden h-0 group-hover:h-[12em] transition-all duration-500 z-[2] w-full mt-10">
+                        <div className="relative overflow-hidden lg:group-hover:h-[12em] md:h-[12em] h-[12em] lg:h-0  transition-all duration-500 z-[2] w-full mt-10">
                             <div>
                                 <ul className='flex flex-col items-start gap-4'>
                                     <div className='flex gap-3 items-center'>
@@ -112,7 +112,7 @@ const Capabilities = () => {
                 </div>
 
                 <div
-                    className="card h-[500px] w-[400px] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
+                    className="card h-[450px] lg:w-[25em] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
                     style={{
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
@@ -132,15 +132,15 @@ const Capabilities = () => {
                     {/* Text content */}
                     <div className="flex flex-col items-center justify-end bg-gray-800 absolute bottom-0 right-0 p-6 z-10">
                         <div className="text-white font-nunito flex flex-col gap-4">
-                            <h2 className="text-[2em] font-bold">
+                            <h2 className="lg:text-[1.5em] text-[1.5em] md:text-[1.9em] font-bold">
                                 Cloud
                             </h2>
-                            <p className="text-lg">
+                            <p className="lg:text-[1em] text-[1em]">
                                 Infrastructure, DevOps, APIs Automation & Scalability
                             </p>
                         </div>
 
-                        <div className="relative overflow-hidden h-0 group-hover:h-[12em] transition-all duration-500 z-[2] w-full mt-10">
+                        <div className="relative overflow-hidden lg:group-hover:h-[12em] md:h-[12em] h-[12em] lg:h-0 transition-all duration-500 z-[2] w-full mt-10">
                             <div>
                                 <ul className='flex flex-col items-start gap-4'>
                                     <div className='flex gap-3 items-center'>
@@ -162,7 +162,7 @@ const Capabilities = () => {
                 </div>
 
                 <div
-                    className="card h-[500px] w-[400px] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
+                    className="card h-[450px] lg:w-[25em] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
                     style={{
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
@@ -182,15 +182,15 @@ const Capabilities = () => {
                     {/* Text content */}
                     <div className="flex flex-col items-center justify-end bg-gray-800 absolute bottom-0 right-0 p-6 z-10">
                         <div className="text-white font-nunito flex flex-col gap-4">
-                            <h2 className="text-[2em] font-bold">
+                            <h2 className="lg:text-[1.5em] text-[1.5em] md:text-[1.9em] font-bold">
                                 Web Development
                             </h2>
-                            <p className="text-lg">
+                            <p className="lg:text-[1em] text-[1em]">
                                 Content, Media & Video, Ecommerce, SaaS, & Websites
                             </p>
                         </div>
 
-                        <div className="relative overflow-hidden h-0 group-hover:h-[15em] transition-all duration-500 z-[2] w-full mt-10">
+                        <div className="relative overflow-hidden lg:group-hover:h-[12em] md:h-[12em] h-[12em] lg:h-0 transition-all duration-500 z-[2] w-full mt-10">
                             <div>
                                 <ul className='flex flex-col items-start gap-4'>
                                     <div className='flex gap-3 items-center'>
@@ -214,7 +214,7 @@ const Capabilities = () => {
                 </div>
 
                 <div
-                    className="card h-[500px] w-[400px] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
+                    className="card h-[450px] lg:w-[25em] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
                     style={{
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
@@ -234,15 +234,15 @@ const Capabilities = () => {
                     {/* Text content */}
                     <div className="flex flex-col items-center justify-end bg-gray-800 absolute bottom-0 right-0 p-6 z-10">
                         <div className="text-white font-nunito flex flex-col gap-4">
-                            <h2 className="text-[2em] font-bold">
+                            <h2 className="lg:text-[1.5em] text-[1.5em] md:text-[1.9em] font-bold">
                                 Mobile Development
                             </h2>
-                            <p className="text-lg">
+                            <p className="lg:text-[1em] text-[1em]">
                                 Native iOS, Android & Hybrid Mobile Apps, Wearables & IoT
                             </p>
                         </div>
 
-                        <div className="relative overflow-hidden h-0 group-hover:h-[7em] transition-all duration-500 z-[2] w-full mt-10">
+                        <div className="relative overflow-hidden lg:group-hover:h-[8em] md:h-[12em] h-[12em] lg:h-0 transition-all duration-500 z-[2] w-full mt-10">
                             <div>
                                 <ul className='flex flex-col items-start gap-4'>
                                     <div className='flex gap-3 items-center'>
@@ -260,7 +260,7 @@ const Capabilities = () => {
                 </div>
 
                 <div
-                    className="card h-[500px] w-[400px] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
+                    className="card h-[450px] lg:w-[25em] md:w-[350px] w-[350px] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
                     style={{
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
@@ -280,15 +280,15 @@ const Capabilities = () => {
                     {/* Text content */}
                     <div className="flex flex-col items-center justify-end bg-gray-800 absolute bottom-0 right-0 p-6 z-10">
                         <div className="text-white font-nunito flex flex-col gap-4">
-                            <h2 className="text-[2em] font-bold">
+                            <h2 className="lg:text-[1.5em] text-[1.5em] md:text-[1.9em] font-bold">
                                 UX/UI Design
                             </h2>
-                            <p className="text-lg">
+                            <p className="lg:text-[1em] text-[1em]">
                                 User Research, Wireframes, Prototypes & User Validation
                             </p>
                         </div>
 
-                        <div className="relative overflow-hidden h-0 group-hover:h-[12em] transition-all duration-500 z-[2] w-full mt-10">
+                        <div className="relative overflow-hidden lg:group-hover:h-[12em] md:h-[12em] h-[12em] lg:h-0 transition-all duration-500 z-[2] w-full mt-10">
                             <div>
                                 <ul className='flex flex-col items-start gap-4'>
                                     <div className='flex gap-3 items-center'>

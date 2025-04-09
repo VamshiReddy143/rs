@@ -10,11 +10,11 @@ import img6 from "@/public/pr6.jpg"
 const Clients = () => {
   return (
     <div id="clients" className='min-h-screen mt-20'>
-        <h1 className='text-[2.5em] font-bold leading-tight  mt-10'>
+        <h1 className='lg:text-[2.5em] text-[1.8em] text-center lg:text-left font-bold leading-tight  mt-10'>
         Clients Love Working With Rootstrap
         </h1>
 
-        <div className='grid grid-cols-3 mt-10 gap-7'>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10 gap-7'>
             <div className='bg-gray-900 p-7 rounded-xl '>
                 <p className='text-gray-400'>
                 “Overall, the quality is fantastic. The execution speed is brilliant, code quality is solid. We do not treat them as an outsourced team. We think of them as one big team.&rdquo;

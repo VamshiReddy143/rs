@@ -17,7 +17,14 @@ const nextConfig: NextConfig = {
         pathname: "/63f902d79a33f71d496cde07/**"
       }
     ]
-  }
+  },
+  theme: {
+    extend: {
+      filter:['grayscale']
+    },
+  },
+  plugins: [],
+
 };
 
 export default nextConfig;
