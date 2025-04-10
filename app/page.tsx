@@ -10,7 +10,7 @@ import React from 'react'
 
 const page = () => {
   return (
-    <div className='lg:px-[10%] px-2  py-10 bg-black text-white'>
+    <div className='max-w-[100vw] overflow-x-hidden lg:px-[10%] px-4 py-8 lg:py-10 bg-black text-white'>
       <Hero/>
       <Capabilities/>
       <Team/>

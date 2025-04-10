@@ -59,7 +59,7 @@ const Kpi = () => {
         <div className="lg:min-h-screen md:mt-[15em] mt-[2em] lg:mt-[2em] lg:flex justify-between items-center">
             <div
                 ref={leftSectionRef}
-                className="flex flex-col items-start gap-6 lg:w-[50%]"
+                className="flex flex-col items-start gap-6 lg:w-[50%] w-full"
             >
                 <p className="text-gray-400">Data-Driven</p>
                 <h1 className="text-[2.2em] font-bold">Your KPIs Are Our KPIs</h1>
@@ -77,7 +77,7 @@ const Kpi = () => {
                     alt="team"
                     width={900}
                     height={900}
-                    className="lg:h-full lg:w-full w-[80%] h-[80%] object-cover"
+                    className="h-full w-full object-cover"
                 />
             </div>
         </div>

@@ -139,46 +139,55 @@ interface VelocityScrollProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const Hero = () => {
   return (
-    <div id="hero" className="">
-      <div className='lg:min-h-screen  flex flex-col-reverse lg:flex-row items-center lg:justify-between'>
-        <div className='lg:w-[36%]'>
-          <h1 className='lg:text-[3em] mt-10 lg:mt-0 text-[2em] md:text-[2.5em] font-extrabold leading-tight'>
-            Accelerate Your <span className='lg:block'>Development</span> & Drive Innovation
+    <div id="hero" className="w-full">
+      <div className='min-h-[auto] lg:min-h-screen flex flex-col-reverse lg:flex-row items-center justify-center lg:justify-between gap-8 lg:gap-0'>
+        <div className='w-full lg:w-[36%] px-4 lg:px-0'>
+          <h1 className='lg:text-[3em] text-[1.5em] sm:text-[2em] md:text-[2.5em] mt-6 lg:mt-0 font-extrabold leading-tight text-center lg:text-left'>
+            Accelerate Your <span className='block'>Development</span> & Drive Innovation
           </h1>
-          <p className='text-[19px] text-gray-400 mt-4 mr-2 leading-[33px]'>
-            We are a data-driven, nearshore software agency that values speed, performance, and scalability. That&lsquo;s why we consistently surpass benchmarks for client retention after 750+ product launches and 13 years in business.
+          <p className='text-base sm:text-[19px] text-gray-400 mt-4 leading-relaxed text-center lg:text-left'>
+            We are a data-driven, nearshore software agency that values speed, performance, and scalability. That‘s why we consistently surpass benchmarks for client retention after 750+ product launches and 13 years in business.
           </p>
-          <button className='text-[18px] bg-transparent text-white px-4 py-2 rounded-xl cursor-pointer border mt-10'>
-            Get in Touch ➔
-          </button>
+          <div className="flex justify-center lg:justify-start">
+            <button className='text-base sm:text-[18px] bg-transparent text-white px-4 py-2 rounded-xl cursor-pointer border mt-8 hover:bg-white/10 transition-colors'>
+              Get in Touch ➔
+            </button>
+          </div>
         </div>
 
-        <div className='lg:w-[60%] w-full relative pt-10 lg:pt-0'>
-          <video autoPlay muted loop className="w-[60em] lg:h-[35em] object-cover rounded-xl">
-            <source src="/videos/homevideo.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-          <div className='absolute flex flex-col right-0 bottom-0 items-center rounded-tl-xl justify-center w-fit h-fit px-2 py-3 bg-black'>
-            <Image
-              src="https://cdn.prod.website-files.com/63f902d79a33f71d496cde07/66f5b9ac256e1a355eccc02f_clutch-box.svg"
-              alt="stars"
-              width={900}
-              height={900}
-              className="h-[3em] w-[7em] mt-3"
-            />
+        <div className='w-full lg:w-[60%] pt-8 lg:pt-0 px-4 lg:px-0'>
+          <div className="relative max-w-full mx-auto">
+            <video 
+              autoPlay 
+              muted 
+              loop 
+              className="w-full max-w-[60em] h-auto lg:h-[35em] object-cover rounded-xl"
+            >
+              <source src="/videos/homevideo.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+            <div className='absolute right-0 bottom-0 flex flex-col items-center rounded-tl-xl justify-center w-fit px-2 py-3 bg-black'>
+              <Image
+                src="https://cdn.prod.website-files.com/63f902d79a33f71d496cde07/66f5b9ac256e1a355eccc02f_clutch-box.svg"
+                alt="stars"
+                width={112}  // Actual pixel width
+                height={48}  // Actual pixel height
+                className="w-[7em] h-[3em] mt-3 object-contain"
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col items-center justify-center mb-10 mt-5 lg:mt-0">
-        <p className="rounded-lg bg-gray-800 px-4 py-2">Trusted By 100s of High-Growth Startups & Industry Leaders</p>
+      <div className="flex flex-col items-center justify-center my-8 lg:my-10 px-4">
+        <p className="rounded-lg bg-gray-800 px-4 py-2 text-sm sm:text-base text-center">
+          Trusted By 100s of High-Growth Startups & Industry Leaders
+        </p>
       </div>
       
-      <div className="hidden md:block relative flex w-full flex-col items-center justify-center overflow-hidden py-12">
+      <div className="hidden sm:block relative w-full flex flex-col items-center justify-center overflow-hidden py-8 lg:py-12">
         <VelocityScroll />
       </div>
-
-      
     </div>
   );
 };

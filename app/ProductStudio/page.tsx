@@ -16,13 +16,16 @@ const page = () => {
         <Hero />
       </div>
 
-      <div className=' lg:px-20 px-2 py-1'>
+      <div className=' lg:px-20 hidden md:block px-2 py-1'>
         <Vision/>
       </div>
 
-      <div className=' lg:px-20 px-2 py-1'>
+      <div className=' lg:px-20 hidden md:block px-2 py-1'>
         <Rapid/>
       </div>
+
+
+      {/* change after wards */}
 
       <div className=' lg:px-20 px-2 py-1'>
         <Market/>

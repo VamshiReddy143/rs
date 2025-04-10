@@ -9,24 +9,26 @@ import Footer from '@/components/Footer'
 
 const page = () => {
   return (
-    <div className='text-white bg-black'>
+    <div className='text-white bg-black '>
       
 
       <div className=' lg:pl-[10%] md:pl-[5%]  px-2 py-1'>
         <Hero />
       </div>
 
-      <div className=' lg:px-20 px-2 py-1'>
+      <div className=' lg:px-20 hidden md:block px-2 py-1'>
         <Kpi />
       </div>
 
-      <div className=' lg:px-20 px-2 py-1'>
+      <div className=' lg:px-20 hidden md:block px-2 py-1'>
         <Collabaration />
       </div>
 
       <div className=' lg:px-20 px-2 py-1'>
         <Roadmap />
       </div>
+
+    
 
       <div className=' lg:px-20 px-2 py-1'>
         <Us />

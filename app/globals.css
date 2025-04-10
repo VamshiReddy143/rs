@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import 'locomotive-scroll/dist/locomotive-scroll.css';
+/* Your other global styles */
 
 @custom-variant dark (&:is(.dark *));
 

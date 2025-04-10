@@ -57,13 +57,13 @@ const Collabaration = () => {
 
     return (
         <div className="lg:min-h-screen  flex  lg:flex-row md:flex-col-reverse flex-col-reverse  justify-between items-center">
-            <div ref={leftSectionRef} className="lg:w-[40%] w-full relative">
+            <div ref={leftSectionRef} className="lg:w-[40%]  relative">
                 <Image
                     src="/collabaration.png"
                     alt="team"
                     width={900}
                     height={900}
-                    className="h-full w-full  object-cover"
+                    className="h-full w-full"
                 />
             </div>
             <div
