@@ -11,10 +11,10 @@ const Fprojects = () => {
       </div>
 
       <div className='mt-10'>
-        <div className='grid grid-cols-2 gap-10'>
+        <div className='grid lg:grid-cols-2 grid-cols-1 gap-10'>
           {/* Project 1 */}
           <div className='group'>
-            <div className='relative w-[40em] h-[40em] rounded-lg overflow-hidden bg-transparent group-hover:outline group-hover:outline-5 group-hover:outline-[#f6ff7a]'>
+            <div className='relative  w-full lg:w-full md:w-full lg:h-[40em] h-[30em]  object-cover rounded-lg overflow-hidden bg-transparent group-hover:outline group-hover:outline-5 group-hover:outline-[#f6ff7a]'>
               <Image
                 src={"/ms.jpg"}
                 fill
@@ -28,7 +28,7 @@ const Fprojects = () => {
 
           {/* Project 2 */}
           <div className='group pt-30'>
-            <div className='relative w-[40em] h-[40em] rounded-lg overflow-hidden bg-transparent group-hover:outline group-hover:outline-5 group-hover:outline-[#f6ff7a]'>
+            <div className='relative  w-full lg:w-full md:w-full h-[30em] object-cover rounded-lg overflow-hidden bg-transparent group-hover:outline group-hover:outline-5 group-hover:outline-[#f6ff7a]'>
               <Image
                 src={"/emirutus.jpg"}
                 fill
@@ -42,7 +42,7 @@ const Fprojects = () => {
 
           {/* Project 3 */}
           <div className='group'>
-            <div className='relative w-[40em] h-[40em] rounded-lg overflow-hidden bg-transparent group-hover:outline group-hover:outline-5 group-hover:outline-[#f6ff7a]'>
+            <div className='relative  w-full lg:w-full md:w-full h-[30em]  object-cover rounded-lg overflow-hidden bg-transparent group-hover:outline group-hover:outline-5 group-hover:outline-[#f6ff7a]'>
               <Image
                 src={"/cow.jpg"}
                 fill
@@ -56,7 +56,7 @@ const Fprojects = () => {
 
           {/* Project 4 */}
           <div className='group pt-30'>
-            <div className='relative w-[40em] h-[40em] rounded-lg overflow-hidden bg-transparent group-hover:outline group-hover:outline-5 group-hover:outline-[#f6ff7a]'>
+            <div className='relative  w-full lg:w-full md:w-full h-[30em] object-cover rounded-lg overflow-hidden bg-transparent group-hover:outline group-hover:outline-5 group-hover:outline-[#f6ff7a]'>
               <Image
                 src={"/madison.jpg"}
                 fill

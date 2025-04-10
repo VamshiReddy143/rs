@@ -1,4 +1,4 @@
-import Navbar from '@/components/Navbar'
+
 import React from 'react'
 import Hero from "@/components/Portfolio/Hero"
 import Fprojects from '@/components/Portfolio/Fprojects'
@@ -9,12 +9,12 @@ import Footer from '@/components/Portfolio/Footer'
 const page = () => {
   return (
     <div className='text-white bg-black'>
-        <Navbar/>
+      
        
-        <div className='px-20 py-2'>
-           <Hero/>
-        </div>
-        <div className='px-20 py-2'>
+      <div className=' lg:px-[10%] md:pl-[5%] mt-[10em] lg:mt-0 px-2 py-1'>
+        <Hero />
+      </div>
+        <div className='lg:px-[10%] px-4 mt-[5em] lg:mt-0 py-2'>
         <Fprojects/>
         </div>
         <div className=''>

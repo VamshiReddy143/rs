@@ -1,5 +1,5 @@
 import React from 'react';
-import line1 from "../public/lineimg1.png";
+
 
 const Capabilities = () => {
     return (

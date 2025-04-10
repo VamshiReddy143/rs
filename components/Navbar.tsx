@@ -8,29 +8,36 @@ const Navbar = () => {
   const [isServicedropdownOpen, setIsServicedropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Refs with TypeScript types
   const capabilitiesRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLDivElement>(null);
   const navbarRef = useRef<HTMLDivElement>(null);
 
-  // Handler for Capabilities click
-  const handleCapabilitiesClick = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-    setIsServicedropdownOpen(false);
+  const handleCapabilitiesClick = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent any default behavior
+    setIsDropdownOpen((prev) => !prev); // Toggle Capabilities dropdown
+    setIsServicedropdownOpen(false); // Close Services dropdown
+    if (isMobileMenuOpen && isDropdownOpen) setIsMobileMenuOpen(false); // Close mobile menu if open
   };
 
-  // Handler for Services click
-  const handleServicesClick = () => {
-    setIsServicedropdownOpen(!isServicedropdownOpen);
-    setIsDropdownOpen(false);
+  const handleServicesClick = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent any default behavior
+    setIsServicedropdownOpen((prev) => !prev); // Toggle Services dropdown
+    setIsDropdownOpen(false); // Close Capabilities dropdown
+    if (isMobileMenuOpen && isServicedropdownOpen) setIsMobileMenuOpen(false); // Close mobile menu if open
   };
 
-  // Toggle mobile menu
   const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+    setIsMobileMenuOpen((prev) => !prev); // Toggle mobile menu
+    setIsDropdownOpen(false); // Close Capabilities dropdown
+    setIsServicedropdownOpen(false); // Close Services dropdown
   };
 
-  // Close dropdowns when clicking outside
+  const closeAllDropdowns = () => {
+    setIsDropdownOpen(false);
+    setIsServicedropdownOpen(false);
+    setIsMobileMenuOpen(false);
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -50,39 +57,34 @@ const Navbar = () => {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isDropdownOpen, isServicedropdownOpen]);
 
-  // Update dropdown width and position dynamically on mount and resize
   useEffect(() => {
     const updateDropdownStyles = () => {
       if (navbarRef.current) {
         const navbarWidth = navbarRef.current.offsetWidth;
-        const navbarLeft = navbarRef.current.offsetLeft;
+        const windowWidth = window.innerWidth;
+        const leftPosition = (windowWidth - navbarWidth) / 2;
 
-        if (capabilitiesRef.current) {
-          capabilitiesRef.current.style.width = `${navbarWidth}px`;
-          capabilitiesRef.current.style.left = `${navbarLeft}px`;
-        }
-        if (servicesRef.current) {
-          servicesRef.current.style.width = `${navbarWidth}px`;
-          servicesRef.current.style.left = `${navbarLeft}px`;
-        }
+        [capabilitiesRef, servicesRef].forEach((ref) => {
+          if (ref.current) {
+            ref.current.style.width = `${navbarWidth}px`;
+            ref.current.style.left = `${leftPosition}px`;
+          }
+        });
       }
     };
 
-    updateDropdownStyles(); // Initial call
+    updateDropdownStyles();
     window.addEventListener("resize", updateDropdownStyles);
     return () => window.removeEventListener("resize", updateDropdownStyles);
-  }, []);
+  }, [isDropdownOpen, isServicedropdownOpen]);
 
   return (
     <div className="fixed top-0 left-0 w-full lg:px-[5em] z-[999] bg-black">
-      {/* Navbar container with padding and ref */}
       <div ref={navbarRef} className="flex justify-between items-center px-4 py-2 md:px-10 lg:px-20">
-        <Link href="/">
+        <Link href="/" onClick={closeAllDropdowns}>
           <div>
             <Image
               src="https://cdn.prod.website-files.com/63f902d79a33f71d496cde07/66e44bace2a664b42ac8c794_RS-Logo.png"
@@ -94,7 +96,6 @@ const Navbar = () => {
           </div>
         </Link>
 
-        {/* Desktop Menu (hidden on lg and below) */}
         <div className="hidden lg:flex lg:items-center lg:gap-10">
           <ul className="flex gap-4 lg:gap-10">
             <li
@@ -109,12 +110,12 @@ const Navbar = () => {
             >
               Services
             </li>
-            <Link href="/Portfolio">
+            <Link href="/Portfolio" onClick={closeAllDropdowns}>
               <li className="text-[14px] lg:text-[14px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
                 Portfolio
               </li>
             </Link>
-            <Link href="/About">
+            <Link href="/About" onClick={closeAllDropdowns}>
               <li className="text-[14px] lg:text-[14px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
                 About
               </li>
@@ -131,7 +132,6 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Mobile/Tablet Menu Button (visible up to lg breakpoint, i.e., ≤ 1023px) */}
         <div className="lg:hidden flex items-center">
           <button
             onClick={toggleMobileMenu}
@@ -142,7 +142,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile/Tablet Menu */}
       {isMobileMenuOpen && (
         <div className="lg:hidden absolute top-16 left-0 w-full bg-black border-t border-gray-800">
           <ul className="flex flex-col items-center gap-4 py-4">
@@ -158,12 +157,12 @@ const Navbar = () => {
             >
               Services
             </li>
-            <Link href="/Portfolio">
+            <Link href="/Portfolio" onClick={closeAllDropdowns}>
               <li className="text-[16px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
                 Portfolio
               </li>
             </Link>
-            <Link href="/About">
+            <Link href="/About" onClick={closeAllDropdowns}>
               <li className="text-[16px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
                 About
               </li>
@@ -181,18 +180,16 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* Capabilities Dropdown */}
       {isDropdownOpen && (
         <div
           ref={capabilitiesRef}
-          className="fixed top-0 left-0 w-full h-full lg:hidden bg-gray-900 z-40 p-4 overflow-y-auto"
+          className="fixed top-0 w-full h-full lg:hidden bg-gray-900 z-40 p-4 overflow-y-auto"
         >
           <div className="flex flex-col items-center justify-start h-full text-white relative">
-            {/* Cross Symbol in Top-Right */}
             <button
               onClick={() => setIsDropdownOpen(false)}
               className="absolute top-2 right-4 text-[24px] hover:text-[#f6ff7a] transition-colors"
-              style={{ lineHeight: "1.5em" }} // Align with navbar height
+              style={{ lineHeight: "1.5em" }}
             >
               ×
             </button>
@@ -256,22 +253,20 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* Services Dropdown */}
       {isServicedropdownOpen && (
         <div
           ref={servicesRef}
-          className="fixed top-0 left-0 w-full h-full lg:hidden bg-gray-900 z-40 p-4 overflow-y-auto"
+          className="fixed top-0 w-full h-full lg:hidden bg-gray-900 z-40 p-4 overflow-y-auto"
         >
-          <div className="flex flex-col items-center justify-start h-full text-white relative">
-            {/* Cross Symbol in Top-Right */}
+          <div className="flex flex-col h-full text-white relative">
             <button
               onClick={() => setIsServicedropdownOpen(false)}
               className="absolute top-2 right-4 text-[24px] hover:text-[#f6ff7a] transition-colors"
-              style={{ lineHeight: "1.5em" }} // Align with navbar height
+              style={{ lineHeight: "1.5em" }}
             >
               ×
             </button>
-            <div className="flex flex-col gap-6 w-full md:max-w-none mt-12">
+            <div className="flex flex-col gap-6 w-full md:max-w-none mt-12 flex-1">
               <div className="bg-gray-800 p-4 rounded-lg flex items-center">
                 <Image
                   src="/serviceimg1.jpg"
@@ -302,22 +297,24 @@ const Navbar = () => {
                   </p>
                 </div>
               </div>
-              <button className="bg-[#f6ff7a] text-black px-4 py-2 rounded-lg mt-auto hover:bg-[#f6ff7a]/80 transition-colors">
-                Discover More →
-              </button>
+              <div className="flex items-center justify-center gap-4 mt-auto">
+                <div className="h-full w-px bg-gray-700"></div>
+                <button className="bg-[#f6ff7a] text-black px-4 py-2 rounded-lg hover:bg-[#f6ff7a]/80 transition-colors">
+                  Discover More →
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Desktop Capabilities Dropdown */}
       {isDropdownOpen && (
         <div
           ref={capabilitiesRef}
           className="hidden lg:block absolute top-16 z-30 bg-gray-900 border border-gray-800 rounded-xl p-4 mt-2"
         >
           <div className="grid grid-cols-4 gap-4">
-            <Link href="/Ai">
+            <Link href="/Ai" onClick={closeAllDropdowns}>
               <div className="p-2">
                 <Image src="/ai.svg" alt="logo" width={300} height={300} className="w-full h-auto" />
                 <h1 className="text-[1.5em] font-bold mt-2">Artificial Intelligence</h1>
@@ -326,7 +323,7 @@ const Navbar = () => {
                 </p>
               </div>
             </Link>
-            <Link href="/DE">
+            <Link href="/DE" onClick={closeAllDropdowns}>
               <div className="p-2">
                 <Image src="/data.svg" alt="logo" width={300} height={300} className="w-full h-auto" />
                 <h1 className="text-[1.5em] font-bold mt-2">Data Engineering</h1>
@@ -335,7 +332,7 @@ const Navbar = () => {
                 </p>
               </div>
             </Link>
-            <Link href="/CI">
+            <Link href="/CI" onClick={closeAllDropdowns}>
               <div className="p-2">
                 <Image src="/cloud.svg" alt="logo" width={300} height={300} className="w-full h-auto" />
                 <h1 className="text-[1.5em] font-bold mt-2">Cloud Infrastructure</h1>
@@ -361,14 +358,13 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* Desktop Services Dropdown */}
       {isServicedropdownOpen && (
         <div
           ref={servicesRef}
           className="hidden lg:block absolute top-16 z-30 bg-gray-900 border border-gray-700 rounded-xl p-4 mt-2"
         >
-          <div className="grid grid-cols-3 gap-4">
-            <Link href="/StaffAugmentation">
+          <div className="grid grid-cols-3 gap-4 min-h-[200px]">
+            <Link href="/StaffAugmentation" onClick={closeAllDropdowns}>
               <div className="p-2">
                 <Image src="/serviceimg1.jpg" alt="logo" width={300} height={300} className="w-full h-auto" />
                 <h1 className="text-[1.5em] font-bold mt-2">Staff Augmentation</h1>
@@ -377,7 +373,7 @@ const Navbar = () => {
                 </p>
               </div>
             </Link>
-            <Link href="/ProductStudio">
+            <Link href="/ProductStudio" onClick={closeAllDropdowns}>
               <div className="p-2">
                 <Image src="/serviceimg2.jpg" alt="logo" width={300} height={300} className="w-full h-auto" />
                 <h1 className="text-[1.5em] font-bold mt-2">Product Studio</h1>
@@ -386,9 +382,10 @@ const Navbar = () => {
                 </p>
               </div>
             </Link>
-            <div className="flex flex-col items-start justify-end p-0">
-              <div className="mt-auto">
-                <button className="bg-transparent text-[20px] text-white border p-2 rounded-xl">
+            <div className="flex flex-col p-0">
+              <div className="flex items-center gap-4 h-full">
+                <div className="h-full w-px bg-gray-700"></div>
+                <button className="bg-transparent text-[20px] text-white border p-2 rounded-xl self-end">
                   Discover More →
                 </button>
               </div>

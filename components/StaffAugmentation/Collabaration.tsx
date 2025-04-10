@@ -56,19 +56,19 @@ const Collabaration = () => {
     }, []);
 
     return (
-        <div className="min-h-screen flex justify-between items-center">
-            <div ref={leftSectionRef} className="w-[40%] relative">
+        <div className="lg:min-h-screen  flex  lg:flex-row md:flex-col-reverse flex-col-reverse  justify-between items-center">
+            <div ref={leftSectionRef} className="lg:w-[40%] w-full relative">
                 <Image
                     src="/collabaration.png"
                     alt="team"
                     width={900}
                     height={900}
-                    className="h-full w-full"
+                    className="h-full w-full  object-cover"
                 />
             </div>
             <div
                 ref={rightSectionRef}
-                className="flex flex-col items-start gap-6 w-[42%]"
+                className="flex flex-col items-start gap-6 lg:w-[42%]"
             >
                 <p className="text-gray-400">Agile & Fast</p>
                 <h1 className="text-[2.2em] font-bold">

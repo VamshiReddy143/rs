@@ -56,28 +56,28 @@ const Vision = () => {
     }, []);
 
     return (
-        <div className="min-h-screen mt-[2em] flex justify-between items-center">
+        <div className="min-h-screen lg:mt-[2em] md:mt-[17em] mt-[5em] lg:flex justify-between items-center">
             <div
                 ref={leftSectionRef}
-                className="flex flex-col items-start gap-6 w-[40%]"
+                className="flex flex-col items-start gap-6 lg:w-[40%]"
             >
                 <p className="text-gray-400">Research & Definition</p>
                 <h1 className="text-[2.2em] font-bold">Translate Your Vision Into Reality</h1>
                 <p className="text-[1.2em] text-gray-400">
                 Rootstrap knows how to go from 0 to 1 by turning ideas into practical product definitions that can be wireframed, architected, and tested with users. We do this while balancing not only your vision, but also your budget and timeline.
                 </p>
-                <button className="mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
+                <button className="lg:mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
                     Get In Touch ➔
                 </button>
             </div>
 
-            <div ref={rightSectionRef} className="w-[40%] relative">
+            <div ref={rightSectionRef} className="lg:w-[40%] mt-10 lg:mt-0 flex items-center justify-center relative">
                 <Image
                     src="/vision.jpg"
                     alt="team"
                     width={900}
                     height={900}
-                    className="h-full w-full"
+                    className="lg:h-full lg:w-full w-[80%] h-[100%] object-cover"
                 />
             </div>
         </div>

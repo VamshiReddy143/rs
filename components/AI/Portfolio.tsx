@@ -3,18 +3,18 @@ import React from 'react';
 
 const Portfolio = () => {
     return (
-        <div className="flex flex-col items-center justify-center gap-7 mt-20">
-            <h1 className="text-[2.4em] font-bold">
+        <div className="flex flex-col items-center justify-center gap-7 lg:mt-20 mt-10">
+            <h1 className="lg:text-[2.4em] text-[2em] font-bold text-center">
                 Our Portfolio: Artificial Intelligence & Machine Learning
             </h1>
-            <p className="text-gray-400">
+            <p className="text-gray-400 text-center">
                 We have partnered with some of the world‘s fastest-growing startups and most innovative corporations.
             </p>
 
-            <div className="grid grid-cols-3 gap-10 mt-10">
+            <div className="grid lg:grid-cols-3 grid-cols-1  gap-10 lg:mt-10 mt-5">
                 <div>
                     <div
-                        className="card  h-[500px] w-[400px] group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
+                        className="card  h-[500px] lg:w-[400px] group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
                         style={{
                             backgroundImage: "url('/aiimg1.jpg')",
                             backgroundSize: 'cover',
@@ -51,7 +51,7 @@ const Portfolio = () => {
 
                 <div>
                     <div
-                        className="card h-[500px] w-[400px]  group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
+                        className="card h-[500px] lg:w-[400px]  group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
                         style={{
                             backgroundImage: "url('/aiimg2.jpg')",
                             backgroundSize: 'cover',
@@ -88,7 +88,7 @@ const Portfolio = () => {
 
                 <div>
                     <div
-                        className="card  h-[500px] w-[400px]  group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
+                        className="card  h-[500px] lg:w-[400px]  group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
                         style={{
                             backgroundImage: "url('/aiimg3.jpg')",
                             backgroundSize: 'cover',

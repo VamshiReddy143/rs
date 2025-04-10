@@ -39,13 +39,13 @@ const Hero = () => {
 
     return (
         <div className='relative   flex justify-between items-center overflow-x-hidden'>
-            <div className='flex flex-col items-start gap-3 w-[45%]'>
-                <h1 className='text-[5em] font-bold'>Our Work</h1>
-                <h2 className='text-[2em] text-gray-200 font-bold'>
+            <div className='flex flex-col items-start gap-3 lg:w-[45%]'>
+                <h1 className='lg:text-[5em] text-[3em] font-bold'>Our Work</h1>
+                <h2 className='lg:text-[1.7em] text-[1.5em] text-gray-200 font-bold'>
                     Explore our portfolio to see how we turn ideas into exceptional experiences.
                 </h2>
             </div>
-            <div className='w-[50%] flex justify-end mb-30 '>
+            <div className='lg:w-[50%] md:w-[20%] hidden lg:flex justify-end mb-30 '>
                 
                 <div ref={svgContainerRef} className='mb-20' >
             

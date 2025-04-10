@@ -56,24 +56,24 @@ const Roadmap = () => {
     }, []);
 
     return (
-        <div className="min-h-screen mt-[2em] flex justify-between items-center">
+        <div className="lg:min-h-screen mt-[2em] lg:flex justify-between items-center">
             <div
                 ref={leftSectionRef}
-                className="flex flex-col items-start gap-6 w-[50%]"
+                className="flex flex-col items-start gap-6 lg:w-[50%]"
             >
                 <p className="text-gray-400">Scalable & Flexible</p>
                 <h1 className="text-[2.2em] font-bold">
                     Accelerate Your Roadmap with Multiple Cross-Functional Pods
                 </h1>
                 <p className="text-[1.2em] text-gray-400">
-                    Rootstrap tackles large-scale projects with teams as large as 50 people operating across several independent working groups called 'pods', complete with engineers, PMs, QA, DevOps, designers, and more.
+                    Rootstrap tackles large-scale projects with teams as large as 50 people operating across several independent working groups called &apos;pods&apos;, complete with engineers, PMs, QA, DevOps, designers, and more.
                 </p>
                 <button className="mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
                     Get In Touch ➔
                 </button>
             </div>
 
-            <div ref={rightSectionRef} className="w-[40%] relative">
+            <div ref={rightSectionRef} className="lg:w-[40%] relative">
                 <Image
                     src="/roadmap.png"
                     alt="team"

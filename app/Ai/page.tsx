@@ -1,6 +1,6 @@
 import React from 'react'
 import Hero from "@/components/AI/Hero"
-import Navbar from '@/components/Navbar'
+
 import Tools from '@/components/AI/Tools'
 import Portfolio from '@/components/AI/Portfolio'
 import Team from '@/components/AI/Team'
@@ -19,26 +19,26 @@ const page = () => {
       </div>
 
 
-      {/* <div className=' px-20 py-1'>
+      <div className=' lg:px-20 px-2 py-1'>
         <Tools />
       </div>
 
 
-      <div className=' px-20 py-1'>
+      <div className=' lg:px-20 px-2 py-1'>
         <Portfolio />
       </div>
 
-      <div className=' px-20 py-1'>
+      <div className=' lg:px-20 px-2 py-1'>
         <Team />
       </div>
 
-      <div className=' px-20 py-1'>
+      <div className=' lg:px-20 px-2 py-1'>
         <Capabilities />
       </div>
 
-      <div className=' px-20 py-1'>
+      <div className=' lg:px-20 px-2 py-1'>
         <Us />
-      </div> */}
+      </div>
 
       <div className=' lg:px-20 px-2 py-1'>
        <Footer/>

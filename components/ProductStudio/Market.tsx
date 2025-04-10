@@ -56,28 +56,28 @@ const Market = () => {
     }, []);
 
     return (
-        <div className="min-h-screen mt-[2em] flex justify-between items-center">
+        <div className="lg:min-h-screen mt-[2em] lg:flex justify-between items-center">
             <div
                 ref={leftSectionRef}
-                className="flex flex-col items-start gap-6 w-[40%]"
+                className="flex flex-col items-start gap-6 lg:w-[40%]"
             >
                 <p className="text-gray-400">Design, Development & QA</p>
                 <h1 className="text-[2.2em] font-bold">Go To Market With Confidence & Speed</h1>
                 <p className="text-[1.2em] text-gray-400">
                 Rootstrap has owned more than 750 product launches over 13 years (more than 1 per week!) thanks to our full-service studio with product, design, development, QA, and DevOps, plus dedicated support during and after launch.
                 </p>
-                <button className="mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
+                <button className="lg:mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
                     Get In Touch ➔
                 </button>
             </div>
 
-            <div ref={rightSectionRef} className="w-[40%] relative">
+            <div ref={rightSectionRef} className="lg:w-[40%] relative flex justify-center items-center mt-7 lg:mt-0">
                 <Image
                     src="/market.jpg"
                     alt="team"
                     width={900}
                     height={900}
-                    className="h-full w-full"
+                    className="lg:h-full lg:w-full h-[80%] w-full object-cover"
                 />
             </div>
         </div>

@@ -56,28 +56,28 @@ const Kpi = () => {
     }, []);
 
     return (
-        <div className="min-h-screen mt-[2em] flex justify-between items-center">
+        <div className="lg:min-h-screen md:mt-[15em] mt-[2em] lg:mt-[2em] lg:flex justify-between items-center">
             <div
                 ref={leftSectionRef}
-                className="flex flex-col items-start gap-6 w-[50%]"
+                className="flex flex-col items-start gap-6 lg:w-[50%]"
             >
                 <p className="text-gray-400">Data-Driven</p>
                 <h1 className="text-[2.2em] font-bold">Your KPIs Are Our KPIs</h1>
                 <p className="text-[1.2em] text-gray-400">
                     Rootstrap understands that results are the only thing that really matter. We take ownership of our work and provide strategic recommendations every step of the way based on what we believe is best for your business.
                 </p>
-                <button className="mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
+                <button className="lg:mt-10  border bg-transparent p-3 rounded-xl cursor-pointer">
                     Get In Touch ➔
                 </button>
             </div>
 
-            <div ref={rightSectionRef} className="w-[40%] relative">
+            <div ref={rightSectionRef} className="lg:w-[40%] relative flex justify-center">
                 <Image
                     src="/kpi.png"
                     alt="team"
                     width={900}
                     height={900}
-                    className="h-full w-full"
+                    className="lg:h-full lg:w-full w-[80%] h-[80%] object-cover"
                 />
             </div>
         </div>

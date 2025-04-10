@@ -5,8 +5,8 @@ const Capabilities = () => {
     return (
         <div className='mt-30 min-h-screen flex flex-col items-center justify-center'>
             <div className='flex flex-col items-center justify-center gap-3'>
-                <h1 className='text-[2.4em] font-bold'>Our Capabilities</h1>
-                <p className='text-gray-400 text-[1.5em]'>We&apos;re proud to offer exceptional talent across a variety of digital disciplines.</p>
+                <h1 className='text-[2.4em] font-bold text-center'>Our Capabilities</h1>
+                <p className='text-gray-400 lg:text-[1.5em] text-[1em] text-center'>We&apos;re proud to offer exceptional talent across a variety of digital disciplines.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center justify-center gap-5 mt-20">

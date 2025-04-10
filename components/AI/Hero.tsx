@@ -12,7 +12,7 @@ const page = () => {
                 <h1 className="lg:text-[4em] md:text-[3.5em] text-[2em] font-bold">
                     Artificial Intelligence & <span className="block">Machine Learning</span>
                 </h1>
-                <p className="mt-5 text-[1.2em] text-gray-400 w-[90%]">
+                <p className="mt-5 text-[1.2em] text-gray-400 lg:w-[90%] md:w-[80%]">
                     We provide high-quality AI/ML solutions for partners across diverse projects. Our
                     expertise ensures your models are highly accurate, scalable, and fine-tuned for your
                     specific use cases.

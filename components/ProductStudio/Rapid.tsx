@@ -56,19 +56,19 @@ const Rapid = () => {
     }, []);
 
     return (
-        <div className="min-h-screen flex justify-between items-center">
-            <div ref={leftSectionRef} className="w-[40%] relative">
+        <div className="lg:min-h-screen  flex mt-10 lg:mt-0  lg:flex-row md:flex-col-reverse flex-col-reverse  justify-between items-center">
+            <div ref={leftSectionRef} className="lg:w-[40%] relative mt-7 lg:mt-0 flex justify-center items-center">
                 <Image
                     src="/rapid.jpg"
                     alt="team"
                     width={900}
                     height={900}
-                    className="h-full w-full"
+                    className="lg:h-full lg:w-full h-[80%] w-[100%] object-cover"
                 />
             </div>
             <div
                 ref={rightSectionRef}
-                className="flex flex-col items-start gap-6 w-[42%]"
+                className="flex flex-col items-start gap-6 lg:w-[42%]"
             >
                 <p className="text-gray-400">Agile & Fast</p>
                 <h1 className="text-[2.2em] font-bold">
@@ -77,7 +77,7 @@ const Rapid = () => {
                 <p className="text-[1.2em] text-gray-400">
                     Rootstrap practices agile development to maximize communication, user validation, and speed to market. This means sprint planning together, plus weekly demos, daily standups, and shared Slack so we always stay in sync.
                 </p>
-                <button className="mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
+                <button className="lg:mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
                     Get In Touch ➔
                 </button>
             </div>

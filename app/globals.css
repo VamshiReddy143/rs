@@ -139,6 +139,10 @@ html {
   filter: grayscale(100%);
 }
 
+body{
+  background-color: black;
+}
+
 
 
 
