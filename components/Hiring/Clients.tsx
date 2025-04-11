@@ -100,7 +100,7 @@ const Clients = () => {
                     {clients.map((client, index) => (
                         <div
                             key={index}
-                            className="w-full flex lg:flex-row md:flex-col lg:items-center md:items-start justify-center gap-7 min-w-[100%]"
+                            className="w-full flex flex-col lg:flex-row md:flex-col lg:items-center md:items-start justify-center gap-7 min-w-[100%]"
                         >
                             <div className='flex items-center justify-between md:ml-10 lg:ml-0'>
                                <div className='lg:h-[20em] lg:w-[20em] h-[8em] w-[8em]'>

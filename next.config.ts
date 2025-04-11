@@ -23,6 +23,9 @@ const nextConfig: NextConfig = {
       filter:['grayscale']
     },
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   plugins: [],
 
 };

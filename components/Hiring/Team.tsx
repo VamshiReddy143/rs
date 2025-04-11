@@ -3,7 +3,7 @@ import React from 'react'
 
 const Team = () => {
   return (
-    <div className='lg:p-[10%]   py-5 px-2 text-white bg-black'>
+    <div className='lg:p-[10%]   px-2 text-white bg-black'>
         <h1 className='lg:text-[5em] text-[2.2em] font-semibold leading-tight'>Join our team and unlock <span className='lg:block'>your potential!</span></h1>
 
         <div className='grid grid-cols-1 md:grid-cols-1  lg:grid-cols-3 lg:mt-[7em] mt-10 gap-10'>
