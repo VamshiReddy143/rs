@@ -5,7 +5,7 @@ const page = () => {
     return (
 
         <div
-        className="bg-black text-white lg:min-h-screen pt-10 lg:pt-0 md:pt-5 bg-no-repeat md:bg-[position:calc(100%+500px)_top] lg:bg-[position:calc(100%+200px)_top] md:bg-[length:1300px_auto] md:bg-[url('/linebg.png')]"
+        className="bg-black text-white lg:min-h-screen pt-3 lg:pt-0 md:pt-5 bg-no-repeat md:bg-[position:calc(100%+500px)_top] lg:bg-[position:calc(100%+200px)_top] md:bg-[length:1300px_auto] md:bg-[url('/linebg.png')]"
       >
       
             <div className="flex flex-col items-start lg:w-[60%] w-full lg:pb-10 md:pb-[20em] justify-center h-screen leading-tight">

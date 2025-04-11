@@ -3,7 +3,7 @@ import React from 'react'
 
 const Hero = () => {
   return (
-    <div className='lg:p-[10%] lg:pt-[10%]  p-5  lg:pt-0 bg-gray-200 text-black'>
+    <div className='lg:p-[10%] lg:pt-[10%] mt-[2em]  p-5  lg:pt-0 bg-gray-200 text-black'>
     <div className='flex flex-col gap-5'>
         <h1 className='lg:text-[5em] text-[2em] font-bold'>We Grow Together!</h1>
         <p className='text-[1.2em] ' >If you want to level up your career at a company in constant motion, you’ve come to the right place.</p>

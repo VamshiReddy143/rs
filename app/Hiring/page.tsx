@@ -164,8 +164,11 @@ import React from 'react'
 
 const page = () => {
   return (
-    <div>
+    <div className=''>
+      <div className='lg:mt-0'>
       <Hero />
+
+      </div>
        <Clients />
         <Team />
        <Fun />
