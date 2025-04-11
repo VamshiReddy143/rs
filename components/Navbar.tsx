@@ -123,18 +123,18 @@ const Navbar = () => {
                 About
               </li>
             </Link>
-           <Link href={"/Blog"}>
+           <Link href={"/Blog"} onClick={closeAll}>
            <li className="text-[14px] lg:text-[14px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
               Blog
             </li>
            </Link>
-          <Link href={"/Hiring"}>
+          <Link href={"/Hiring"} onClick={closeAll}>
           <li className="text-[14px] lg:text-[14px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
               Hiring!
             </li>
           </Link>
           </ul>
-         <Link href={"/Contact"}>
+         <Link href={"/Contact"} onClick={closeAll}>
          <button className="text-[16px] lg:text-[15px] bg-[#f6ff7a] text-black px-2 py-1 lg:px-4 lg:py-2 rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80 transition-colors">
             Get in Touch ➔
           </button>
@@ -176,18 +176,18 @@ const Navbar = () => {
                 About
               </li>
             </Link>
-            <Link href={"/Blog"}>
+            <Link href={"/Blog"} onClick={closeAll}>
             <li className="text-[16px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
               Blog
             </li>
             </Link>
 
-            <Link href={"/Hiring"}>
+            <Link href={"/Hiring"} onClick={closeAll}>
             <li className="text-[16px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
               Hiring!
             </li>
             </Link>
-            <Link href={"/Contact"}>
+            <Link href={"/Contact"} onClick={closeAll}>
             <button className="text-[16px] bg-[#f6ff7a] text-black px-4 py-2 rounded-lg hover:bg-[#f6ff7a]/80 transition-colors">
               Get in Touch ➔
             </button>
