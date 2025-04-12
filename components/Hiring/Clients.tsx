@@ -88,7 +88,7 @@ const Clients = () => {
     };
 
     return (
-        <div className="bg-gray-300 lg:px-[10%] px-2  py-[5%] mb-10">
+        <div className="bg-gray-300 lg:px-[10%] px-2 text-black  py-[5%] mb-10">
             {/* Carousel Container */}
             <div className="relative overflow-hidden">
                 <div

@@ -83,8 +83,8 @@ const Navbar = () => {
   }, [isDropdownOpen, isServicedropdownOpen]);
 
   return (
-    <div className="fixed top-0 left-0 w-full lg:px-[5em] z-[999] bg-black">
-      <div ref={navbarRef} className="flex justify-between items-center px-4 py-2 md:px-10 lg:px-20">
+    <div className="fixed top-0 left-0 w-full  z-[999] bg-black">
+      <div ref={navbarRef} className="flex justify-between items-center py-2  ">
         <Link href="/" onClick={closeAll}>
           <div className="">
             <Image

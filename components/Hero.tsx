@@ -140,7 +140,7 @@ interface VelocityScrollProps extends React.HTMLAttributes<HTMLDivElement> {
 const Hero = () => {
   return (
     <div id="hero" className="w-full">
-      <div className='min-h-[auto] lg:min-h-screen flex flex-col-reverse lg:flex-row items-center justify-center lg:justify-between gap-8 lg:gap-0'>
+      <div className='  lg:min-h-screen flex flex-col-reverse min-w-full lg:flex-row mt-10 items-center justify-center lg:justify-between gap-8 lg:gap-0'>
         <div className='w-full lg:w-[36%] px-4 lg:px-0'>
           <h1 className='lg:text-[3em] text-[1.5em] sm:text-[2em] md:text-[2.5em] mt-6 lg:mt-0 font-extrabold leading-tight text-center lg:text-left'>
             Accelerate Your <span className='block'>Development</span> & Drive Innovation
