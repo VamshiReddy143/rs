@@ -10,7 +10,9 @@ import React from 'react'
 const page = () => {
   return (
    <div>
-    <Hero/>
+   <div className='bg-gray-200'>
+   <Hero/>
+   </div>
     <MarketVideo/>
      <div  className=' lg:max-w-[90em] mx-auto lg:px-[6em] pb-10 px-3'>
     

@@ -22,15 +22,15 @@ const Team = () => {
                             alt='team'
                             className='h-15 w-15'
                         />
-                        <h1 className='font-bold text-[1.5em]'>Technical Lead</h1>
+                        <h1 className='font-bold text-[1.5em]'>Architect</h1>
                     </div>
 
                     <h2 className='text-[1.1em] font-bold'>
-                        Full-stack developer with 7+ years of experience, specializing in JavaScript and React
+                    Cybersecurity specialist with diverse technical background
                     </h2>
 
                     <p className='text-gray-300 text-[1em]'>
-                        Contributed to large-scale projects and managed high-stakes situations with poise. Additional strengths in product-thinking and team leadership make for a versatile problem solver.
+                    Deep knowledge of Node.js with experience in frontend frameworks and cloud infrastructure. Can effectively lead a wide variety of projects
                     </p>
 
                     {/* Downpart */}
@@ -39,7 +39,7 @@ const Team = () => {
 
                         <div className='flex gap-10 items-center justify-end'>
                             <Image
-                                src={"/egglogo.svg"}
+                                src={"/time.svg"}
                                 width={900}
                                 height={900}
                                 alt='team'
@@ -62,15 +62,15 @@ const Team = () => {
                             alt='team'
                             className='h-15 w-15'
                         />
-                        <h1 className='font-bold text-[1.5em]'>Staff Engineer</h1>
+                        <h1 className='font-bold text-[1.5em]'>Technical Lead</h1>
                     </div>
 
                     <h2 className='text-[1.1em] font-bold'>
-                        Highly accomplished Staff Engineer with extensive experience in Web and Mobile development
+                    Proven leader with a strong ability to adapt
                     </h2>
 
                     <p className='text-gray-300 text-[1em]'>
-                        Strong backend and machine learning expertise, and proficiency in various frameworks. Successfully led teams on challenging projects, delivering exceptional results in complex environments.
+                    Experienced in both traditional and serverless applications. Effective communicator with the capacity to adapt to the challenging situations.
                     </p>
 
                     {/* Downpart */}
@@ -110,11 +110,11 @@ const Team = () => {
                     </div>
 
                     <h2 className='text-[1.1em] font-bold'>
-                        A skilled Web Engineer with expertise in React, SCSS, TypeScript, and Vite
+                    Seasoned Node developer with deep expertise in data-driven applications
                     </h2>
 
                     <p className='text-gray-300 text-[1em]'>
-                        Contributed to significant projects, both independently and as part of a team, showcasing versatile expertise and practical experience in modern web technologies.
+                    Lengthy track record developing data-intensive Node applications. Can own the entire development cycle from architecture design to deployment and optimization.
                     </p>
 
                     {/* Downpart */}

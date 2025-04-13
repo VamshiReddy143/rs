@@ -212,12 +212,21 @@ const Navbar = () => {
               <div className="bg-gray-800 p-4 rounded-lg">
                 <div className="flex flex-col gap-2">
                   <div className="flex justify-between">
-                    <span>React</span>
-                    <span>React Native</span>
+                    <Link href={"/React"} onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/React"; }}>
+                      <span>React</span>
+                    </Link>
+                    <Link href={"/React_Native"} onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/React_Native"; }}>
+                      <span>React Native</span>
+                    </Link>
                   </div>
                   <div className="flex justify-between">
-                    <span>NodeJS</span>
-                    <span>Ruby on Rails</span>
+                    <Link href={"/NodeJS"} onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/NodeJS"; }}>
+                      <span>NodeJS</span>
+                    </Link>
+
+                    <Link href={"/Ruby_on_Rails"} onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/Ruby_on_Rails"; }}>
+                      <span>Ruby on Rails</span>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -311,10 +320,18 @@ const Navbar = () => {
             </Link>
             <div className="flex flex-col items-start justify-between border-l border-gray-700 pl-5">
               <ul className="flex flex-col gap-2">
-                <li>React</li>
-                <li>React Native</li>
-                <li>NodeJS</li>
-                <li>Ruby on Rails</li>
+                <Link href={"/React"} onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/React"; }}>
+                  <li>React</li>
+                </Link>
+                <Link href={"/React_Native"} onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/React_Native"; }}>
+                  <li>React Native</li>
+                </Link>
+                <Link href={"/NodeJS"} onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/NodeJS"; }}>
+                  <li>NodeJS</li>
+                </Link>
+                <Link href={"/Ruby_on_Rails"} onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/Ruby_on_Rails"; }}>
+                  <li>Ruby on Rails</li>
+                </Link>
               </ul>
               <div className="mt-2">
                 <button className="bg-transparent text-[20px] text-[#f6ff7a] border p-2 rounded-xl">
