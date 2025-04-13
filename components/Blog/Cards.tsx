@@ -3,7 +3,7 @@ import React from 'react';
 
 const Cards = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-[10%] mt-[5em]">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6  mt-[5em]">
       <div className="flex flex-col min-h-[400px] bg-gray-800 rounded-xl overflow-hidden relative">
         <Image src="/aiii.png" width={900} height={900} alt="team" className="h-[50%] w-full object-cover" />
         {/* Content Container */}

@@ -5,8 +5,10 @@ import React from 'react'
 const page = () => {
   return (
     <div>
+      <div className=' lg:max-w-[90em] mx-auto lg:px-[6em] px-3'>
         <Hero/>
-       <div className='lg:p-[10%] text-white px-5'>
+        </div>
+       <div className='lg:p-[11%] text-white px-5'>
        <Footer/>
        </div>
     </div>

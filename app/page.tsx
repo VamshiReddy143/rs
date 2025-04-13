@@ -10,7 +10,7 @@ import React from 'react'
 
 const page = () => {
   return (
-    <div className="w-full min-h-screen  overflow-x-hidden   py-8 lg:py-10 bg-black text-white">
+    <div className="w-full min-h-screen lg:max-w-[90em] mx-auto lg:px-[6em] px-3  overflow-x-hidden   py-8 lg:py-10 bg-black text-white">
 
       <Hero/>
       <Capabilities/>
@@ -18,6 +18,7 @@ const page = () => {
       <Clients/>
       <Contact/>
       <Footer/>
+      
     </div>
   )
 }

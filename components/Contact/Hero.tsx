@@ -65,7 +65,7 @@ const Hero: React.FC = () => {
   };
 
   return (
-    <div className="lg:p-[10%] md:p-[5%] mt-10 p-5 lg:min-h-screen px-2 text-white bg-black">
+    <div className="lg:mt-[10%] md:mt-[4em] mt-10 p-5 lg:min-h-screen px-2 text-white bg-black">
       <div className="flex flex-col lg:flex-row justify-between gap-8">
         <div className="w-full lg:w-1/2">
           <h1 className="lg:text-[3em] text-[2em] font-bold">Let&apos;s Build Together</h1>

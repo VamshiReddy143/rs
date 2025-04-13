@@ -14,7 +14,7 @@ const Portfolio = () => {
             <div className="grid lg:grid-cols-3 grid-cols-1 gap-10 mt-10">
                 <div>
                     <div
-                        className="card  h-[500px] lg:w-[400px] group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
+                        className="card  h-[500px]  group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
                         style={{
                             backgroundImage: "url('/deimg1.jpg')",
                             backgroundSize: 'cover',
@@ -52,7 +52,7 @@ Delivered real-time health & wellness data between doctors and caregivers in ord
 
                 <div>
                     <div
-                        className="card h-[500px] lg:w-[400px]  group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
+                        className="card h-[500px]   group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
                         style={{
                             backgroundImage: "url('/deimg2.jpg')",
                             backgroundSize: 'cover',
@@ -89,7 +89,7 @@ Delivered real-time health & wellness data between doctors and caregivers in ord
 
                 <div>
                     <div
-                        className="card  h-[500px] lg:w-[400px]  group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
+                        className="card  h-[500px]   group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
                         style={{
                             backgroundImage: "url('/deimg3.jpg')",
                             backgroundSize: 'cover',

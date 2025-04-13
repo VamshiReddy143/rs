@@ -11,7 +11,7 @@ const Team = () => {
 
             <div className='grid lg:grid-cols-3 grid-cols-1 gap-5 mt-15 '>
 
-                <div className='flex flex-col gap-8 bg-gray-800 rounded-xl p-5  relative lg:h-[500px] h-[400px]  lg:w-[400px]'>
+                <div className='flex flex-col gap-8 bg-gray-800 rounded-xl p-5  relative lg:h-[500px] h-[400px]  '>
                     <div className='flex gap-3 items-center justify-start'>
                         <Image src={"/ml.png"} width={900} height={900} alt='team' className='h-15 w-15' />
                         <h1 className='font-bold text-[1.5em]'>Machine Learning Lead</h1>
@@ -40,7 +40,7 @@ const Team = () => {
 
 
 
-                <div className='flex flex-col gap-7 bg-gray-800 rounded-xl p-5 relative  h-[400px] lg:h-[500px]  lg:w-[400px]'>
+                <div className='flex flex-col gap-7 bg-gray-800 rounded-xl p-5 relative  h-[400px] lg:h-[500px] '>
                     <div className='flex gap-3 items-center justify-start'>
                         <Image src={"/ds.png"} width={900} height={900} alt='team' className='h-15 w-15' />
                         <h1 className='font-bold text-[1.5em]'>Data Scientist</h1>
@@ -66,7 +66,7 @@ const Team = () => {
 
 
 
-                <div className='flex flex-col gap-7 bg-gray-800 rounded-xl p-5 relative  h-[400px] lg:h-[500px] lg:w-[400px]'>
+                <div className='flex flex-col gap-7 bg-gray-800 rounded-xl p-5 relative  h-[400px] lg:h-[500px] '>
                     <div className='flex gap-3 items-center justify-start'>
                         <Image src={"/mle.png"} width={900} height={900} alt='team' className='h-15 w-15' />
                         <h1 className='font-bold text-[1.5em]'>Machine Learning Engineer</h1>

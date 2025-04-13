@@ -14,7 +14,7 @@ const Portfolio = () => {
             <div className="grid lg:grid-cols-3 grid-cols-1  gap-10 lg:mt-10 mt-5">
                 <div>
                     <div
-                        className="card  h-[500px] lg:w-[400px] group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
+                        className="card  h-[500px]  group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
                         style={{
                             backgroundImage: "url('/aiimg1.jpg')",
                             backgroundSize: 'cover',
@@ -51,7 +51,7 @@ const Portfolio = () => {
 
                 <div>
                     <div
-                        className="card h-[500px] lg:w-[400px]  group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
+                        className="card h-[500px]   group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
                         style={{
                             backgroundImage: "url('/aiimg2.jpg')",
                             backgroundSize: 'cover',
@@ -88,7 +88,7 @@ const Portfolio = () => {
 
                 <div>
                     <div
-                        className="card  h-[500px] lg:w-[400px]  group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
+                        className="card  h-[500px]   group gap-[0.5em] rounded-[1.5em] relative flex justify-end flex-col p-[1.5em] z-[1] overflow-hidden"
                         style={{
                             backgroundImage: "url('/aiimg3.jpg')",
                             backgroundSize: 'cover',

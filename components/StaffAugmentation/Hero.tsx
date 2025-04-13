@@ -11,7 +11,7 @@ const page = () => {
             <div className="flex flex-col items-start  justify-center lg:h-screen leading-tight">
                 <div className='lg:flex justify-between items-center '>
                     <div className='lg:w-[60%] w-full'>
-                        <h1 className="lg:text-[4em] md:text-[3.5em] text-[2em] font-extrabold">
+                        <h1 className="lg:text-[3em] md:text-[3.5em] text-[2em] font-extrabold">
                             Staff Augmentation
                         </h1>
                         <p className="mt-5 text-[1.2em] text-gray-400 w-[85%]">
@@ -22,10 +22,10 @@ const page = () => {
                         </button>
                     </div>
 
-                    <div className='bg-gray-900 border-2 border-[#3b9b58] rounded-xl p-4 lg:w-[35%] w-full mt-10 lg:mt-0 lg:mr-50 mr-0'>
+                    <div className='bg-gray-900 border-2 border-[#3b9b58] rounded-xl p-2 lg:w-[40%] w-full mt-10 lg:mt-0 lg:mr-50 mr-0'>
                         <div className='flex flex-col items-start justify-center p-5 gap-7'>
                             <Image src={"/coma.png"} alt="team" width={900} height={900} className='h-10 w-10' />
-                            <p className='text-[1.4em] italic font-bold leading-[1.4em]'>
+                            <p className='text-[1.2em] italic font-bold leading-[1.4em]'>
                                 Rootstrap has the same level of care and ownership of the product as our team. Treat them as your core team, and you can utilize them to the fullest to tackle challenging problems.
                             </p>
                            <div className='flex justify-between items-center w-full'>

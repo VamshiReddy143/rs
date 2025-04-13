@@ -1,6 +1,5 @@
 import React from 'react'
 import Hero from "@/components/AI/Hero"
-
 import Tools from '@/components/AI/Tools'
 import Portfolio from '@/components/AI/Portfolio'
 import Team from '@/components/AI/Team'
@@ -13,35 +12,17 @@ const page = () => {
   return (
     <div className='text-white bg-black'>
 
-
-      <div className=' lg:pl-[10%] md:pl-[5%]  px-2 py-1'>
-        <Hero />
-      </div>
-
-
-      <div className=' lg:px-20 px-2 py-1'>
-        <Tools />
-      </div>
-
-
-      <div className=' lg:px-20 px-2 py-1'>
-        <Portfolio />
-      </div>
-
-      <div className=' lg:px-20 px-2 py-1'>
+       <div className='lg:ml-[11%] px-3 md:mt-10 mt-10 py-1'>
+       <Hero />
+       </div>
+      <div className=' max-w-[90em] mx-auto  lg:px-[6em] px-3'>
+   
+        <Tools />   
+        <Portfolio />   
         <Team />
-      </div>
-
-      <div className=' lg:px-20 px-2 py-1'>
-        <Capabilities />
-      </div>
-
-      <div className=' lg:px-20 px-2 py-1'>
+        <Capabilities /> 
         <Us />
-      </div>
-
-      <div className=' lg:px-20 px-2 py-1'>
-       <Footer/>
+        <Footer/>
       </div>
     </div>
   )

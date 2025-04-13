@@ -4,7 +4,7 @@ const Community = () => {
     return (
 
         <div
-            className="bg-black text-white  lg:pl-[10%] px-5  bg-no-repeat
+            className="bg-black text-white min-h-screen mt-10  pb-10  lg:pl-[11%] px-5  bg-no-repeat
             bg-none
                    md:bg-[position:center_top]
                    lg:bg-[position:center_bottom]

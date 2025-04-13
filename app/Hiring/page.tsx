@@ -162,20 +162,25 @@ import Footer from '@/components/Hiring/Footer';
 
 import React from 'react'
 
+
 const page = () => {
   return (
-    <div className=''>
-      <div className='lg:mt-0'>
+  
+     <div className=''>
       <Hero />
-
-      </div>
        <Clients />
+       <div className=' lg:max-w-[90em] mx-auto lg:px-[6em] px-3'>
+
+    
         <Team />
+        </div>
+        
        <Fun />
        <Challenges />
        <Community />
       <Footer />
-    </div>
+    
+     </div>
   )
 }
 

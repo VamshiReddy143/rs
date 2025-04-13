@@ -2,9 +2,9 @@ import React from 'react'
 
 const Connections = () => {
   return (
-    <div className='text-white bg-black lg:p-[10%] px-3'>
-         <div className='flex flex-col gap-7 w-[75%]'>
-            <h1 className='lg:text-[5em] text-semibold leading-tight'>Our <span className='text-[#ffc83f]'>Core Values</span> nurture
+    <div className='text-white bg-black min-h-screen mt-10 lg:mb-10'>
+         <div className='flex flex-col gap-7 lg:w-[75%]'>
+            <h1 className='lg:text-[5em] text-[2.5em] text-semibold leading-tight'>Our <span className='text-[#ffc83f]'>Core Values</span> nurture
             <span className='lg:block'>human connections</span></h1>
             <div className='h-[2px] w-[100px] bg-white rounded-full'/>
             <p className='text-[1.5em]'>Developed collaboratively in partnership with our entire team, our values are irrefutable foundations for the company that guide how we think, live, and interact with each other and with our client partners.</p>

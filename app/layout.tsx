@@ -27,11 +27,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#1a1a1a] text-white `}>
-        <div className="text-white max-w-[90em] px-[6em] mx-auto">
+        <div className="text-white lg:max-w-[90em] lg:px-[6em] lg:mx-auto px-3">
+         
           <Navbar />
         </div>
-        <main className="max-w-[90em] mx-auto px-[6em]">
-          <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        <main className="">
+          <SmoothScrollProvider>
+            {children}
+            </SmoothScrollProvider>
         </main>
       </body>
     </html>

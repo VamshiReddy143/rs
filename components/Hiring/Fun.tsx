@@ -8,7 +8,7 @@ const Fun: React.FC = () => {
         Having fun is a key part of the process.
       </h1>
 
-      <div className="mt-[7em] relative" style={{ minHeight: "800px" }}>
+      <div className="mt-[7em] relative " style={{ minHeight: "800px" }}>
         <div
           className="lg:h-[300px] lg:w-[400px] md:h-[200px] md:w-[300px] h-[100px] w-[200px] absolute"
           data-scroll
@@ -63,7 +63,7 @@ const Fun: React.FC = () => {
           />
         </div>
         <div
-          className="lg:h-[300px] lg:w-[400px] h-[150px] w-[200px] absolute lg:ml-[55em] lg:mt-[26em] md:mt-[20em] md:ml-[31em] mt-[25em] ml-[10em]"
+          className="lg:h-[300px]  h-[150px]  absolute lg:ml-[45em] lg:mt-[26em] md:mt-[20em] md:ml-[31em] mt-[25em] ml-[10em]"
           data-scroll
           data-scroll-speed="3"
         >

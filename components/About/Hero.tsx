@@ -4,14 +4,14 @@ import React from "react";
 
 const Hero = () => {
   return (
-    <div className="min-h-screen relative ">
-      <div className="min-h-screen flex items-center bg-gray-200 px-3 justify-between">
-        <div className="text-black lg:px-[10em]  lg:w-[80%]">
-          <h1 className="lg:text-[5em] text-[2.5em]  font-semibold leading-tight">
+    <div className="min-h-screen relative lg:max-w-[90em] mx-auto lg:px-[6em]  bg-gray-200   text-black ">
+      <div className="min-h-screen flex items-center px-3 justify-between">
+        <div className="text-black  lg:w-[80%]">
+          <h1 className="lg:text-[4em] text-[2.5em]  font-semibold leading-tight">
             Calm, Steady Hands for the New Digital Economy
           </h1>
           <p className="text-[1.5em] leading-tight lg:mt-5 mt-3 lg:w-[90%]">
-            Since 2011, we've navigated accelerating technological change,
+            Since 2011, we&apos;ve navigated accelerating technological change,
             developing custom software that enables our clients to embrace the
             future with confidence.
           </p>

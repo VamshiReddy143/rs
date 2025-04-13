@@ -4,7 +4,7 @@ import React from 'react';
 const Hero = () => {
   return (
     <div
-    className="bg-black lg:pl-[10%] p-5 text-white lg:min-h-screen pt-10 lg:pt-0 md:pt-5 
+    className="bg-black  text-white lg:min-h-screen pt-10 lg:pt-0 md:pt-5 
     bg-no-repeat 
     bg-none 
     md:bg-[position:calc(100%+300px)_top] 

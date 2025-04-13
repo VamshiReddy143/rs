@@ -6,7 +6,7 @@ const page = () => {
     return (
 
         <div
-            className="bg-black mt-[5em] lg:mt-0 text-white flex justify-between overflow-hidden lg:min-h-screen bg-no-repeat bg-[position:calc(100%)] lg:bg-[length:900px]  md:bg-[length:900px]  bg-[length:400px] bg-[url('/pss.png')]"
+            className="bg-black  mt-[5em] lg:mt-0 text-white flex justify-between overflow-hidden lg:min-h-screen bg-no-repeat bg-[position:calc(100%)] lg:bg-[length:900px]  md:bg-[length:900px]  bg-[length:400px] bg-[url('/pss.png')]"
         >
             <div className="flex flex-col items-start  justify-center lg:h-screen leading-tight">
                 <div className='lg:flex justify-between items-center '>
@@ -15,7 +15,7 @@ const page = () => {
                         Product Studio
 
                         </h1>
-                        <p className="mt-5 text-[1.2em] text-gray-400 lg:w-[85%]">
+                        <p className="mt-5 text-[1.3em] text-gray-400 lg:w-[85%]">
                         Build a high-quality, user-centric product or feature from scratch, fast and on budget. We staff embedded product teams with PMs, UX/UI designers, frontend, backend, data, and QA engineers.
                         </p>
                         <button className="mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
@@ -24,10 +24,10 @@ const page = () => {
                     </div>
 
 
-                    <div className='bg-gray-900 border-2 border-[#e54b58] rounded-xl p-4 lg:w-[35%] w-full mt-10 lg:mt-0 lg:mr-50 mr-0'>
-                        <div className='flex flex-col items-start justify-center p-5 gap-7'>
+                    <div className='bg-gray-900 border-2 border-[#e54b58] rounded-xl p-2 lg:w-[45%] w-full mt-10 lg:mt-0 lg:mr-[11%] mr-0'>
+                        <div className='flex flex-col items-start justify-center p-3 gap-6'>
                             <Image src={"/redcoma.svg"} alt="team" width={900} height={900} className='h-10 w-10' />
-                            <p className='text-[1.4em] italic font-bold leading-[1.4em]'>
+                            <p className='text-[1.2em] italic font-bold leading-[1.4em] leading-[1.3em]'>
                             Developed our MVP from scratch. Delivered intuitive and streamlined product, receiving positive user feedback and keeping on budget. The partnership element they bring to the table is impressive.
                             </p>
                            <div className='flex justify-between items-center w-full'>

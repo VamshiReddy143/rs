@@ -9,7 +9,7 @@ const page = () => {
       >
       
             <div className="flex flex-col items-start lg:w-[60%] w-full lg:pb-10 md:pb-[20em] justify-center h-screen leading-tight">
-                <h1 className="lg:text-[4em] md:text-[3.5em] text-[2em] font-bold">
+                <h1 className="lg:text-[3em] md:text-[3.5em] text-[2em] font-bold">
                 Data Engineering &<span className="block">Data Science</span>
                 </h1>
                 <p className="mt-5 text-[1.2em] text-gray-400 lg:w-[80%] md:w-[80%]">

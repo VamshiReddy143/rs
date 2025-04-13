@@ -36,31 +36,6 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   };
 
-
- 
-
-  // useEffect(() => {
-  //   const handleClickOutside = (event: MouseEvent) => {
-  //     if (
-  //       capabilitiesRef.current &&
-  //       !capabilitiesRef.current.contains(event.target as Node) &&
-  //       isDropdownOpen
-  //     ) {
-  //       setIsDropdownOpen(false);
-  //     }
-  //     if (
-  //       servicesRef.current &&
-  //       !servicesRef.current.contains(event.target as Node) &&
-  //       isServicedropdownOpen
-  //     ) {
-  //       setIsServicedropdownOpen(false);
-  //     }
-  //   };
-
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => document.removeEventListener("mousedown", handleClickOutside);
-  // }, [isDropdownOpen, isServicedropdownOpen]);
-
   useEffect(() => {
     const updateDropdownStyles = () => {
       if (navbarRef.current) {
@@ -83,8 +58,8 @@ const Navbar = () => {
   }, [isDropdownOpen, isServicedropdownOpen]);
 
   return (
-    <div className="fixed top-0 left-0 w-full  z-[999] bg-black">
-      <div ref={navbarRef} className="flex justify-between items-center py-2  ">
+    <div className="fixed top-0 left-0 z-[999] bg-black w-full">
+      <div ref={navbarRef} className="lg:max-w-[90em] lg:mx-auto px-3 lg:px-[6em] flex justify-between items-center py-2">
         <Link href="/" onClick={closeAll}>
           <div className="">
             <Image
@@ -96,8 +71,6 @@ const Navbar = () => {
             />
           </div>
         </Link>
-
-
 
         <div className="hidden lg:flex lg:items-center lg:gap-10">
           <ul className="flex gap-4 lg:gap-10">
@@ -123,22 +96,22 @@ const Navbar = () => {
                 About
               </li>
             </Link>
-           <Link href={"/Blog"} onClick={closeAll}>
-           <li className="text-[14px] lg:text-[14px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
-              Blog
-            </li>
-           </Link>
-          <Link href={"/Hiring"} onClick={closeAll}>
-          <li className="text-[14px] lg:text-[14px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
-              Hiring!
-            </li>
-          </Link>
+            <Link href="/Blog" onClick={closeAll}>
+              <li className="text-[14px] lg:text-[14px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
+                Blog
+              </li>
+            </Link>
+            <Link href="/Hiring" onClick={closeAll}>
+              <li className="text-[14px] lg:text-[14px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
+                Hiring!
+              </li>
+            </Link>
           </ul>
-         <Link href={"/Contact"} onClick={closeAll}>
-         <button className="text-[16px] lg:text-[15px] bg-[#f6ff7a] text-black px-2 py-1 lg:px-4 lg:py-2 rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80 transition-colors">
-            Get in Touch ➔
-          </button>
-         </Link>
+          <Link href="/Contact" onClick={closeAll}>
+            <button className="text-[16px] lg:text-[15px] bg-[#f6ff7a] text-black px-2 py-1 lg:px-4 lg:py-2 rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80 transition-colors">
+              Get in Touch ➔
+            </button>
+          </Link>
         </div>
 
         <div className="lg:hidden flex items-center">
@@ -176,22 +149,20 @@ const Navbar = () => {
                 About
               </li>
             </Link>
-            <Link href={"/Blog"} onClick={closeAll}>
-            <li className="text-[16px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
-              Blog
-            </li>
+            <Link href="/Blog" onClick={closeAll}>
+              <li className="text-[16px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
+                Blog
+              </li>
             </Link>
-
-            <Link href={"/Hiring"} onClick={closeAll}>
-            <li className="text-[16px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
-              Hiring!
-            </li>
+            <Link href="/Hiring" onClick={closeAll}>
+              <li className="text-[16px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
+                Hiring!
+              </li>
             </Link>
-            <Link href={"/Contact"} onClick={closeAll}>
-            <button className="text-[16px] bg-[#f6ff7a] text-black px-4 py-2 rounded-lg hover:bg-[#f6ff7a]/80 transition-colors">
-              Get in Touch ➔
-            </button>
-
+            <Link href="/Contact" onClick={closeAll}>
+              <button className="text-[16px] bg-[#f6ff7a] text-black px-4 py-2 rounded-lg hover:bg-[#f6ff7a]/80 transition-colors">
+                Get in Touch ➔
+              </button>
             </Link>
           </ul>
         </div>
@@ -211,7 +182,7 @@ const Navbar = () => {
               ×
             </button>
             <div className="flex flex-col gap-6 w-full md:max-w-none mt-12">
-              <Link href="/Ai"  onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/Ai"; }} >
+              <Link href="/Ai" onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/Ai"; }}>
                 <div className="bg-gray-800 p-4 rounded-lg flex items-center hover:bg-gray-700 transition-colors">
                   <Image src="/ai.svg" alt="AI" width={48} height={48} className="mr-4 object-cover w-12 h-12" />
                   <div>
@@ -220,8 +191,7 @@ const Navbar = () => {
                   </div>
                 </div>
               </Link>
-
-              <Link href="/DE"  onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/DE"; }}>
+              <Link href="/DE" onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/DE"; }}>
                 <div className="bg-gray-800 p-4 rounded-lg flex items-center hover:bg-gray-700 transition-colors">
                   <Image src="/data.svg" alt="Data" width={48} height={48} className="mr-4 object-cover w-12 h-12" />
                   <div>
@@ -230,15 +200,9 @@ const Navbar = () => {
                   </div>
                 </div>
               </Link>
-              <Link href="/CI"  onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/CI"; }}>
+              <Link href="/CI" onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/CI"; }}>
                 <div className="bg-gray-800 p-4 rounded-lg flex items-center hover:bg-gray-700 transition-colors">
-                  <Image
-                    src="/cloud.svg"
-                    alt="Cloud"
-                    width={48}
-                    height={48}
-                    className="mr-4 object-cover w-12 h-12"
-                  />
+                  <Image src="/cloud.svg" alt="Cloud" width={48} height={48} className="mr-4 object-cover w-12 h-12" />
                   <div>
                     <h1 className="text-[1.5em] font-bold">Cloud Infrastructure</h1>
                     <p className="text-gray-400 mt-2">Infrastructure, DevOps, APIs, Automation & Scalability</p>
@@ -281,13 +245,7 @@ const Navbar = () => {
             <div className="flex flex-col gap-6 w-full md:max-w-none mt-12 flex-1">
               <Link href="/StaffAugmentation" onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/StaffAugmentation"; }}>
                 <div className="bg-gray-800 p-4 rounded-lg flex items-center hover:bg-gray-700 transition-colors">
-                  <Image
-                    src="/serviceimg1.jpg"
-                    alt="Staff"
-                    width={48}
-                    height={48}
-                    className="mr-4 object-cover w-12 h-12"
-                  />
+                  <Image src="/serviceimg1.jpg" alt="Staff" width={48} height={48} className="mr-4 object-cover w-12 h-12" />
                   <div>
                     <h1 className="text-[1.5em] font-bold">Staff Augmentation</h1>
                     <p className="text-gray-400 mt-2">
@@ -298,13 +256,7 @@ const Navbar = () => {
               </Link>
               <Link href="/ProductStudio" onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/ProductStudio"; }}>
                 <div className="bg-gray-800 p-4 rounded-lg flex items-center hover:bg-gray-700 transition-colors">
-                  <Image
-                    src="/serviceimg2.jpg"
-                    alt="Product"
-                    width={48}
-                    height={48}
-                    className="mr-4 object-cover w-12 h-12"
-                  />
+                  <Image src="/serviceimg2.jpg" alt="Product" width={48} height={48} className="mr-4 object-cover w-12 h-12" />
                   <div>
                     <h1 className="text-[1.5em] font-bold">Product Studio</h1>
                     <p className="text-gray-400 mt-2">
@@ -324,7 +276,6 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* Large screen dropdowns */}
       {isDropdownOpen && (
         <div
           ref={capabilitiesRef}
