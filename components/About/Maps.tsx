@@ -76,21 +76,23 @@ const CountryMap = () => {
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
 
   return (
-    <div className="lg:flex min-h-screen bg-[#1a1a1a] text-white lg:pl-[10%] bg-black">
-      <div className="lg:w-[30%] p-8 relative">
-        <div className="mb-12">
-          <h3 className="lg:text-4xl text-3xl font-light mb-2">Our</h3>
-          <h1 className="lg:text-6xl text-4xl font-bold text-[#FFB800]">Hubs</h1>
-          <div className="lg:w-20 w-15 h-0.5 bg-white mt-8" />
+    <div className="flex flex-col lg:flex-row min-h-screen bg-[#1a1a1a] text-white px-4 sm:px-8 lg:px-16">
+      <div className="lg:w-1/3 w-full p-4 sm:p-8 relative">
+        <div className="mb-8 sm:mb-12">
+          <h3 className="text-2xl sm:text-3xl lg:text-4xl font-light mb-2">Our</h3>
+          <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-[#FFB800]">
+            Hubs
+          </h1>
+          <div className="w-16 sm:w-20 h-0.5 bg-white mt-4 sm:mt-8" />
         </div>
 
         <div className="relative">
           <div className="absolute left-0 top-0 w-0.5 h-full bg-white/20" />
-          <ul className="space-y-8">
+          <ul className="space-y-6 sm:space-y-8">
             {countryList.map((country) => (
               <li
                 key={country.id}
-                className="pl-8 cursor-pointer group"
+                className="pl-6 sm:pl-8 cursor-pointer group"
                 onMouseEnter={() => {
                   if (country.id !== "ALL") setHoveredCountry(country.id);
                 }}
@@ -108,16 +110,14 @@ const CountryMap = () => {
                 }}
               >
                 <div
-                  className={`relative transition-all duration-300
-                  ${
+                  className={`relative transition-all duration-300 ${
                     selectedCountry === country.id
                       ? "text-[#FFB800]"
                       : "text-white/60 hover:text-white"
                   }`}
                 >
                   <div
-                    className={`absolute left-0 top-0 w-0.5 h-full bg-[#FFB800] transition-opacity duration-300
-                    ${
+                    className={`absolute left-0 top-0 w-0.5 h-full bg-[#FFB800] transition-opacity duration-300 ${
                       selectedCountry === country.id
                         ? "opacity-100"
                         : "opacity-0 group-hover:opacity-100"
@@ -125,15 +125,15 @@ const CountryMap = () => {
                     style={{ transform: "translateX(-2rem)" }}
                   />
                   {country.id === "ALL" ? (
-                    <span className="lg:text-3xl text-2xl font-light">
+                    <span className="text-xl sm:text-2xl lg:text-3xl font-light">
                       {country.name}
                     </span>
                   ) : (
                     <>
-                      <div className="lg:text-3xl text-2xl font-light mb-1">
+                      <div className="text-xl sm:text-2xl lg:text-3xl font-light mb-1">
                         {country.name}
                       </div>
-                      <div className="lg:text-lg text-sm font-light">
+                      <div className="text-sm sm:text-base lg:text-lg font-light">
                         {country.city}
                       </div>
                     </>
@@ -145,10 +145,10 @@ const CountryMap = () => {
         </div>
       </div>
 
-      <div className="flex-1">
+      <div className="flex-1 w-full h-[50vh] sm:h-[60vh] lg:h-screen">
         <ComposableMap
           projection="geoMercator"
-          projectionConfig={{ scale: 150 }}
+          projectionConfig={{ scale: 120, center: [0, 20] }}
           style={{ width: "100%", height: "100%" }}
         >
           <defs>
@@ -164,8 +164,9 @@ const CountryMap = () => {
           <Geographies geography="https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json">
             {({ geographies }) =>
               geographies.map((geo) => {
-                const geoId = geo.id.toString(); // Convert to string
+                const geoId = geo.id ? geo.id.toString() : null; // Safeguard for undefined id
                 const isSelected =
+                  geoId &&
                   selectedCountry !== "ALL" &&
                   idMapping[geoId] === selectedCountry;
                 return (
