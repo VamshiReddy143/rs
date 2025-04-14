@@ -7,10 +7,7 @@ const SmoothScrollProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
-      easing: (t) => Math.min(1, 1 - Math.pow(2, -10 * t)),
-      direction: "vertical",
-      smooth: true,
-      smoothTouch: true,
+      easing: (t: number) => Math.min(1, 1 - Math.pow(2, -10 * t)),
     });
 
     function raf(time: number) {
@@ -31,7 +28,7 @@ const SmoothScrollProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
         // Calculate offsetY and scale
         const offsetY = distanceFromCenter * speed * -0.05; // Medium slide intensity
-        const scale = 1 + (Math.abs(distanceFromCenter) * 0.00005); // Gentle scale effect
+        const scale = 1 + Math.abs(distanceFromCenter) * 0.00005; // Gentle scale effect
 
         // Apply transform only when in or near viewport
         if (rect.top < window.innerHeight && rect.bottom > 0) {

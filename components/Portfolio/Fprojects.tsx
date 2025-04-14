@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import React from 'react'
 
 const Fprojects = () => {
@@ -13,7 +14,8 @@ const Fprojects = () => {
       <div className='mt-10'>
         <div className='grid lg:grid-cols-2 grid-cols-1 gap-10'>
           {/* Project 1 */}
-          <div className='group'>
+         <Link href={"/Portfolio/Featuredcases/masterclass"}>
+         <div className='group'>
             <div className='relative  w-full lg:w-full md:w-full lg:h-[40em] h-[30em]  object-cover rounded-lg overflow-hidden bg-transparent group-hover:outline group-hover:outline-5 group-hover:outline-[#f6ff7a]'>
               <Image
                 src={"/ms.jpg"}
@@ -25,8 +27,10 @@ const Fprojects = () => {
             <h1 className='text-[2em] font-bold mt-4'>MasterClass</h1>
             <p className='text-[1.3em]'>A dynamic partnership shaping the future of online education</p>
           </div>
+         </Link>
 
           {/* Project 2 */}
+          <Link href={"/Portfolio/Featuredcases/emeritus"}>
           <div className='group pt-30'>
             <div className='relative  w-full lg:w-full md:w-full h-[30em] object-cover rounded-lg overflow-hidden bg-transparent group-hover:outline group-hover:outline-5 group-hover:outline-[#f6ff7a]'>
               <Image
@@ -39,6 +43,7 @@ const Fprojects = () => {
             <h1 className='text-[2em] font-bold mt-4'>Emeritus</h1>
             <p className='text-[1.3em]'>Delving into the progressive transformation that boosted user experience and conversions.</p>
           </div>
+          </Link>
 
           {/* Project 3 */}
           <div className='group'>

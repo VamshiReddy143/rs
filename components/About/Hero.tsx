@@ -4,7 +4,7 @@ import React from "react";
 
 const Hero = () => {
   return (
-    <div className="min-h-screen relative lg:max-w-[90em] mx-auto lg:px-[6em]  bg-gray-200   text-black ">
+    <div className="min-h-screen relative lg:max-w-[90em] mx-auto lg:px-[6em]  bg-[#f4f3ef]    text-black ">
       <div className="min-h-screen flex items-center  px-3 justify-between">
         <div className="text-black  lg:w-[80%]">
           <h1 className="lg:text-[4em] text-[2.5em]  font-semibold leading-tight">

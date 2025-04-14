@@ -18,7 +18,7 @@ const page = () => {
        <Hero/>
        </div>
 
-       <div className=' max-w-[90em] mx-auto  lg:px-[6em] px-3'>
+       <div className=' lg:max-w-[90em] mx-auto  lg:px-[6em] px-3'>
         <Tools/>
         <Portfolio/>
         <Team/>

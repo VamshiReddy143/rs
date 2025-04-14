@@ -10,7 +10,7 @@ import React from 'react'
 const page = () => {
   return (
    <div>
-   <div className='bg-gray-200'>
+   <div className='bg-[#f4f3ef]'>
    <Hero/>
    </div>
     <MarketVideo/>
