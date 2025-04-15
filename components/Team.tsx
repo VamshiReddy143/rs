@@ -9,6 +9,7 @@ import img2 from "@/public/team2.jpg";
 import img3 from "@/public/team3.jpg";
 import img4 from "@/public/team4.jpg";
 import img5 from "@/public/team5.jpg";
+import Link from "next/link";
 
 // Define investor interface and arrays
 interface Investor {
@@ -132,7 +133,8 @@ const Team: React.FC = () => {
       </div>
 
       <div className="mt-10 lg:flex gap-10">
-        <div className="relative lg:w-[70%] w-full">
+       <div className="relative lg:w-[70%] w-full">
+       <Link href={"/Portfolio/Featuredcases/masterclass"}>
           <Image
             src={img1}
             alt="team"
@@ -144,9 +146,11 @@ const Team: React.FC = () => {
           <h1 className="absolute bottom-0 esquerda-0 transform -translate-x-1/70 lg:pl-10 p-5 lg:text-[2em] text-[1.8em] font-bold text-white">
             Building The Most Premium Learning Experience On the Planet
           </h1>
+       </Link>
         </div>
 
         <div className="relative lg:w-[30%]">
+        <Link href={"/Portfolio/Featuredcases/farmers_dog"}>
           <Image
             src={img2}
             alt="team"
@@ -158,29 +162,35 @@ const Team: React.FC = () => {
           <h1 className="absolute bottom-0 left-0 transform -translate-x-1/70 lg:pl-3 p-5 text-[1.6em] font-bold text-white">
             Building The Most Premium Learning Experience On the Planet
           </h1>
+          </Link>
         </div>
       </div>
 
       <div className="lg:flex justify-center gap-7 text-center">
         <div className="flex flex-col gap-10 lg:w-[30%] mx-auto mt-10 relative">
           <div className="relative">
+          <Link href={"/Portfolio/Featuredcases/emeritus"}>
             <Image src={img3} alt="team" width={900} height={900} />
             <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50 hover:opacity-0" />
             <h1 className="absolute bottom-0 left-0 transform -translate-x-1/70 p-5 text-[1.6em] font-bold text-white">
               Making Higher Education Accessible Online
             </h1>
+            </Link>
           </div>
 
           <div className="relative">
+          <Link href={"/Portfolio/Featuredcases/madison"}>
             <Image src={img4} alt="team" width={900} height={900} />
             <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50 hover:opacity-0" />
             <h1 className="absolute bottom-0 left-0 transform -translate-x-1/70 p-5 text-[1.6em] font-bold text-white">
               Launching a Critical Mobile App During Covid
             </h1>
+            </Link>
           </div>
         </div>
 
         <div className="relative lg:w-[70%] aspect-[3/2] mt-10 overflow-hidden rounded-xl">
+        <Link href={"/Portfolio/Case_Studies"}>
           <Image src={img5} alt="team" fill className="object-cover" />
           <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50 hover:opacity-0" />
           <h1 className="absolute bottom-0 left-0 pl-10 lg:text-[1.7em] font-bold text-white">
@@ -189,6 +199,7 @@ const Team: React.FC = () => {
               #1 Platform For Early Education
             </span>
           </h1>
+          </Link>
         </div>
       </div>
 

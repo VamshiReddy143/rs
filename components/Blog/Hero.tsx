@@ -1,20 +1,28 @@
-import Image from 'next/image';
-import React from 'react';
 
-const Hero = () => {
+import React from "react";
+
+interface HeroProps {
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
+  selectedCategory: string;
+  setSelectedCategory: (category: string) => void;
+}
+
+const Hero: React.FC<HeroProps> = ({ searchTerm, setSearchTerm, selectedCategory, setSelectedCategory }) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value.trim());
+  };
+
+  const handleCategoryClick = (category: string) => {
+    const normalizedCategory = category.replace(/\s+/g, "").toLowerCase(); // Remove all spaces and convert to lowercase
+    const currentCategory = selectedCategory.replace(/\s+/g, "").toLowerCase();
+    setSelectedCategory(normalizedCategory === currentCategory ? "" : category);
+  };
+
   return (
     <div
-    className="bg-black  text-white lg:min-h-screen pt-10 lg:pt-0 md:pt-5 
-    bg-no-repeat 
-    bg-none 
-    md:bg-[position:calc(100%+300px)_top] 
-    lg:bg-[position:calc(100%+200px)_top] 
-    lg:bg-[position:calc(100%+300px)_top] 
-    md:bg-[length:1100px_auto] 
-    lg:bg-[length:1300px_auto]
-    md:bg-[url('https://cdn.prod.website-files.com/63f902d79a33f71d496cde07/67210c73068849a398c9bf41_blog-hero-bg.webp')]"
-  >
-  
+      className="bg-black text-white lg:min-h-screen pt-10 lg:pt-0 md:pt-5 bg-no-repeat bg-none md:bg-[position:calc(100%+300px)_top] lg:bg-[position:calc(100%+200px)_top] lg:bg-[position:calc(100%+300px)_top] md:bg-[length:1100px_auto] lg:bg-[length:1300px_auto] md:bg-[url('https://cdn.prod.website-files.com/63f902d79a33f71d496cde07/67210c73068849a398c9bf41_blog-hero-bg.webp')]"
+    >
       <div className="flex justify-between items-center">
         <div className="pt-[10%]">
           <h1 className="text-white lg:text-[4em] md:text-[3.5em] text-[2.5em] lg:w-[40%] md:w-[80%] font-bold leading-tight">
@@ -27,24 +35,40 @@ const Hero = () => {
       </div>
 
       <div className="flex lg:flex-row flex-col-reverse lg:gap-[5em] gap-[2em] mt-[7em]">
-        <ul className="flex  flex-wrap gap-3  lg:w-[40%]">
-          <li className="border-1 border-[#f6ff7a] text-[#f6ff7a] rounded-full px-3 py-1 w-fit">AI/Machine Learning</li>
-          <li className="border-1 border-[#f6ff7a] text-[#f6ff7a] rounded-full px-3 py-1 w-fit">Agile</li>
-          <li className="border-1 border-[#f6ff7a] text-[#f6ff7a] rounded-full px-3 py-1 w-fit">Blockchain</li>
-          <li className="border-1 border-[#f6ff7a] text-[#f6ff7a] rounded-full px-3 py-1 w-fit">Data Services</li>
-          <li className="border-1 border-[#f6ff7a] text-[#f6ff7a] rounded-full px-3 py-1 w-fit">DevOps</li>
-          <li className="border-1 border-[#f6ff7a] text-[#f6ff7a] rounded-full px-3 py-1 w-fit">Development</li>
-          <li className="border-1 border-[#f6ff7a] text-[#f6ff7a] rounded-full px-3 py-1 w-fit">Marketing</li>
-          <li className="border-1 border-[#f6ff7a] text-[#f6ff7a] rounded-full px-3 py-1 w-fit">Product Design</li>
-          <li className="border-1 border-[#f6ff7a] text-[#f6ff7a] rounded-full px-3 py-1 w-fit">QA / Testing</li>
-          <li className="border-1 border-[#f6ff7a] text-[#f6ff7a] rounded-full px-3 py-1 w-fit">Security</li>
-          <li className="border-1 border-[#f6ff7a] text-[#f6ff7a] rounded-full px-3 py-1 w-fit">Soft Skills</li>
-          <li className="border-1 border-[#f6ff7a] text-[#f6ff7a] rounded-full px-3 py-1 w-fit">Software Architecture</li>
+        <ul className="flex flex-wrap gap-3 lg:w-[40%]">
+          {[
+            "AI/MachineLearning",
+            "Agile",
+            "Blockchain",
+            "DataServices",
+            "DevOps",
+            "Development",
+            "Marketing",
+            "ProductDesign",
+            "QA/Testing",
+            "Security",
+            "SoftSkills",
+            "SoftwareArchitecture",
+          ].map((category) => (
+            <li
+              key={category}
+              onClick={() => handleCategoryClick(category)}
+              className={`border-1 border-[#f6ff7a] text-[#f6ff7a] rounded-full px-3 py-1 w-fit cursor-pointer ${
+                selectedCategory.replace(/\s+/g, "").toLowerCase() === category.replace(/\s+/g, "").toLowerCase()
+                  ? "bg-[#f6ff7a] text-black"
+                  : ""
+              }`}
+            >
+              {category}
+            </li>
+          ))}
         </ul>
 
         <div className="w-full lg:w-[25%] relative">
           <input
             type="text"
+            value={searchTerm}
+            onChange={handleSearchChange}
             className="bg-gray-800 p-4 w-full rounded-t-lg border-b-2 border-transparent focus:outline-none focus:border-[#f6ff7a] text-white placeholder-gray-400 text-base sm:text-lg transition-all duration-300 pr-10"
             placeholder="I am looking for..."
           />

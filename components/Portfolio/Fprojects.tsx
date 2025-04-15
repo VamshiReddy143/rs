@@ -46,6 +46,7 @@ const Fprojects = () => {
           </Link>
 
           {/* Project 3 */}
+          <Link href={"/Portfolio/Featuredcases/livestock"}>
           <div className='group'>
             <div className='relative  w-full lg:w-full md:w-full h-[30em]  object-cover rounded-lg overflow-hidden bg-transparent group-hover:outline group-hover:outline-5 group-hover:outline-[#f6ff7a]'>
               <Image
@@ -58,8 +59,10 @@ const Fprojects = () => {
             <h1 className='text-[2em] font-bold mt-4'>Livestock Health</h1>
             <p className='text-[1.3em]'>A revolutionary step in animal health: AI-based illness detection</p>
           </div>
+          </Link>
 
           {/* Project 4 */}
+          <Link href={"/Portfolio/Featuredcases/madison"}>
           <div className='group pt-30'>
             <div className='relative  w-full lg:w-full md:w-full h-[30em] object-cover rounded-lg overflow-hidden bg-transparent group-hover:outline group-hover:outline-5 group-hover:outline-[#f6ff7a]'>
               <Image
@@ -72,6 +75,7 @@ const Fprojects = () => {
             <h1 className='text-[2em] font-bold mt-4'>Madison Reed</h1>
             <p className='text-[1.3em]'>Elevating an omnichannel customer experience</p>
           </div>
+          </Link>
         </div>
       </div>
     </div>

@@ -1,59 +1,56 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useLayoutEffect } from "react";
 import Image from "next/image";
 import Lenis from "lenis";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Challenges = () => {
-  const wimg1Ref = useRef<HTMLImageElement | null>(null);
-  const wimg2Ref = useRef<HTMLImageElement | null>(null);
-  const wimg3Ref = useRef<HTMLImageElement | null>(null);
+  const whityRef = useRef<HTMLImageElement>(null);
+  const wimg1Ref = useRef<HTMLImageElement>(null);
+  const wimg2Ref = useRef<HTMLImageElement>(null);
+  const wimg3Ref = useRef<HTMLImageElement>(null);
 
+  // Initialize Lenis and sync with ScrollTrigger
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.8,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      // Removed 'smooth' as it’s not a valid option
+      duration: 1.5,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smooth: true,
     });
 
-    let lastScrollY = 0;
+    ScrollTrigger.scrollerProxy(document.body, {
+      scrollTop: () => lenis.scroll,
+      getBoundingClientRect: () => ({
+        top: 0,
+        left: 0,
+        width: window.innerWidth,
+        height: window.innerHeight,
+      }),
+    });
+
+    lenis.on("scroll", () => {
+      ScrollTrigger.update();
+    });
 
     const handleScroll = () => {
-      const scrollY = lenis.scroll;
-      const moveFactor = 1;
-      const waveSpeed = 0.005;
-      const waveAmplitude = 6;
-      const maxMove = 150;
-
-      const isScrollingUp = scrollY < lastScrollY;
-      lastScrollY = scrollY;
-
-      if (
-        wimg1Ref.current &&
-        wimg2Ref.current &&
-        wimg3Ref.current
-      ) {
-        const getWaveOffset = (offset: number, speedMultiplier = 1) =>
-          Math.sin(scrollY * waveSpeed * speedMultiplier + offset) * waveAmplitude;
-
-        [wimg1Ref, wimg2Ref, wimg3Ref].forEach((ref, index) => {
-          const waveOffset = getWaveOffset(index, 1 + index * 0.2);
-          const baseMove = isScrollingUp ? scrollY * moveFactor : -scrollY * moveFactor;
-          const move = baseMove + waveOffset;
-
-          ref.current!.style.transform = `translateX(${Math.max(
-            -maxMove,
-            Math.min(maxMove, move)
-          )}px)`;
-          ref.current!.style.marginTop = `${10 + waveOffset}px`;
-        });
+      if (whityRef.current) {
+        const scrollY = lenis.scroll;
+        const floatAmplitude = 50;
+        const floatSpeed = 0.005;
+        const floatOffset = Math.sin(scrollY * floatSpeed) * floatAmplitude;
+        const verticalMove = scrollY > 0 ? -floatOffset : floatOffset;
+        whityRef.current.style.transform = `translateY(${verticalMove}px)`;
       }
     };
 
     lenis.on("scroll", handleScroll);
     handleScroll();
 
-    function raf(time: number) {
+    function raf(time) {
       lenis.raf(time);
       requestAnimationFrame(raf);
     }
@@ -65,9 +62,113 @@ const Challenges = () => {
     };
   }, []);
 
+  // Initialize GSAP animations after DOM is ready
+  useLayoutEffect(() => {
+    ScrollTrigger.refresh();
+
+    if (wimg1Ref.current && wimg2Ref.current && wimg3Ref.current) {
+      // wimg1: Wavy entrance from right
+      gsap.fromTo(
+        wimg1Ref.current,
+        {
+          x: window.innerWidth,
+          opacity: 0,
+        },
+        {
+          x: 0,
+          opacity: 1,
+          ease: "power2.out",
+          duration: 3,
+          scrollTrigger: {
+            trigger: wimg1Ref.current,
+            scroller: document.body,
+            start: "top 80%",
+            end: "+=800",
+            scrub: 1,
+            onUpdate: (self) => {
+              const progress = self.progress;
+              const waveAmplitude = 50;
+              const waveFrequency = 0.1; // Unique frequency
+              const waveOffset = Math.sin(progress * Math.PI * waveFrequency) * waveAmplitude;
+              gsap.set(wimg1Ref.current, { y: waveOffset });
+            },
+            onEnter: () => console.log("wimg1 entered"),
+            onLeaveBack: () => console.log("wimg1 leaving back"),
+          },
+        }
+      );
+
+      // wimg2: Wavy entrance from right with different timing
+      gsap.fromTo(
+        wimg2Ref.current,
+        {
+          x: window.innerWidth + 100, // Offset start position
+          opacity: 0,
+        },
+        {
+          x: 0,
+          opacity: 1,
+          ease: "power2.out",
+          duration: 3.2, // Slightly longer duration
+          scrollTrigger: {
+            trigger: wimg2Ref.current,
+            scroller: document.body,
+            start: "top 80%",
+            end: "+=850",
+            scrub: 1,
+            onUpdate: (self) => {
+              const progress = self.progress;
+              const waveAmplitude = 70;
+              const waveFrequency = 0.12; // Different frequency
+              const waveOffset = Math.sin(progress * Math.PI * waveFrequency) * waveAmplitude;
+              gsap.set(wimg2Ref.current, { y: waveOffset });
+            },
+            onEnter: () => console.log("wimg2 entered"),
+            onLeaveBack: () => console.log("wimg2 leaving back"),
+          },
+        }
+      );
+
+      // wimg3: Wavy entrance from right with unique timing
+      gsap.fromTo(
+        wimg3Ref.current,
+        {
+          x: window.innerWidth + 200, // Further offset start position
+          opacity: 0,
+        },
+        {
+          x: 0,
+          opacity: 1,
+          ease: "power2.out",
+          duration: 2.8, // Slightly shorter duration
+          scrollTrigger: {
+            trigger: wimg3Ref.current,
+            scroller: document.body,
+            start: "top 80%",
+            end: "+=750",
+            scrub: 1,
+            onUpdate: (self) => {
+              const progress = self.progress;
+              const waveAmplitude = 60;
+              const waveFrequency = 0.15; // Different frequency
+              const waveOffset = Math.sin(progress * Math.PI * waveFrequency) * waveAmplitude;
+              gsap.set(wimg3Ref.current, { y: waveOffset });
+            },
+            onEnter: () => console.log("wimg3 entered"),
+            onLeaveBack: () => console.log("wimg3 leaving back"),
+          },
+        }
+      );
+    }
+
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, []);
+
   return (
     <div className="bg-black text-white">
-      <div className="lg:px-[3.2em] pt-[3em] pb-[1em] text-[3.4em] font-semibold mx-auto mr-10">
+      <div className="lg:px-[3.2em] pt-[3em] pb-[1em] text-[3.4em] font-semibold mx-auto">
         A progressive transformation that enhanced{" "}
         <span className="inline bg-gradient-to-t from-green-600 to-green-600 bg-[length:100%_0.3em] bg-no-repeat bg-bottom">
           Digital Presence
@@ -75,7 +176,51 @@ const Challenges = () => {
         and boosted conversions
       </div>
 
-      <div className="lg:flex items-start justify-between gap-[10em] lg:pl-[10em] mx-auto lg:pl-[4em] pt-[20em] px-3 pb-[1em]">
+      <div className="lg:px-[3.2em] pt-[3em] pb-[1em] text-[3.4em] font-semibold mx-auto flex">
+        <Image
+          src={"/blacky2.jpg"}
+          width={900}
+          height={900}
+          alt="team"
+          className="object-cover h-full rounded-full z-10"
+        />
+        <Image
+          ref={whityRef}
+          src={"/whity.jpg"}
+          width={900}
+          height={900}
+          alt="team"
+          className="object-cover w-full h-full rounded-full z-20 -ml-10"
+          style={{
+            transition: "transform 0.1s ease",
+            willChange: "transform",
+          }}
+        />
+      </div>
+
+      <div className="flex items-center justify-between lg:max-w-[90em] mx-auto lg:px-[4em] pt-[3em] pb-[1em]">
+        <h1 className="text-[3.4em] font-semibold w-[90%]">Challenge</h1>
+        <div className="flex flex-col items-center gap-10">
+          <p className="text-[1.6em] leading-tight">
+            Emeritus turned to Rootstrap to modernize the tech stack and enhance
+            the performance of and results delivered by a mission-critical web
+            application.
+          </p>
+          <p className="text-[1.6em] leading-tight">
+            The Emeritus Enrollment Engine was suffering from recurrent platform
+            crashes that impacted enrollment and revenue generation, and needed a
+            complete revamp to improve website performance, functionality, and end
+            results.
+          </p>
+          <p className="text-[1.6em] leading-tight">
+            Our team was also tasked with the creation and execution of a
+            migration plan to help Emeritus transition away from a legacy,
+            underperforming technical solution.
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-start justify-between gap-[10em] lg:pl-[10em] mx-auto lg:pl-[4em] pt-[20em] pb-[1em]">
         <h1 className="text-[3em] font-semibold">
           What <span className="block">we did?</span>
         </h1>
@@ -87,11 +232,7 @@ const Challenges = () => {
             width={900}
             height={900}
             alt="team"
-            className="w-full lg:h-[40em] h-[20em] mt-10"
-            style={{
-              transition: "transform 0.5s ease, margin-top 0.5s ease",
-              willChange: "transform, margin-top",
-            }}
+            className="w-full h-[40em] mt-10"
           />
           <Image
             ref={wimg2Ref}
@@ -99,11 +240,7 @@ const Challenges = () => {
             width={900}
             height={900}
             alt="team"
-            className="w-full lg:h-[40em] h-[20em]"
-            style={{
-              transition: "transform 0.5s ease, margin-top 0.5s ease",
-              willChange: "transform, margin-top",
-            }}
+            className="w-full h-[40em]"
           />
           <Image
             ref={wimg3Ref}
@@ -111,13 +248,18 @@ const Challenges = () => {
             width={900}
             height={900}
             alt="team"
-            className="w-full lg:h-[40em] h-[20em] mt-10"
-            style={{
-              transition: "transform 0.5s ease, margin-top 0.5s ease",
-              willChange: "transform, margin-top",
-            }}
+            className="w-full h-[40em] mt-10"
           />
         </div>
+      </div>
+
+      <div className="mt-10">
+        <p className="lg:px-[2.5em] pt-[3em] pb-[1em] text-[2em] font-semibold mx-auto">
+          We progressively grew the team from 4 engineers to a cross-functional team of more than 30 people.
+        </p>
+        <p className="lg:px-[2.5em] pb-[1em] text-[2em] font-semibold mx-auto">
+          We successfully migrated Emeritus’s previous Salesforce-based system onto a new platform while maintaining website functionality
+        </p>
       </div>
     </div>
   );
