@@ -4,6 +4,7 @@ import { motion, useMotionValue, useScroll, useSpring, useTransform } from "fram
 import React, { useEffect, useRef, useState } from "react";
 import Image from 'next/image';
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 // Separate company arrays for top and bottom
 const topCompanies = [
@@ -148,11 +149,13 @@ const Hero = () => {
           <p className='text-base sm:text-[19px] text-gray-400 mt-4 leading-relaxed text-left'>
             We are a data-driven, nearshore software agency that values speed, performance, and scalability. That‘s why we consistently surpass benchmarks for client retention after 750+ product launches and 13 years in business.
           </p>
-          <div className="flex justify-center lg:justify-start">
+         <Link href={"/Contact"}>
+         <div className="flex justify-center lg:justify-start">
             <button className='text-base sm:text-[18px] bg-transparent text-white px-4 py-2 rounded-xl cursor-pointer border mt-8 hover:bg-white/10 transition-colors'>
               Get in Touch ➔
             </button>
           </div>
+         </Link>
         </div>
 
         <div className='w-full lg:w-[60%] pt-8 lg:pt-0 px-4 lg:px-0'>

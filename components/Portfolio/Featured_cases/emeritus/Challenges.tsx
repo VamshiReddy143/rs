@@ -91,7 +91,7 @@ const Challenges = () => {
           scrollTrigger: {
             trigger: wimg1Ref.current,
             scroller: document.body,
-            start: "top 80%",
+            start: "top 120%",
             end: "+=800",
             scrub: 1,
             onUpdate: (self) => {
@@ -122,7 +122,7 @@ const Challenges = () => {
           scrollTrigger: {
             trigger: wimg2Ref.current,
             scroller: document.body,
-            start: "top 80%",
+            start: "top 150%",
             end: "+=850",
             scrub: 1,
             onUpdate: (self) => {
@@ -153,7 +153,7 @@ const Challenges = () => {
           scrollTrigger: {
             trigger: wimg3Ref.current,
             scroller: document.body,
-            start: "top 80%",
+            start: "top 150%",
             end: "+=750",
             scrub: 1,
             onUpdate: (self) => {
@@ -176,8 +176,8 @@ const Challenges = () => {
   }, []);
 
   return (
-    <div className="bg-black text-white">
-      <div className="lg:px-[3.2em] pt-[3em] pb-[1em] text-[3.4em] font-semibold mx-auto">
+    <div className="bg-black text-white overflow-hidden">
+      <div className="lg:px-[3.2em] pt-[1em] pb-[1em] text-[2em] font-semibold mx-auto">
         A progressive transformation that enhanced{" "}
         <span className="inline bg-gradient-to-t from-green-600 to-green-600 bg-[length:100%_0.3em] bg-no-repeat bg-bottom">
           Digital Presence
@@ -191,7 +191,7 @@ const Challenges = () => {
           width={900}
           height={900}
           alt="team"
-          className="object-cover h-full rounded-full z-10"
+          className="object-cover lg:h-full h-[200px] rounded-full z-10"
         />
         <Image
           ref={whityRef}
@@ -199,7 +199,7 @@ const Challenges = () => {
           width={900}
           height={900}
           alt="team"
-          className="object-cover w-full h-full rounded-full z-20 -ml-10"
+          className="object-cover lg:h-full h-[200px]  rounded-full z-20 -ml-10 "
           style={{
             transition: "transform 0.1s ease",
             willChange: "transform",
@@ -207,21 +207,21 @@ const Challenges = () => {
         />
       </div>
 
-      <div className="flex items-center justify-between lg:max-w-[90em] mx-auto lg:px-[4em] pt-[3em] pb-[1em]">
-        <h1 className="text-[3.4em] font-semibold w-[90%]">Challenge</h1>
+      <div className="lg:flex items-center justify-between lg:max-w-[90em] mx-auto lg:px-[4em] px-3 pt-[3em] pb-[1em]">
+        <h1 className="lg:text-[3.4em] text-[2.4em] font-semibold w-[90%]">Challenge</h1>
         <div className="flex flex-col items-center gap-10">
-          <p className="text-[1.6em] leading-tight">
+          <p className="lg:text-[1.6em] text-[1.3em] leading-tight">
             Emeritus turned to Rootstrap to modernize the tech stack and enhance
             the performance of and results delivered by a mission-critical web
             application.
           </p>
-          <p className="text-[1.6em] leading-tight">
+          <p className="lg:text-[1.6em] text-[1.3em] leading-tight">
             The Emeritus Enrollment Engine was suffering from recurrent platform
             crashes that impacted enrollment and revenue generation, and needed a
             complete revamp to improve website performance, functionality, and end
             results.
           </p>
-          <p className="text-[1.6em] leading-tight">
+          <p className="lg:text-[1.6em] text-[1.3em] leading-tight">
             Our team was also tasked with the creation and execution of a
             migration plan to help Emeritus transition away from a legacy,
             underperforming technical solution.
@@ -229,8 +229,8 @@ const Challenges = () => {
         </div>
       </div>
 
-      <div className="flex items-start justify-between gap-[10em] lg:pl-[10em] mx-auto lg:pl-[4em] pt-[20em] pb-[1em]">
-        <h1 className="text-[3em] font-semibold">
+      <div className="lg:flex items-start justify-between gap-[10em] lg:pl-[10em] mx-auto lg:pl-[4em] lg:pt-[20em] pt-[5em] px-3 pb-[1em]">
+        <h1 className="lg:text-[3em] text-[2em] font-semibold">
           What <span className="block">we did?</span>
         </h1>
 
@@ -241,7 +241,7 @@ const Challenges = () => {
             width={900}
             height={900}
             alt="team"
-            className="w-full h-[40em] mt-10"
+            className="w-full lg:h-[40em] h-[15em] mt-10"
           />
           <Image
             ref={wimg2Ref}
@@ -249,7 +249,7 @@ const Challenges = () => {
             width={900}
             height={900}
             alt="team"
-            className="w-full h-[40em]"
+            className="w-full lg:h-[40em] h-[15em]"
           />
           <Image
             ref={wimg3Ref}
@@ -257,16 +257,16 @@ const Challenges = () => {
             width={900}
             height={900}
             alt="team"
-            className="w-full h-[40em] mt-10"
+            className="w-full lg:h-[40em] h-[15em] mt-10"
           />
         </div>
       </div>
 
       <div className="mt-10">
-        <p className="lg:px-[2.5em] pt-[3em] pb-[1em] text-[2em] font-semibold mx-auto">
+        <p className="lg:px-[2.5em] pt-[3em] pb-[1em] text-[1.4em] font-semibold mx-auto">
           We progressively grew the team from 4 engineers to a cross-functional team of more than 30 people.
         </p>
-        <p className="lg:px-[2.5em] pb-[1em] text-[2em] font-semibold mx-auto">
+        <p className="lg:px-[2.5em] pb-[1em] text-[1.4em] font-semibold mx-auto">
           We successfully migrated Emeritus’s previous Salesforce-based system onto a new platform while maintaining website functionality
         </p>
       </div>
