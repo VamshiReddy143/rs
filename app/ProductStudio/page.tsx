@@ -55,7 +55,7 @@ import Vision from "@/components/ProductStudio/Vision"
 import Rapid from '@/components/ProductStudio/Rapid'
 import Market from '@/components/ProductStudio/Market'
 import Us from '@/components/CI/Us'
-import Footer from '@/components/Footer'
+import Footer from '@/components/Home/Footer'
 
 const page = () => {
   return (

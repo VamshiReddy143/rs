@@ -60,16 +60,25 @@ const Navbar = () => {
   return (
     <div className="fixed top-0 left-0 z-[999] bg-black w-full">
       <div ref={navbarRef} className="lg:max-w-[90em] lg:mx-auto px-3 lg:px-[6em] flex justify-between items-center py-2">
-        <Link href="/" onClick={closeAll}>
-          <div className="">
+        <Link href="/" onClick={closeAll} className="hidden md:block">
+          <div className="hidden md:block ">
             <Image
               src="https://cdn.prod.website-files.com/63f902d79a33f71d496cde07/66e44bace2a664b42ac8c794_RS-Logo.png"
               alt="logo"
               width={900}
               height={900}
-              className="h-[1.2em] w-auto md:h-[1em]"
+              className="h-[1.2em] w-auto md:h-[1em] hidden md:block"
             />
           </div>
+        </Link>
+        <Link href="/" onClick={closeAll}>
+        <div className='md:hidden'>
+                    <svg width={40} height={30} viewBox="0 0 99 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M90.5376 0L63.5253 26.7557C60.8408 19.6916 55.7584 13.7731 49.1498 10.0152C42.5413 6.25735 34.8185 4.89445 27.3061 6.16028C19.7938 7.42614 12.9604 11.2419 7.97807 16.9528C2.99576 22.6639 0.175105 29.9142 0 37.46H11.4703C11.6784 32.1123 13.9238 27.0413 17.7547 23.2676C21.5855 19.4937 26.7174 17.2975 32.1175 17.1207C37.5174 16.9439 42.7845 18.7998 46.8587 22.3147C50.9327 25.8297 53.5114 30.7427 54.0755 36.0651L53.9632 36.1965H54.1061C54.1061 36.6312 54.1776 37.4094 54.1878 37.4094H68.7093L98.5789 7.9145L90.5376 0Z" fill="#969699" >
+                        </path>
+                        <path d="M94.9736 30.231C95.669 30.231 96.2852 30.3872 96.822 30.6997C97.3711 31.0122 97.7981 31.4448 98.1031 31.9977C98.4204 32.5505 98.579 33.1695 98.579 33.8545C98.579 34.5396 98.4204 35.1585 98.1031 35.7114C97.7981 36.2522 97.3711 36.6789 96.822 36.9914C96.2852 37.3038 95.669 37.4601 94.9736 37.4601C94.2781 37.4601 93.6559 37.3038 93.1068 36.9914C92.5578 36.6789 92.1246 36.2522 91.8074 35.7114C91.5024 35.1585 91.3499 34.5396 91.3499 33.8545C91.3499 33.1695 91.5024 32.5505 91.8074 31.9977C92.1246 31.4448 92.5578 31.0122 93.1068 30.6997C93.6559 30.3872 94.2781 30.231 94.9736 30.231ZM94.9736 36.8652C95.852 36.8652 96.5597 36.5827 97.0966 36.0179C97.6456 35.453 97.9201 34.7319 97.9201 33.8545C97.9201 32.9772 97.6456 32.2561 97.0966 31.6912C96.5597 31.1263 95.852 30.8439 94.9736 30.8439C94.0829 30.8439 93.363 31.1263 92.814 31.6912C92.2771 32.2561 92.0087 32.9772 92.0087 33.8545C92.0087 34.7319 92.2771 35.453 92.814 36.0179C93.363 36.5827 94.0829 36.8652 94.9736 36.8652ZM96.5658 33.0613C96.5658 33.3618 96.4804 33.6142 96.3096 33.8185C96.1388 34.0108 95.9008 34.137 95.5958 34.1971L96.6939 35.7474L95.7605 35.7655L94.7539 34.2331H94.333V35.7655H93.546V31.8895H95.2481C95.6507 31.8895 95.968 31.9977 96.1998 32.214C96.4438 32.4183 96.5658 32.7008 96.5658 33.0613ZM94.333 33.5841H95.1932C95.364 33.5841 95.5043 33.5421 95.6141 33.4579C95.7239 33.3738 95.7788 33.2476 95.7788 33.0793C95.7788 32.9111 95.7239 32.7909 95.6141 32.7188C95.5043 32.6347 95.364 32.5926 95.1932 32.5926H94.333V33.5841Z" fill="#969699"></path>
+                    </svg>
+                </div>
         </Link>
 
         <div className="hidden lg:flex lg:items-center lg:gap-10">
@@ -114,7 +123,15 @@ const Navbar = () => {
           </Link>
         </div>
 
-        <div className="lg:hidden flex items-center">
+       <div className="flex items-center gap-2 lg:hidden">
+        <div>
+        <Link href="/Contact" onClick={closeAll}>
+            <button className="text-[16px] lg:text-[15px] bg-[#f6ff7a] text-black px-2 py-1 lg:px-4 lg:py-2 rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80 transition-colors">
+              Get in Touch ➔
+            </button>
+          </Link>
+        </div>
+       <div className="lg:hidden flex items-center">
           <button
             onClick={toggleMobileMenu}
             className="text-white text-2xl focus:outline-none"
@@ -122,6 +139,8 @@ const Navbar = () => {
             ☰
           </button>
         </div>
+       </div>
+
       </div>
 
       {isMobileMenuOpen && (
@@ -160,7 +179,7 @@ const Navbar = () => {
               </li>
             </Link>
             <Link href="/Contact" onClick={closeAll}>
-              <button className="text-[16px] bg-[#f6ff7a] text-black px-4 py-2 rounded-lg hover:bg-[#f6ff7a]/80 transition-colors">
+              <button className="text-[16px] bg-[#f6ff7a] text-black px-4 py-2 rounded-lg hover:bg-[#f6ff7a]/80 transition-colors  cursor-pointer">
                 Get in Touch ➔
               </button>
             </Link>
@@ -230,9 +249,11 @@ const Navbar = () => {
                   </div>
                 </div>
               </div>
-              <button className="bg-[#f6ff7a] text-black px-4 py-2 rounded-lg mt-auto hover:bg-[#f6ff7a]/80 transition-colors">
+         <Link href={"/About"}  onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/About"; }}>
+         <button className="bg-[#f6ff7a] text-black px-4 py-2 rounded-lg mt-auto hover:bg-[#f6ff7a]/80 transition-colors cursor-pointer">
                 Discover More →
               </button>
+         </Link>
             </div>
           </div>
         </div>
@@ -276,9 +297,11 @@ const Navbar = () => {
               </Link>
               <div className="flex items-center justify-center gap-4 mt-auto">
                 <div className="h-full w-px bg-gray-700"></div>
-                <button className="bg-[#f6ff7a] text-black px-4 py-2 rounded-lg hover:bg-[#f6ff7a]/80 transition-colors">
+                <Link href={"/About"} onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/About"; }}>
+                <button className="bg-[#f6ff7a] text-black px-4 py-2 rounded-lg hover:bg-[#f6ff7a]/80 transition-colors cursor-pointer">
                   Discover More →
                 </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -334,9 +357,11 @@ const Navbar = () => {
                 </Link>
               </ul>
               <div className="mt-2">
-                <button className="bg-transparent text-[20px] text-[#f6ff7a] border p-2 rounded-xl">
+              <Link href={"/About"} onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/About"; }}>
+                <button className="bg-transparent text-[20px] text-[#f6ff7a] border p-2 rounded-xl cursor-pointer">
                   Discover More →
                 </button>
+              </Link>
               </div>
             </div>
           </div>
@@ -370,9 +395,11 @@ const Navbar = () => {
             <div className="flex flex-col p-0">
               <div className="flex items-center gap-4 h-full">
                 <div className="h-full w-px bg-gray-700"></div>
-                <button className="bg-transparent text-[20px] text-white border p-2 rounded-xl self-end">
+                <Link href={"/About"}  onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/About"; }}>
+                <button className="bg-transparent text-[20px] text-white border absolute bottom-10 p-2 rounded-xl self-end cursor-pointer">
                   Discover More →
                 </button>
+                </Link>
               </div>
             </div>
           </div>

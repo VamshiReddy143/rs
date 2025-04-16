@@ -11,7 +11,7 @@ const page = () => {
     <div className='text-white bg-black'>
 
 
-      <div className=' lg:max-w-[90em] mx-auto lg:px-10 px-3'>
+      <div className=' lg:max-w-[90em] mx-auto lg:px-[4em] px-3'>
         <Hero />
       
      

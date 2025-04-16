@@ -1,23 +1,37 @@
 
 import Capabilities from '@/components/AI/Capabilities'
-import Clients from '@/components/Clients'
-import Contact from '@/components/Contact'
-import Footer from '@/components/Footer'
-import Hero from '@/components/Hero'
+import Clients from '@/components/Home/Clients'
+import Contact from '@/components/Home/Contact'
+import Footer from '@/components/Home/Footer'
+import Hero from '@/components/Home/Hero'
+import Scroller from '@/components/Home/Scroller'
+import Scroller2 from '@/components/Home/Scroller2'
 
-import Team from '@/components/Team'
+import Team from '@/components/Home/Team'
 import React from 'react'
 
 const page = () => {
   return (
-    <div className="w-full min-h-screen lg:max-w-[90em] mx-auto lg:px-[6em] px-3  overflow-x-hidden   py-8 lg:py-10 bg-black text-white">
+    <div >
+     <div className="w-full min-h-screen lg:max-w-[90em] mx-auto lg:px-[6em] px-3  overflow-x-hidden   py-8 lg:py-10 bg-black text-white">
+     <Hero/>
+     </div>
 
-      <Hero/>
-      <Capabilities/>
+
+
+      <Scroller/>
+     <div className="w-full min-h-screen lg:max-w-[90em] mx-auto lg:px-[6em] px-3  overflow-x-hidden   py-8 lg:py-10 bg-black text-white">
+     <Capabilities/>
       <Team/>
+     </div>
+
+     <Scroller2/>
+
+     <div className="w-full min-h-screen lg:max-w-[90em] mx-auto lg:px-[6em] px-3  overflow-x-hidden   py-8 lg:py-10 bg-black text-white">
       <Clients/>
       <Contact/>
       <Footer/>
+      </div>
       
     </div>
   )

@@ -3,6 +3,7 @@ import React from 'react'
 import img1 from "@/public/c3.png"
 import img2 from "@/public/c2.png"
 import img3 from "@/public/c1.png"
+import Link from 'next/link'
 
 const Contact = () => {
   return (
@@ -32,9 +33,11 @@ const Contact = () => {
             </div>
         </div>
 
+        <Link href={"/Contact"}>
         <div className='md:flex items-center justify-center mt-10 hidden'>
         <button className='text-[20px] bg-[#f6ff7a] text-black px-4 py-2 rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>Get in Touch ➔</button>
         </div>
+        </Link>
 
     </div>
   )

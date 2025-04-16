@@ -3,6 +3,7 @@ import Image from 'next/image';
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Link from 'next/link';
 
 // Register ScrollTrigger with GSAP
 gsap.registerPlugin(ScrollTrigger);
@@ -77,9 +78,11 @@ const Collabaration = () => {
                 <p className="text-[1.2em] text-gray-400">
                     Rootstrap practices agile development to maximize communication, user validation, and speed to market. This means sprint planning together, plus weekly demos, daily standups, and shared Slack so we always stay in sync.
                 </p>
-                <button className="mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
+               <Link href={"/Contact"}>
+               <button className="mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
                     Get In Touch ➔
                 </button>
+               </Link>
             </div>
         </div>
     );

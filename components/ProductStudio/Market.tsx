@@ -3,6 +3,7 @@ import Image from 'next/image';
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Link from 'next/link';
 
 // Register ScrollTrigger with GSAP
 gsap.registerPlugin(ScrollTrigger);
@@ -66,9 +67,11 @@ const Market = () => {
                 <p className="text-[1.2em] text-gray-400">
                 Rootstrap has owned more than 750 product launches over 13 years (more than 1 per week!) thanks to our full-service studio with product, design, development, QA, and DevOps, plus dedicated support during and after launch.
                 </p>
-                <button className="lg:mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
+               <Link href={"/Contact"}>
+               <button className="lg:mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
                     Get In Touch ➔
                 </button>
+               </Link>
             </div>
 
             <div ref={rightSectionRef} className="lg:w-[40%] relative flex justify-center items-center mt-7 lg:mt-0">

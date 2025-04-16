@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 
 const Portfolio = () => {
@@ -123,11 +124,14 @@ Connected data silos within healthcare organizations, generating data network ef
                     </div>
                 </div>
             </div>
+                <Link href={"/Contact"}>
             <div>
+
                 <button className='text-[20px] bg-transparent border text-white px-3 py-2 rounded-xl cursor-pointer hover:bg-gray-700 mt-10'>
                     Get in Touch ➔
                 </button>
             </div>
+            </Link>
 
         </div>
     );

@@ -5,7 +5,7 @@ import Portfolio from '@/components/React/Portfolio'
 import Team from '@/components/React/Team'
 
 import Us from '@/components/CI/Us'
-import Footer from '@/components/Footer'
+import Footer from '@/components/Home/Footer'
 import Capabilities from '@/components/AI/Capabilities'
 
 

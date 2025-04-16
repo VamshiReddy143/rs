@@ -16,13 +16,15 @@ const Capabilities = () => {
         {/* Card 1: Artificial Intelligence */}
         <div
           className="card h-[450px] w-full max-w-[380px] mx-auto group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
-          style={{
-            backgroundImage: "url('/lineimg1.png')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
+          // Removed backgroundImage from here
         >
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-110"
+            style={{
+              backgroundImage: "url('/lineimg1.png')",
+            }}
+          />
+          
           <div className="absolute inset-0 transition-all duration-500 group-hover:scale-110" />
           <div className="flex flex-col items-center justify-end bg-gray-800 absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-10">
             <div className="text-white font-nunito flex flex-col gap-3 text-center sm:text-left">
@@ -55,13 +57,14 @@ const Capabilities = () => {
         {/* Card 2: Data */}
         <div
           className="card h-[450px] w-full max-w-[380px] mx-auto group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
-          style={{
-            backgroundImage: "url('/lineimg2.png')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
+          // Removed backgroundImage from here
         >
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-110"
+            style={{
+              backgroundImage: "url('/lineimg2.png')",
+            }}
+          />
           <div className="absolute inset-0 transition-all duration-500 group-hover:scale-110" />
           <div className="flex flex-col items-center justify-end bg-gray-800 absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-10">
             <div className="text-white font-nunito flex flex-col gap-3 text-center sm:text-left">
@@ -93,13 +96,14 @@ const Capabilities = () => {
         {/* Card 3: Cloud */}
         <div
           className="card h-[450px] w-full max-w-[380px] mx-auto group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
-          style={{
-            backgroundImage: "url('/lineimg3.png')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
+          // Removed backgroundImage from here
         >
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-110"
+            style={{
+              backgroundImage: "url('/lineimg3.png')",
+            }}
+          />
           <div className="absolute inset-0 transition-all duration-500 group-hover:scale-110" />
           <div className="flex flex-col items-center justify-end bg-gray-800 absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-10">
             <div className="text-white font-nunito flex flex-col gap-3 text-center sm:text-left">
@@ -132,13 +136,14 @@ const Capabilities = () => {
         {/* Card 4: Web Development */}
         <div
           className="card h-[450px] w-full max-w-[380px] mx-auto group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
-          style={{
-            backgroundImage: "url('/lineimg4.png')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
+          // Removed backgroundImage from here
         >
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-110"
+            style={{
+              backgroundImage: "url('/lineimg4.png')",
+            }}
+          />
           <div className="absolute inset-0 transition-all duration-500 group-hover:scale-110" />
           <div className="flex flex-col items-center justify-end bg-gray-800 absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-10">
             <div className="text-white font-nunito flex flex-col gap-3 text-center sm:text-left">
@@ -173,13 +178,14 @@ const Capabilities = () => {
         {/* Card 5: Mobile Development */}
         <div
           className="card h-[450px] w-full max-w-[380px] mx-auto group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
-          style={{
-            backgroundImage: "url('/lineimg5.png')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
+          // Removed backgroundImage from here
         >
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-110"
+            style={{
+              backgroundImage: "url('/lineimg5.png')",
+            }}
+          />
           <div className="absolute inset-0 transition-all duration-500 group-hover:scale-110" />
           <div className="flex flex-col items-center justify-end bg-gray-800 absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-10">
             <div className="text-white font-nunito flex flex-col gap-3 text-center sm:text-left">
@@ -208,13 +214,14 @@ const Capabilities = () => {
         {/* Card 6: UX/UI Design */}
         <div
           className="card h-[450px] w-full max-w-[380px] mx-auto group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
-          style={{
-            backgroundImage: "url('/lineimg6.png')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
+          // Removed backgroundImage from here
         >
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-110"
+            style={{
+              backgroundImage: "url('/lineimg6.png')",
+            }}
+          />
           <div className="absolute inset-0 transition-all duration-500 group-hover:scale-110" />
           <div className="flex flex-col items-center justify-end bg-gray-800 absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-10">
             <div className="text-white font-nunito flex flex-col gap-3 text-center sm:text-left">

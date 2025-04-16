@@ -1,5 +1,6 @@
 
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 
 const page = () => {
@@ -18,9 +19,11 @@ const page = () => {
                         <p className="mt-5 text-[1.3em] text-gray-400 lg:w-[85%]">
                         Build a high-quality, user-centric product or feature from scratch, fast and on budget. We staff embedded product teams with PMs, UX/UI designers, frontend, backend, data, and QA engineers.
                         </p>
-                        <button className="mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
+                      <Link href={"/Contact"}>
+                      <button className="mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
                             Get In Touch ➔
                         </button>
+                      </Link>
                     </div>
 
 

@@ -2,9 +2,7 @@
 
 import { motion, useMotionValue, useScroll, useSpring, useTransform } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
-import Image from 'next/image';
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 
 // Separate company arrays for top and bottom
 const topCompanies = [
@@ -87,7 +85,7 @@ function ParallaxText({ children, direction }: ParallaxProps) {
     const x = useTransform(
         scrollProgress,
         [0, 1000],
-        direction === 'left' ? [0, -200] : [-20, 100],
+        direction === 'left' ? [0, -200] : [-10, 100],
         { clamp: false }
     );
 
@@ -140,10 +138,10 @@ interface VelocityScrollProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const BlogScroller = () => {
     return (
-        <div id="hero" className="w-full mt-[10em]">
+        <div id="hero" className="w-full ">
             <div className="flex flex-col items-center justify-center my-8 lg:my-10 px-4">
                 <p className="rounded-lg bg-gray-800 px-4 py-2 text-sm sm:text-base text-center">
-                    Trusted By 100s of High-Growth Startups & Industry Leaders
+                Our Clients Are Backed by the World&apos;s Leading Investors
                 </p>
             </div>
 
@@ -151,13 +149,6 @@ const BlogScroller = () => {
                 <VelocityScroll />
             </div>
 
-            <div className="flex flex-col gap-5 items-center justify-center text-center mt-[10em]">
-                <h1 className="text-[2.5em] font-bold">Be part of our mission!</h1>
-                <p className="text-gray-200 text-[1em]">Join a team of people who love what they do!</p>
-               <Link href={"/About"}>
-               <button className="border p-3 rounded-lg font-bold cursor-pointer">See All Open Positions →</button>
-               </Link>
-            </div>
         </div>
     );
 };

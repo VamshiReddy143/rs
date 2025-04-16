@@ -3,6 +3,7 @@ import Image from 'next/image';
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Link from 'next/link';
 
 // Register ScrollTrigger with GSAP
 gsap.registerPlugin(ScrollTrigger);
@@ -68,9 +69,11 @@ const Roadmap = () => {
                 <p className="text-[1.2em] text-gray-400">
                     Rootstrap tackles large-scale projects with teams as large as 50 people operating across several independent working groups called &apos;pods&apos;, complete with engineers, PMs, QA, DevOps, designers, and more.
                 </p>
-                <button className="mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
+               <Link href={"/Contact"}>
+               <button className="mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
                     Get In Touch ➔
                 </button>
+               </Link>
             </div>
 
             <div ref={rightSectionRef} className="lg:w-[40%] relative">

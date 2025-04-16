@@ -1,5 +1,6 @@
 
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 
 const page = () => {
@@ -17,9 +18,11 @@ const page = () => {
                         <p className="mt-5 text-[1.2em] text-gray-400 w-[85%]">
                             Add senior engineers to your staff for less than the cost of US employees. We staff individuals as well as teams of 50+ people, plus project managers, DevOps, QA, and designers.
                         </p>
+                        <Link href={"/Contact"}>
                         <button className="mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
                             Get In Touch ➔
                         </button>
+                        </Link>
                     </div>
 
                     <div className='bg-gray-900 border-2 border-[#3b9b58] rounded-xl p-2 lg:w-[40%] w-full mt-10 lg:mt-0 lg:mr-50 mr-0'>

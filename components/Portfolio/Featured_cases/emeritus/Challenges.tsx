@@ -6,6 +6,13 @@ import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+// Custom LenisOptions type to include 'smooth'
+interface CustomLenisOptions {
+  duration?: number;
+  easing?: (t: number) => number;
+  smooth?: boolean;
+}
+
 gsap.registerPlugin(ScrollTrigger);
 
 const Challenges = () => {
@@ -16,11 +23,13 @@ const Challenges = () => {
 
   // Initialize Lenis and sync with ScrollTrigger
   useEffect(() => {
-    const lenis = new Lenis({
+    const lenisOptions: CustomLenisOptions = {
       duration: 1.5,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smooth: true,
-    });
+    };
+
+    const lenis = new Lenis(lenisOptions);
 
     ScrollTrigger.scrollerProxy(document.body, {
       scrollTop: () => lenis.scroll,
@@ -50,7 +59,7 @@ const Challenges = () => {
     lenis.on("scroll", handleScroll);
     handleScroll();
 
-    function raf(time) {
+    function raf(time: number) { // Explicitly typed 'time' as number
       lenis.raf(time);
       requestAnimationFrame(raf);
     }

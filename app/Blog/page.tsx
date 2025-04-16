@@ -5,7 +5,7 @@ import Cards from "@/components/Blog/Cards";
 import Hero from "@/components/Blog/Hero";
 import React, { useState } from "react";
 import Scroller from "@/components/Blog/BlogScroller";
-import Footer from "@/components/Footer";
+import Footer from "@/components/Home/Footer";
 
 
 const Page: React.FC = () => {

@@ -5,7 +5,7 @@ import Portfolio from '@/components/NodeJS/Portfolio'
 import Team from '@/components/NodeJS/Team'
 import Capabilities from '@/components/AI/Capabilities'
 import Us from '@/components/CI/Us'
-import Footer from '@/components/Footer'
+import Footer from '@/components/Home/Footer'
 
 
 

@@ -5,7 +5,7 @@ import Portfolio from '@/components/AI/Portfolio'
 import Team from '@/components/AI/Team'
 import Capabilities from '@/components/AI/Capabilities'
 import Us from '@/components/AI/Us'
-import Footer from '@/components/Footer'
+import Footer from '@/components/Home/Footer'
 
 
 const page = () => {

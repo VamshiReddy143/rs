@@ -10,7 +10,7 @@ import arrow from "@/public/pr.png"
 
 const Footer = () => {
     return (
-        <div className=' mt-10 mb-10'>
+        <div className=' mt-10'>
             <div className='bg-gray-900 md:p-3 p-0 lg:p-0 rounded-xl flex items-center justify-between gap-10'>
                 <div className='lg:pl-10 p-5'>
                     <h1 className='lg:text-[3em] text-[2em] font-bold'>Never Miss an Update!</h1>

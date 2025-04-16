@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import React from 'react'
 
 const Us = () => {
@@ -35,11 +36,13 @@ const Us = () => {
            </div>
         </div>
 
-      <div className='mt-10'>
+    <Link href={"/Contact"}>
+    <div className='mt-10'>
       <button className='text-[20px] bg-[#f6ff7a] text-black px-3 py-2 rounded-xl cursor-pointer hover:bg-[#f6ff7a]/80'>
             Get in Touch ➔
           </button>
       </div>
+    </Link>
     </div>
   )
 }

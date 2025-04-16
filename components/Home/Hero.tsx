@@ -142,10 +142,10 @@ const Hero = () => {
     <div id="hero" className="w-full">
       <div className='  lg:min-h-screen flex flex-col-reverse min-w-full lg:flex-row mt-10 items-center justify-center lg:justify-between gap-8 lg:gap-0'>
         <div className='w-full lg:w-[36%] px-4 lg:px-0'>
-          <h1 className='lg:text-[3em] text-[1.5em] sm:text-[2em] md:text-[2.5em] mt-6 lg:mt-0 font-extrabold leading-tight text-center lg:text-left'>
+          <h1 className='lg:text-[3em] text-[1.9em] sm:text-[2em] md:text-[2.5em] mt-6 lg:mt-0 font-extrabold leading-tight text-left'>
             Accelerate Your <span className='block'>Development</span> & Drive Innovation
           </h1>
-          <p className='text-base sm:text-[19px] text-gray-400 mt-4 leading-relaxed text-center lg:text-left'>
+          <p className='text-base sm:text-[19px] text-gray-400 mt-4 leading-relaxed text-left'>
             We are a data-driven, nearshore software agency that values speed, performance, and scalability. That‘s why we consistently surpass benchmarks for client retention after 750+ product launches and 13 years in business.
           </p>
           <div className="flex justify-center lg:justify-start">
@@ -179,15 +179,9 @@ const Hero = () => {
         </div>
       </div>
 
-      <div className="flex flex-col items-center justify-center my-8 lg:my-10 px-4">
-        <p className="rounded-lg bg-gray-800 px-4 py-2 text-sm sm:text-base text-center">
-          Trusted By 100s of High-Growth Startups & Industry Leaders
-        </p>
-      </div>
       
-      <div className="hidden sm:block relative w-full flex flex-col items-center justify-center overflow-hidden py-8 lg:py-12">
-        <VelocityScroll />
-      </div>
+      
+     
     </div>
   );
 };

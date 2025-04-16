@@ -2,7 +2,7 @@
 import React from 'react'
 import Hero from '@/components/CI/Hero'
 
-import Footer from '@/components/Footer'
+import Footer from '@/components/Home/Footer'
 import Tools from '@/components/CI/Tools'
 import Portfolio from '@/components/CI/Portfolio'
 import Team from '@/components/CI/Team'

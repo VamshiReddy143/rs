@@ -1,4 +1,5 @@
 
+import Link from 'next/link';
 import React from 'react';
 
 const page = () => {
@@ -17,9 +18,12 @@ const page = () => {
 
 
                 </p>
+
+                <Link href={"/Contact"}>
                 <button className="mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
                     Get In Touch ➔
                 </button>
+                </Link>
 
                 <div className='bg-gray-900 lg:flex hidden md:block items-center absolute md:bottom-20 lg:bottom-0 left-1/2 -translate-x-1/2 justify-center lg:p-5 md:p-10 lg:rounded-full  lg:w-fit md:w-full'>
                     <div className='flex md:flex-col  items-center justify-center gap-5'>

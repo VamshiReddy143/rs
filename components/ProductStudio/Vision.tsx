@@ -3,6 +3,7 @@ import Image from 'next/image';
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Link from 'next/link';
 
 // Register ScrollTrigger with GSAP
 gsap.registerPlugin(ScrollTrigger);
@@ -66,9 +67,12 @@ const Vision = () => {
                 <p className="text-[1.2em] text-gray-400">
                 Rootstrap knows how to go from 0 to 1 by turning ideas into practical product definitions that can be wireframed, architected, and tested with users. We do this while balancing not only your vision, but also your budget and timeline.
                 </p>
-                <button className="lg:mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
+
+              <Link href={"/Contact"}>
+              <button className="lg:mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
                     Get In Touch ➔
                 </button>
+              </Link>
             </div>
 
             <div ref={rightSectionRef} className="lg:w-[40%] mt-10 lg:mt-0 flex items-center justify-center relative">

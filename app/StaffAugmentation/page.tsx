@@ -54,7 +54,7 @@ import Kpi from '@/components/StaffAugmentation/Kpi'
 import Collabaration from '@/components/StaffAugmentation/Collabaration'
 import Roadmap from '@/components/StaffAugmentation/Roadmap'
 import Us from '@/components/CI/Us'
-import Footer from '@/components/Footer'
+import Footer from '@/components/Home/Footer'
 
 const page = () => {
   return (

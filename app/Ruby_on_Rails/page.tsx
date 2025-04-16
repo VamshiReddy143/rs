@@ -5,7 +5,7 @@ import Portfolio from '@/components/Ruby_on_Rails/Portfolio'
 import Team from '@/components/Ruby_on_Rails/Team'
 import Capabilities from '@/components/AI/Capabilities'
 import Us from '@/components/CI/Us'
-import Footer from '@/components/Footer'
+import Footer from '@/components/Home/Footer'
 
 
 

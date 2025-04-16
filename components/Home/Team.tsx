@@ -203,18 +203,20 @@ const Team: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex flex-col items-center justify-center gap-4 text-center mt-20">
+     <Link href={"/Portfolio"}>
+     <div className="flex flex-col items-center justify-center gap-4 text-center mt-20">
         <button className="border-1 border-white text-white px-4 py-3 rounded-lg cursor-pointer hover:bg-gray-700 hover:text-white transition duration-300 ease-in-out">
           View All Case Studies
         </button>
       </div>
+     </Link>
 
-      <div className="flex flex-col items-center justify-center mt-30">
+      {/* <div className="flex flex-col items-center justify-center mt-30">
         <p className="rounded-lg bg-gray-800 px-4 py-2">
           Our Clients Are Backed by the World&apos;s Leading Investors
         </p>
-      </div>
-      <div
+      </div> */}
+      {/* <div
         ref={scrollSectionRef}
         className="relative hidden md:flex flex w-full flex-col items-center justify-center overflow-hidden py-12 gap-12"
       >
@@ -224,7 +226,7 @@ const Team: React.FC = () => {
         <ParallaxText direction="right" targetRef={scrollSectionRef}>
           <ScrollNames investors={teamBottomInvestors} />
         </ParallaxText>
-      </div>
+      </div> */}
     </div>
   );
 };
