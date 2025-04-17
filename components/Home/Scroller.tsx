@@ -86,7 +86,7 @@ function ParallaxText({ children, direction }: ParallaxProps) {
     const x = useTransform(
         scrollProgress,
         [0, 1000],
-        direction === 'left' ? [0, -200] : [-20, 100],
+        direction === 'left' ? [0, -200] : [-200, 100],
         { clamp: false }
     );
 

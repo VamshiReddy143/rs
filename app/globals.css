@@ -588,3 +588,13 @@ h3.apply-now:hover {
     transform: translateY(-20px); /* Adjust height of float */
   }
 }
+
+
+@media (min-width: 1024px) {
+  .dropdown-container {
+    box-sizing: border-box; /* Ensure padding/borders are included in width */
+    margin: 0;
+    padding: 0;
+  }
+}
+

@@ -140,10 +140,10 @@ const Team: React.FC = () => {
             alt="team"
             width={900}
             height={900}
-            className="h-[40em] w-full object-cover relative"
+            className="lg:h-[40em] h-[20em] w-full object-cover relative"
           />
           <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50 hover:opacity-0" />
-          <h1 className="absolute bottom-0 esquerda-0 transform -translate-x-1/70 lg:pl-10 p-5 lg:text-[2em] text-[1.8em] font-bold text-white">
+          <h1 className="absolute bottom-0 esquerda-0 lg:p-1 p-3  lg:text-[1.7em] text-[1.2em] transform -translate-x-1/70 lg:pl-7 lg:pr-[6em] text-left   font-bold text-white">
             Building The Most Premium Learning Experience On the Planet
           </h1>
        </Link>
@@ -156,23 +156,23 @@ const Team: React.FC = () => {
             alt="team"
             width={900}
             height={900}
-            className="h-[40em] object-cover relative"
+            className="lg:h-[40em] h-[20em] object-cover relative"
           />
           <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50 hover:opacity-0" />
-          <h1 className="absolute bottom-0 left-0 transform -translate-x-1/70 lg:pl-3 p-5 text-[1.6em] font-bold text-white">
-            Building The Most Premium Learning Experience On the Planet
+          <h1 className="absolute bottom-0  left-0 lg:p-1 p-3  lg:text-[1.7em] text-[1.2em] transform -translate-x-1/70 lg:pl-7 text-left   font-bold text-white">
+           Delivering Delight For The Largest Pet Startup
           </h1>
           </Link>
         </div>
       </div>
 
       <div className="lg:flex justify-center gap-7 text-center">
-        <div className="flex flex-col gap-10 lg:w-[30%] mx-auto mt-10 relative">
+        <div className="flex flex-col lg:gap-10 gap-5 lg:w-[30%] mx-auto lg:mt-10 mt-5 relative">
           <div className="relative">
           <Link href={"/Portfolio/Featuredcases/emeritus"}>
-            <Image src={img3} alt="team" width={900} height={900} />
+            <Image src={img3} alt="team" width={900} height={900} className=""/>
             <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50 hover:opacity-0" />
-            <h1 className="absolute bottom-0 left-0 transform -translate-x-1/70 p-5 text-[1.6em] font-bold text-white">
+            <h1 className="absolute bottom-0 left-0 lg:p-1 p-3  lg:text-[1.7em] text-[1.2em] transform -translate-x-1/70 lg:pl-7  text-left  font-bold text-white">
               Making Higher Education Accessible Online
             </h1>
             </Link>
@@ -180,20 +180,20 @@ const Team: React.FC = () => {
 
           <div className="relative">
           <Link href={"/Portfolio/Featuredcases/madison"}>
-            <Image src={img4} alt="team" width={900} height={900} />
+            <Image src={img4} alt="team" width={900} height={900} className="" />
             <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50 hover:opacity-0" />
-            <h1 className="absolute bottom-0 left-0 transform -translate-x-1/70 p-5 text-[1.6em] font-bold text-white">
+            <h1 className="absolute bottom-0 left-0 lg:p-1 p-3  lg:text-[1.7em] text-[1.2em] transform -translate-x-1/70 lg:pl-7 text-left  font-bold text-white">
               Launching a Critical Mobile App During Covid
             </h1>
             </Link>
           </div>
         </div>
 
-        <div className="relative lg:w-[70%] aspect-[3/2] mt-10 overflow-hidden rounded-xl">
+        <div className="relative lg:w-[70%] aspect-[2/2] lg:aspect-[3/2] mt-7 overflow-hidden rounded-xl">
         <Link href={"/Portfolio/Case_Studies"}>
-          <Image src={img5} alt="team" fill className="object-cover" />
+          <Image src={img5} alt="team" fill className="" />
           <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50 hover:opacity-0" />
-          <h1 className="absolute bottom-0 left-0 pl-10 lg:text-[1.7em] font-bold text-white">
+          <h1 className="absolute bottom-0 left-0 lg:p-1 p-3  lg:text-[1.7em] text-[1.2em] transform -translate-x-1/70 lg:pl-7 text-left  font-bold text-white">
             Combining saas, Consumer & Payments into The industry&apos;s
             <span className="lg:block">
               #1 Platform For Early Education

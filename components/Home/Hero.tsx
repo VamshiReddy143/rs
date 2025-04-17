@@ -141,16 +141,16 @@ interface VelocityScrollProps extends React.HTMLAttributes<HTMLDivElement> {
 const Hero = () => {
   return (
     <div id="hero" className="w-full">
-      <div className='  lg:min-h-screen flex flex-col-reverse min-w-full lg:flex-row mt-10 items-center justify-center lg:justify-between gap-8 lg:gap-0'>
+      <div className='  lg:min-h-screen flex flex-col-reverse min-w-full lg:flex-row  items-center justify-center lg:justify-between gap-8 lg:gap-0'>
         <div className='w-full lg:w-[36%] px-4 lg:px-0'>
-          <h1 className='lg:text-[3em] text-[1.9em] sm:text-[2em] md:text-[2.5em] mt-6 lg:mt-0 font-extrabold leading-tight text-left'>
+          <h1 className='lg:text-[3em] text-[1.9em] sm:text-[2em] md:text-[2.5em]  lg:mt-0 font-extrabold leading-tight text-left'>
             Accelerate Your <span className='block'>Development</span> & Drive Innovation
           </h1>
           <p className='text-base sm:text-[19px] text-gray-400 mt-4 leading-relaxed text-left'>
             We are a data-driven, nearshore software agency that values speed, performance, and scalability. That‘s why we consistently surpass benchmarks for client retention after 750+ product launches and 13 years in business.
           </p>
          <Link href={"/Contact"}>
-         <div className="flex justify-center lg:justify-start">
+         <div className="flex justify-center justify-start">
             <button className='text-base sm:text-[18px] bg-transparent text-white px-4 py-2 rounded-xl cursor-pointer border mt-8 hover:bg-white/10 transition-colors'>
               Get in Touch ➔
             </button>
@@ -158,24 +158,24 @@ const Hero = () => {
          </Link>
         </div>
 
-        <div className='w-full lg:w-[60%] pt-8 lg:pt-0 px-4 lg:px-0'>
+        <div className='w-full lg:w-[60%] pt-8 lg:pt-0 px-4 mt-15 mb-5 lg:px-0'>
           <div className="relative max-w-full mx-auto">
             <video 
               autoPlay 
               muted 
               loop 
-              className="w-full max-w-[60em] h-auto lg:h-[35em] object-cover rounded-xl"
+              className="w-full max-w-[60em] h-auto lg:h-[38em] object-cover rounded-xl"
             >
               <source src="/videos/homevideo.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
-            <div className='absolute right-0 bottom-0 flex flex-col items-center rounded-tl-xl justify-center w-fit px-2 py-3 bg-black'>
+            <div className='absolute right-0 bottom-0 flex flex-col items-center rounded-tl-lg justify-center w-fit px-2  bg-black'>
               <Image
                 src="https://cdn.prod.website-files.com/63f902d79a33f71d496cde07/66f5b9ac256e1a355eccc02f_clutch-box.svg"
                 alt="stars"
                 width={112}  // Actual pixel width
                 height={48}  // Actual pixel height
-                className="w-[7em] h-[3em] mt-3 object-contain"
+                className="w-[7.5em] h-[4em] mt-3  object-contain"
               />
             </div>
           </div>

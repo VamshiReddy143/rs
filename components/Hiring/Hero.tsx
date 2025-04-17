@@ -91,7 +91,7 @@ const Hero = () => {
 
   return (
     <div className="lg:p-[12%] lg:pt-[10%] mt-[2em] p-5 lg:pt-0 bg-gray-200 text-black">
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col pt-10 gap-5">
         <h1 className="lg:text-[5em] text-[2em] font-bold">We Grow Together!</h1>
         <p className="text-[1.2em]">
           If you want to level up your career at a company in constant motion, you’ve come to the right place.
@@ -107,7 +107,7 @@ const Hero = () => {
           />
         </div>
       </div>
-      <div className="flex flex-col md:flex-col lg:flex-row justify-between gap-10 mt-[15em]">
+      <div className="flex flex-col md:flex-col lg:flex-row justify-between gap-10 mt-[10em]">
         <div>
           <h1 className="lg:text-[3em] text-[2em] font-semibold leading-tight">
             We believe in fostering a culture of creativity, autonomy, and ownership.
