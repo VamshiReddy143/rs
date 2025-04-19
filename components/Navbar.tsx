@@ -67,7 +67,7 @@ const Navbar = () => {
   }, [isDropdownOpen, isServicedropdownOpen]);
 
   return (
-    <div className="fixed top-0 left-0 z-[999] bg-black w-full">
+    <div className="fixed top-0 left-0 z-[999] bg-[#191a1b] w-full">
       <div ref={navbarRef} className="lg:max-w-[90em] lg:mx-auto px-3 lg:px-[6em] flex justify-between items-center py-5">
         <Link href="/" onClick={closeAll} className="hidden md:block">
           <div className="hidden md:block">
@@ -76,13 +76,13 @@ const Navbar = () => {
               alt="logo"
               width={900}
               height={900}
-              className="h-[1.2em] w-auto md:h-[1em] hidden md:block"
+              className="h-[1.2em] w-auto md:h-[18px] hidden md:block"
             />
           </div>
         </Link>
         <Link href="/" onClick={closeAll}>
           <div className="md:hidden">
-            <svg width={40} height={30} viewBox="0 0 99 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width={50} height={30} viewBox="0 0 99 37" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M90.5376 0L63.5253 26.7557C60.8408 19.6916 55.7584 13.7731 49.1498 10.0152C42.5413 6.25735 34.8185 4.89445 27.3061 6.16028C19.7938 7.42614 12.9604 11.2419 7.97807 16.9528C2.99576 22.6639 0.175105 29.9142 0 37.46H11.4703C11.6784 32.1123 13.9238 27.0413 17.7547 23.2676C21.5855 19.4937 26.7174 17.2975 32.1175 17.1207C37.5174 16.9439 42.7845 18.7998 46.8587 22.3147C50.9327 25.8297 53.5114 30.7427 54.0755 36.0651L53.9632 36.1965H54.1061C54.1061 36.6312 54.1776 37.4094 54.1878 37.4094H68.7093L98.5789 7.9145L90.5376 0Z"
                 fill="#ffffff"
@@ -157,11 +157,11 @@ const Navbar = () => {
       </div>
 
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed top-0 left-0 w-full h-full bg-black z-50 flex flex-col">
-          <div className="relative">
+        <div className="lg:hidden fixed top-0 left-0 w-full h-full bg-[#191a1b] z-50 flex p-1 flex-col">
+          <div className="relative p-5">
             <Link href="/" onClick={closeAll}>
               <div className="absolute top-2 left-4 z-[1001]">
-                <svg width={40} height={30} viewBox="0 0 99 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width={56} height={30} viewBox="0 0 99 37" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M90.5376 0L63.5253 26.7557C60.8408 19.6916 55.7584 13.7731 49.1498 10.0152C42.5413 6.25735 34.8185 4.89445 27.3061 6.16028C19.7938 7.42614 12.9604 11.2419 7.97807 16.9528C2.99576 22.6639 0.175105 29.9142 0 37.46H11.4703C11.6784 32.1123 13.9238 27.0413 17.7547 23.2676C21.5855 19.4937 26.7174 17.2975 32.1175 17.1207C37.5174 16.9439 42.7845 18.7998 46.8587 22.3147C50.9327 25.8297 53.5114 30.7427 54.0755 36.0651L53.9632 36.1965H54.1061C54.1061 36.6312 54.1776 37.4094 54.1878 37.4094H68.7093L98.5789 7.9145L90.5376 0Z"
                     fill="#ffffff"
@@ -182,40 +182,40 @@ const Navbar = () => {
           </div>
           <ul className="flex flex-col font-semibold items-center justify-center gap-3 text-white flex-1">
             <li
-              className="text-[16px] cursor-pointer hover:text-[#f6ff7a] transition-colors"
+              className="text-[22px] cursor-pointer hover:text-[#f6ff7a] transition-colors"
               onClick={toggleCapabilitiesDropdown}
             >
               Capabilities
             </li>
             <li
-              className="text-[16px] cursor-pointer hover:text-[#f6ff7a] transition-colors"
+              className="text-[22px] cursor-pointer hover:text-[#f6ff7a] transition-colors"
               onClick={toggleServicesDropdown}
             >
               Services
             </li>
             <Link href="/Portfolio" onClick={closeAll}>
-              <li className="text-[16px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
+              <li className="text-[22px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
                 Portfolio
               </li>
             </Link>
             <Link href="/About" onClick={closeAll}>
-              <li className="text-[16px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
+              <li className="text-[22px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
                 About
               </li>
             </Link>
             <Link href="/Blog" onClick={closeAll}>
-              <li className="text-[16px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
+              <li className="text-[22px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
                 Blog
               </li>
             </Link>
             <Link href="/Hiring" onClick={closeAll}>
-              <li className="text-[16px] cursor-pointer hover:text-[#f6ff7a] transition-colors">
+              <li className="text-[22px] cursor-pointer text-[#f6ff7a] hover:text-[#f6ff7a] transition-colors">
                 Hiring!
               </li>
             </Link>
             <Link href="/Contact" onClick={closeAll}>
               <button className="text-[16px] bg-[#f6ff7a] text-black px-4 py-2 rounded-lg hover:bg-[#f6ff7a]/80 transition-colors cursor-pointer">
-                Get in Touch ➔
+                Get in Touch  ➔
               </button>
             </Link>
           </ul>
@@ -225,12 +225,12 @@ const Navbar = () => {
       {isDropdownOpen && (
         <div
           ref={capabilitiesRef}
-          className="fixed top-0 w-full h-full lg:hidden bg-gray-900 z-[1000] p-4 overflow-y-auto"
+          className="fixed top-0 w-full h-full bg-[#191a1b] lg:hidden  z-[1000] p-2 overflow-y-auto"
         >
           <div className="flex flex-col h-full text-white relative">
             <Link href="/" onClick={closeAll}>
               <div className="absolute top-2 left-4 z-[1001]">
-                <svg width={40} height={30} viewBox="0 0 99 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width={55} height={30} viewBox="0 0 99 37" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M90.5376 0L63.5253 26.7557C60.8408 19.6916 55.7584 13.7731 49.1498 10.0152C42.5413 6.25735 34.8185 4.89445 27.3061 6.16028C19.7938 7.42614 12.9604 11.2419 7.97807 16.9528C2.99576 22.6639 0.175105 29.9142 0 37.46H11.4703C11.6784 32.1123 13.9238 27.0413 17.7547 23.2676C21.5855 19.4937 26.7174 17.2975 32.1175 17.1207C37.5174 16.9439 42.7845 18.7998 46.8587 22.3147C50.9327 25.8297 53.5114 30.7427 54.0755 36.0651L53.9632 36.1965H54.1061C54.1061 36.6312 54.1776 37.4094 54.1878 37.4094H68.7093L98.5789 7.9145L90.5376 0Z"
                     fill="#ffffff"
@@ -244,7 +244,7 @@ const Navbar = () => {
             </Link>
             <button
               onClick={closeAll}
-              className="absolute top-2 right-4 text-[24px] hover:text-[#f6ff7a] transition-colors z-[1001]"
+              className="absolute top-2 right-4 text-[28px] hover:text-[#f6ff7a] transition-colors z-[1001]"
               style={{ lineHeight: "1.5em" }}
             >
               ×
@@ -257,35 +257,35 @@ const Navbar = () => {
             </button>
             <div className="flex flex-col gap-3 w-full md:max-w-none mt-[8em]">
               <Link href="/Ai" onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/Ai"; }}>
-                <div className="bg-gray-800 p-2 rounded-lg flex items-center hover:bg-gray-700 transition-colors">
-                  <Image src="/ai.svg" alt="AI" width={48} height={48} className="mr-4 object-cover w-12 h-12" />
-                  <div>
-                    <h1 className="text-[1.2em] font-bold">Artificial Intelligence</h1>
-                    <p className="text-gray-400 text-[0.8em] mt-3">GenAI, Custom LLMs, Machine Learning & Computer Vision</p>
+                <div className="bg-[#242425] rounded-lg flex items-center hover:bg-gray-700 transition-colors">
+                  <Image src="/ai.svg" alt="AI" width={48} height={48} className="mr-4 object-cover w-12 h-25" />
+                  <div className=" py-2">
+                    <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[24px] font-bold">Artificial Intelligence</h1>
+                    <p className="text-[#bcbcc0] text-[16px] mt-3">GenAI, Custom LLMs, Machine Learning & Computer Vision</p>
                   </div>
                 </div>
               </Link>
               <Link href="/DE" onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/DE"; }}>
-                <div className="bg-gray-800 p-2 rounded-lg flex items-center hover:bg-gray-700 transition-colors">
-                  <Image src="/data.svg" alt="Data" width={48} height={48} className="mr-4 object-cover w-12 h-12" />
-                  <div>
-                    <h1 className="text-[1.2em] font-bold">Data</h1>
-                    <p className="text-gray-400 text-[0.8em] mt-3">ETL & Storage, Visualization, Processing & Enrichment</p>
+                <div className="bg-[#242425]  rounded-lg flex items-center hover:bg-gray-700 transition-colors">
+                  <Image src="/data.svg" alt="Data" width={48} height={48} className="mr-4 object-cover w-12 h-25" />
+                  <div className=" py-2">
+                    <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[24px] font-bold">Data</h1>
+                    <p className="text-[#bcbcc0] text-[16px] mt-3">ETL & Storage, Visualization, Processing & Enrichment</p>
                   </div>
                 </div>
               </Link>
               <Link href="/CI" onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/CI"; }}>
-                <div className="bg-gray-800 p-2 rounded-lg flex items-center hover:bg-gray-700 transition-colors">
-                  <Image src="/cloud.svg" alt="Cloud" width={48} height={48} className="mr-4 object-cover w-12 h-12" />
-                  <div>
-                    <h1 className="text-[1.2em] font-bold">Cloud</h1>
-                    <p className="text-gray-400 text-[0.8em] mt-3">Infrastructure, DevOps, APIs, Automation & Scalability</p>
+                <div className="bg-[#242425]  rounded-lg flex items-center hover:bg-gray-700 transition-colors">
+                  <Image src="/cloud.svg" alt="Cloud" width={48} height={48} className="mr-4 object-cover w-12 h-25" />
+                  <div className=" py-2">
+                    <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[24px] font-bold">Cloud</h1>
+                    <p className="text-[#bcbcc0] text-[16px] mt-3">Infrastructure, DevOps, APIs, Automation & Scalability</p>
                   </div>
                 </div>
               </Link>
               <div className="p-4 rounded-lg">
                 <div className="flex flex-col gap-2">
-                  <div className="flex justify-between">
+                  <div className="flex justify-between text-[14px]">
                     <Link href={"/React"} onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/React"; }}>
                       <span>React</span>
                     </Link>
@@ -293,7 +293,7 @@ const Navbar = () => {
                       <span>React Native</span>
                     </Link>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between text-[14px]">
                     <Link href={"/NodeJS"} onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/NodeJS"; }}>
                       <span>NodeJS</span>
                     </Link>
@@ -305,7 +305,7 @@ const Navbar = () => {
               </div>
               <Link href={"/About"} onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/About"; }}>
                 <button className="bg-[#f6ff7a] text-black px-4 py-2 w-full rounded-lg mt-auto hover:bg-[#f6ff7a]/80 transition-colors cursor-pointer">
-                  Discover More →
+                  Discover More  ➔
                 </button>
               </Link>
             </div>
@@ -316,12 +316,12 @@ const Navbar = () => {
       {isServicedropdownOpen && (
         <div
           ref={servicesRef}
-          className="fixed top-0 w-full h-full lg:hidden bg-gray-900 z-[1000] p-4 overflow-y-auto"
+          className="fixed top-0 w-full h-full lg:hidden bg-[#191a1b] z-[1000] p-4 overflow-y-auto"
         >
           <div className="flex flex-col h-full text-white relative">
             <Link href="/" onClick={closeAll}>
               <div className="absolute top-2 left-4 z-[1001]">
-                <svg width={40} height={30} viewBox="0 0 99 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width={55} height={30} viewBox="0 0 99 37" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M90.5376 0L63.5253 26.7557C60.8408 19.6916 55.7584 13.7731 49.1498 10.0152C42.5413 6.25735 34.8185 4.89445 27.3061 6.16028C19.7938 7.42614 12.9604 11.2419 7.97807 16.9528C2.99576 22.6639 0.175105 29.9142 0 37.46H11.4703C11.6784 32.1123 13.9238 27.0413 17.7547 23.2676C21.5855 19.4937 26.7174 17.2975 32.1175 17.1207C37.5174 16.9439 42.7845 18.7998 46.8587 22.3147C50.9327 25.8297 53.5114 30.7427 54.0755 36.0651L53.9632 36.1965H54.1061C54.1061 36.6312 54.1776 37.4094 54.1878 37.4094H68.7093L98.5789 7.9145L90.5376 0Z"
                     fill="#ffffff"
@@ -335,7 +335,7 @@ const Navbar = () => {
             </Link>
             <button
               onClick={closeAll}
-              className="absolute top-2 right-4 text-[24px] hover:text-[#f6ff7a] transition-colors z-[1001]"
+              className="absolute top-2 right-4 text-[30px] hover:text-[#f6ff7a] transition-colors z-[1001]"
               style={{ lineHeight: "1.5em" }}
             >
               ×
@@ -348,22 +348,22 @@ const Navbar = () => {
             </button>
             <div className="flex flex-col gap-6 w-full md:max-w-none mt-[8em] flex-1">
               <Link href="/StaffAugmentation" onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/StaffAugmentation"; }}>
-                <div className="bg-gray-800 p-2 rounded-lg flex items-center hover:bg-gray-700 transition-colors">
-                  <Image src="/serviceimg1.jpg" alt="Staff" width={48} height={48} className="mr-4 object-cover w-12 h-12" />
-                  <div>
-                    <h1 className="text-[1.2em] font-bold">Staff Augmentation</h1>
-                    <p className="text-gray-400 text-[0.8em] mt-3">
+                <div className="bg-[#242425]  rounded-lg flex items-center hover:bg-gray-700 transition-colors">
+                  <Image src="/serviceimg1.jpg" alt="Staff" width={48} height={48} className="mr-4 object-cover w-12 h-36" />
+                  <div className="py-2">
+                    <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[24px] font-bold">Staff Augmentation</h1>
+                    <p className="text-[#bcbcc0] text-[16px] mt-3">
                       We staff senior engineers and engineering pods up to 50+ people, including PMs, QA, DevOps, and Design
                     </p>
                   </div>
                 </div>
               </Link>
               <Link href="/ProductStudio" onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/ProductStudio"; }}>
-                <div className="bg-gray-800 p-2 rounded-lg flex items-center hover:bg-gray-700 transition-colors">
-                  <Image src="/serviceimg2.jpg" alt="Product" width={48} height={48} className="mr-4 object-cover w-12 h-12" />
-                  <div>
-                    <h1 className="text-[1.2em] font-bold">Product Studio</h1>
-                    <p className="text-gray-400 text-[0.8em] mt-3">
+                <div className="bg-[#242425]  rounded-lg flex items-center hover:bg-gray-700 transition-colors">
+                  <Image src="/serviceimg2.jpg" alt="Product" width={48} height={48} className="mr-4 object-cover w-12 h-36" />
+                  <div className="py-2">
+                    <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[24px] font-bold">Product Studio</h1>
+                    <p className="text-[#bcbcc0] text-[16px] mt-3">
                       We staff embedded product teams with expert Product Managers, UI/UX Designers, Front-End, Backend, Data Engineers, and QA
                     </p>
                   </div>
@@ -373,7 +373,7 @@ const Navbar = () => {
                 <div className="h-full lg:w-px bg-gray-700 hidden lg:block"></div>
                 <Link href={"/About"} onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/About"; }} className="w-full">
                   <button className="bg-[#f6ff7a] text-black px-4 py-2 w-full rounded-lg mt-auto hover:bg-[#f6ff7a]/80 transition-colors cursor-pointer">
-                    Discover More →
+                    Discover More  ➔
                   </button>
                 </Link>
               </div>
@@ -385,42 +385,42 @@ const Navbar = () => {
       {isDropdownOpen && (
         <div
           ref={capabilitiesRef}
-          className="hidden lg:block absolute top-16 inset-x-0 mx-auto z-30 bg-black  rounded-xl max-w-[85vw] p-2 "
+          className="hidden lg:block absolute top-16 inset-x-0 mx-auto z-30 bg-[#191a1b]  rounded-xl max-w-[85vw] p-2 "
         >
 
 
 
-          <div className="grid [grid-template-columns:auto_auto_auto_320px] pb-8 px-6 gap-5">
+          <div className="grid [grid-template-columns:auto_auto_auto_320px] pb-8 items-center px-6 gap-5">
 
             <Link href="/Ai" onClick={closeAll}>
               <div className="p-2 flex flex-col gap-2">
-                <Image src="/ai.svg" alt="logo" width={300} height={300} className="w-full h-auto" />
-                <h1 className="text-[1.5em] font-bold mt-2">Artificial Intelligence</h1>
-                <p className="text-gray-400 mt-2">
+                <Image src="/ai.svg" alt="logo" width={300} height={300} className="w-full h-[8em]" />
+                <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[1.5em] font-bold mt-2">Artificial Intelligence</h1>
+                <p className="text-[#bcbcc0] mt-2">
                   GenAI, Custom LLMs, Machine Learning & Computer Vision
                 </p>
               </div>
             </Link>
             <Link href="/DE" onClick={closeAll}>
               <div className="p-2  flex flex-col gap-2">
-                <Image src="/data.svg" alt="logo" width={300} height={300} className="w-full h-auto" />
-                <h1 className="text-[1.5em] font-bold mt-2">Data </h1>
-                <p className="text-gray-400 mt-2">
+                <Image src="/data.svg" alt="logo" width={300} height={300} className="w-full h-[8em]" />
+                <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[1.5em] font-bold mt-2">Data </h1>
+                <p className="text-[#bcbcc0] mt-2">
                   ETL & Storage, Visualization, Processing & Enrichment
                 </p>
               </div>
             </Link>
             <Link href="/CI" onClick={closeAll}>
               <div className="p-2  flex flex-col gap-2">
-                <Image src="/cloud.svg" alt="logo" width={300} height={300} className="w-full h-auto" />
-                <h1 className="text-[1.5em] font-bold mt-2">Cloud </h1>
-                <p className="text-gray-400 mt-2">
+                <Image src="/cloud.svg" alt="logo" width={300} height={300} className="w-full h-[8em]" />
+                <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[1.5em] font-bold mt-2">Cloud </h1>
+                <p className="text-[#bcbcc0] mt-2">
                   Infrastructure, DevOps, APIs, Automation & Scalability
                 </p>
               </div>
             </Link>
-            <div className="flex flex-col items-start justify-between border-l border-gray-700 pl-5">
-              <ul className="flex flex-col gap-2">
+            <div className="flex flex-col items-start justify-between border-l h-full border-[#3d3d3f] pl-5">
+              <ul className="flex flex-col gap-2 text-[14px] mt-7">
                 <Link href="/React" onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/React"; }}>
                   <li>React</li>
                 </Link>
@@ -436,8 +436,8 @@ const Navbar = () => {
               </ul>
               <div className="mt-2">
                 <Link href="/About" onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/About"; }}>
-                  <button className="bg-transparent text-[18px]  border p-2 rounded-lg cursor-pointer">
-                    Discover More →
+                  <button className="bg-transparent text-[16px]  border p-2 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors">
+                    Discover More  ➔
                   </button>
                 </Link>
               </div>
@@ -449,33 +449,33 @@ const Navbar = () => {
       {isServicedropdownOpen && (
         <div
           ref={servicesRef}
-                   className="hidden lg:block absolute top-16 inset-x-0 mx-auto z-30 bg-black  rounded-xl max-w-[85vw] p-2 mt-2"
+                   className="hidden lg:block absolute top-16 inset-x-0 mx-auto z-30 bg-[#191a1b]  rounded-xl max-w-[85vw] px-2"
         >
-          <div className="grid  [grid-template-columns:auto_auto_320px] gap-2 pb-6  min-h-[200px]">
+          <div className="grid  [grid-template-columns:auto_auto_320px] gap-2 pb-6 items-center  min-h-[200px]">
             <Link href="/StaffAugmentation" onClick={closeAll}>
-              <div className="p-2">
-                <Image src="/serviceimg1.jpg" alt="logo" width={300} height={300} className="w-full h-auto" />
-                <h1 className="text-[1.7em] font-bold mt-2">Staff Augmentation</h1>
-                <p className="text-gray-400 text-[1em] mt-2">
+              <div className="p-2 mb-6">
+                <Image src="/serviceimg1.jpg" alt="logo" width={300} height={300} className="w-full h-[8em] " />
+                <h1 className="text-[1.7em] font-bold mt-4">Staff Augmentation</h1>
+                <p className="text-[#bcbcc0] text-[16px] mt-3">
                   We staff senior engineers and engineering pods up to 50+ people, including PMs, QA, DevOps, and Design
                 </p>
               </div>
             </Link>
             <Link href="/ProductStudio" onClick={closeAll}>
               <div className="p-2">
-                <Image src="/serviceimg2.jpg" alt="logo" width={300} height={300} className="w-full h-auto" />
-                <h1 className="text-[1.7em] font-bold mt-2">Product Studio</h1>
-                <p className="text-gray-400 text-[1em] mt-2">
+                <Image src="/serviceimg2.jpg" alt="logo" width={300} height={300} className="w-full h-[8em] " />
+                <h1 className="text-[1.7em] font-bold mt-1">Product Studio</h1>
+                <p className="text-[#bcbcc0] text-[16px] mt-2">
                   We staff embedded product teams with expert Product Managers, UI/UX Designers, Front-End, Backend, Data Engineers, and QA
                 </p>
               </div>
             </Link>
-            <div className="flex flex-col p-0">
+            <div className="flex flex-col p-0 border-l h-full border-[#3d3d3f]">
               <div className="flex items-center gap-4 h-full">
                 <div className="h-full w-px bg-gray-700"></div>
                 <Link href="/About" onClick={(e) => { e.preventDefault(); closeAll(); window.location.href = "/About"; }}>
-                  <button className="bg-transparent text-[18px] text-white border absolute bottom-10 p-2 rounded-lg self-end cursor-pointer">
-                    Discover More →
+                  <button className="bg-transparent text-[16px] text-white border absolute bottom-10 p-2 rounded-lg self-end cursor-pointer hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors">
+                    Discover More  ➔
                   </button>
                 </Link>
               </div>

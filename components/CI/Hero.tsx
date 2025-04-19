@@ -1,30 +1,31 @@
 
 import Link from 'next/link';
-import React from 'react';
+import React from 'react'
 
 const page = () => {
     return (
 
         <div
-        className="bg-black text-white lg:min-h-screen pt-3 lg:pt-0 md:pt-5 bg-no-repeat md:bg-[position:calc(100%+500px)_top] lg:bg-[position:calc(100%+200px)_top] md:bg-[length:1300px_auto] md:bg-[url('/linebg.png')]"
+        className="bg-[#191a1b] text-white lg:min-h-screen pt-[7em] lg:pt-0 md:pt-5 bg-no-repeat md:bg-[position:calc(100%+500px)_top] lg:bg-[position:calc(100%+220px)_top] md:bg-[length:1300px_auto] md:bg-[url('/linebg.png')]"
       >
       
-            <div className="flex flex-col items-start lg:w-[60%] w-full lg:pb-10 md:pb-[20em] justify-center h-screen leading-tight">
-                <h1 className="lg:text-[4em] md:text-[3.5em] text-[2em] font-bold">
+      <div className="flex flex-col items-start lg:w-[60%] w-full lg:pb-26 md:pb-[20em] justify-center h-screen leading-tight">
+      <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[64px] md:text-[56px] text-[40px]  font-bold">
                 Accelerate Your AWS<span className="block">Roadmap</span>
                 </h1>
-                <p className="mt-5 text-[1.2em] text-gray-400 lg:w-[80%] md:w-[80%] ">
+                <p className="mt-5 text-[16px] text-[#bcbcc0] lg:w-[89%] md:w-[70%] leading-[1.9]">
                 From robust enterprise infrastructure to agile cloud environments for rapid prototyping, our expertise ensures your AWS ecosystem is optimized for maximum efficiency. Whether you require in-depth assessments, bespoke consulting, or end-to-end implementation, we help you harness the full potential of AWS.
                 </p>
                 <Link href={"/Contact"}>
-                <button className="mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
-                    Get In Touch ➔
+               <button className="mt-10 border bg-transparent px-3 py-3 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors">
+                    Get In Touch <span className='ml-2'>➔</span>
                 </button>
-                </Link>
+               </Link>
 
-                <div className='bg-gray-900 lg:flex hidden md:block items-center absolute md:bottom-20 lg:bottom-0 left-1/2 -translate-x-1/2 justify-center lg:p-5 md:p-10 lg:rounded-full  lg:w-fit md:w-full'>
-                    <div className='flex md:flex-col  items-center justify-center gap-5'>
-                        <p className="whitespace-nowrap overflow-hidden text-ellipsis">Staff Augmentation & Product Studio Available Across: </p>         
+             
+               <div className='bg-[#242425] lg:flex hidden md:block items-center absolute md:bottom-20 lg:bottom-0 left-1/2 -translate-x-1/2 justify-center lg:p-5 md:p-10 lg:rounded-full  lg:w-fit md:w-full'>
+                    <div className='flex md:flex-col  items-center justify-center gap-5 py-3'>
+                        <p className="whitespace-nowrap overflow-hidden text-ellipsis text-[16px] text-[#bcbcc0] flex">Staff Augmentation & Product Studio Available Across: <span className='hidden lg:block ml-4'>➔</span> </p>         
                         <p className='lg:hidden md:block'>↓</p>
                     </div>
                     <div>
@@ -66,9 +67,10 @@ const page = () => {
 
 
 
-                <div className='bg-gray-900 md:hidden  items-center mt-5  rounded-xl  p-5  w-full'>
+          
+                <div className='bg-[#242425] md:hidden  items-start mt-5  rounded-xl  p-5  w-full'>
                     <div className='flex flex-col items-center gap-5'>
-                        <p className="text-center  overflow-hidden text-ellipsis">Staff Augmentation & Product Studio Available Across</p>
+                        <p className="text-center  overflow-hidden text-[16px] text-left text-[#bcbcc0] text-ellipsis">Staff Augmentation & Product Studio Available Across</p>
                         <p>↓</p>
                     </div>
                     <div>
@@ -94,7 +96,7 @@ const page = () => {
                         </ul>
 
 
-                        <ul className='flex gap-2 items-center justify-center  mt-5'>
+                        <ul className='flex gap-2 items-left justify-center  mt-5'>
                            
                             
                             <li className="relative text-[#75ff9C] font-bold text-[1em] px-3 py-1 rounded-full border border-[#75ff9C] border-b-0">

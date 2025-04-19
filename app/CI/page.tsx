@@ -2,16 +2,18 @@
 import React from 'react'
 import Hero from '@/components/CI/Hero'
 
-import Footer from '@/components/Home/Footer'
+
 import Tools from '@/components/CI/Tools'
 import Portfolio from '@/components/CI/Portfolio'
 import Team from '@/components/CI/Team'
 import Us from '@/components/CI/Us'
 import Capabilities from '@/components/AI/Capabilities'
+import Footer from '@/components/AI/Footer'
+
 
 const page = () => {
   return (
-    <div className='text-white bg-black'>
+    <div className='text-white bg-[#191a1b]'>
  
  <div className='lg:ml-[11%] px-3 md:mt-10 mt-10 py-1'>
        <Hero />

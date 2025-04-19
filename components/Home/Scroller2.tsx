@@ -1,53 +1,58 @@
+
 "use client";
 
 import { motion, useMotionValue, useScroll, useSpring, useTransform } from "framer-motion";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
+import Image from 'next/image';
 import { cn } from "@/lib/utils";
 
-// Separate company arrays for top and bottom
+// Company arrays with logos and unique widths
 const topCompanies = [
-    { name: "MasterClass", logo: "/logos/company-a.png" },
-    { name: "The Farmers Dog", logo: "/logos/company-b.png" },
-    { name: "brightwheel", logo: "/logos/company-c.png" },
-    { name: "BetterUp", logo: "/logos/company-d.png" },
-    { name: "Google", logo: "/logos/company-e.png" },
+    { logo: "/logos/accel.svg", width: 100 },
+    { logo: "/logos/nea.svg", width: 70 },
+    { logo: "/logos/sony.svg", width: 190 },
+    { logo: "/logos/br.svg", width: 160 },
+    { logo: "/logos/bg.svg", width: 180 },
 ];
 
 const bottomCompanies = [
-    { name: "salesforce", logo: "/logos/company-i.png" },
-    { name: "SONY", logo: "/logos/company-f.png" },
-    { name: "EPSON", logo: "/logos/company-g.png" },
-    { name: "DoorSpace", logo: "/logos/company-h.png" },
-    { name: "Globalization Partners", logo: "/logos/company-j.png" },
+    { logo: "/logos/bvp.svg", width: 120 },
+    { logo: "/logos/ga.svg", width: 180 },
+    { logo: "/logos/insight.svg", width: 100 },
+    { logo: "/logos/la.svg", width: 190 },
+    { logo: "/logos/72.svg", width: 170 },
+    { logo: "/logos/aeq.svg", width: 140 },
 ];
 
-// New ScrollNames component
+// ScrollNames component to display logos
 interface ScrollNamesProps {
     companies: typeof topCompanies;
+    gap: string; // New prop for custom gap
 }
 
-const ScrollNames: React.FC<ScrollNamesProps> = ({ companies }) => {
+const ScrollNames: React.FC<ScrollNamesProps> = ({ companies, gap }) => {
     return (
-        <>
+        <div className={`flex flex-row justify-center items-center gap-[${gap}] w-full min-w-[100vw]`}>
             {companies.map((company, index) => (
-                <div key={index} className="inline-flex items-center mx-8">
-                    {/* <Image
-            src={company.logo}
-            alt={`${company.name} logo`}
-            width={100}
-            height={50}
-            className="object-contain"
-          /> */}
-                    <span className="text-4xl font-bold">{company.name}</span>
+                <div key={index} className="flex-shrink-0">
+                    <Image
+                        src={company.logo}
+                        alt={`logo-${index}`}
+                        width={company.width}
+                        height={10}
+                        className="object-contain"
+                        onError={() => console.error(`clap  ${company.logo}`)}
+                    />
                 </div>
             ))}
-        </>
+        </div>
     );
 };
 
 interface ParallaxProps extends React.HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode;
     direction: 'left' | 'right';
+    containerRef: React.RefObject<HTMLDivElement>;
 }
 
 export const wrap = (min: number, max: number, v: number) => {
@@ -55,78 +60,62 @@ export const wrap = (min: number, max: number, v: number) => {
     return ((((v - min) % rangeSize) + rangeSize) % rangeSize) + min;
 };
 
-function ParallaxText({ children, direction }: ParallaxProps) {
+function ParallaxText({ children, direction, containerRef }: ParallaxProps) {
     const baseX = useMotionValue(0);
-    const { scrollY } = useScroll();
-    const scrollProgress = useSpring(scrollY, {
-        damping: 50,
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["end end", "start start"], // Animate when component is in view
+    });
+
+    const scrollProgress = useSpring(scrollYProgress, {
+        damping: 40,
         stiffness: 400,
     });
 
-    const [repetitions, setRepetitions] = useState(1);
-    const containerRef = useRef<HTMLDivElement>(null);
-    const textRef = useRef<HTMLSpanElement>(null);
-
-    useEffect(() => {
-        const calculateRepetitions = () => {
-            if (containerRef.current && textRef.current) {
-                const containerWidth = containerRef.current.offsetWidth;
-                const textWidth = textRef.current.offsetWidth;
-                const newRepetitions = Math.ceil(containerWidth / textWidth) + 2;
-                setRepetitions(newRepetitions);
-            }
-        };
-
-        calculateRepetitions();
-        window.addEventListener("resize", calculateRepetitions);
-        return () => window.removeEventListener("resize", calculateRepetitions);
-    }, [children]);
-
     const x = useTransform(
         scrollProgress,
-        [0, 1000],
-        direction === 'left' ? [0, -200] : [0, 100],
+        [0, 1],
+        direction === 'left' ? [400, -900] : [-600, 900], // Adjusted for faster, centered start
         { clamp: false }
     );
 
     useEffect(() => {
         const unsubscribe = scrollProgress.onChange((latest) => {
-            const movement = direction === 'left' ? -latest * 0.2 : latest * 0.2;
+            console.log(`scrollYProgress (${direction}):`, latest); // Debug progress
+            const movement = direction === 'left' ? -latest * 300 : latest * 300;
             baseX.set(movement);
         });
         return () => unsubscribe();
     }, [baseX, scrollProgress, direction]);
 
     return (
-        <div
-            ref={containerRef}
-            className="w-full overflow-hidden whitespace-nowrap"
-        >
+        <div className="w-full overflow-hidden whitespace-nowrap flex justify-center">
             <motion.div className="inline-block" style={{ x }}>
-                {Array.from({ length: repetitions }).map((_, i) => (
-                    <span key={i} ref={i === 0 ? textRef : null} className="inline-flex items-center gap-16">
-                        {children}
-                    </span>
-                ))}
+                <span className="inline-flex items-center justify-center gap-16">
+                    {children}
+                </span>
             </motion.div>
         </div>
     );
 }
 
 export function VelocityScroll({ className, ...props }: VelocityScrollProps) {
+    const containerRef = useRef<HTMLDivElement>(null);
+
     return (
         <div
+            ref={containerRef}
             className={cn(
-                "relative w-full flex flex-col items-center justify-center gap-12",
+                "relative w-full flex flex-col items-center justify-center gap-6",
                 className
             )}
             {...props}
         >
-            <ParallaxText direction="left">
-                <ScrollNames companies={topCompanies} />
+            <ParallaxText direction="left" containerRef={containerRef}>
+                <ScrollNames companies={topCompanies} gap="11em" />
             </ParallaxText>
-            <ParallaxText direction="right">
-                <ScrollNames companies={bottomCompanies} />
+            <ParallaxText direction="right" containerRef={containerRef}>
+                <ScrollNames companies={bottomCompanies} gap="10em" />
             </ParallaxText>
         </div>
     );
@@ -138,17 +127,35 @@ interface VelocityScrollProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const BlogScroller = () => {
     return (
-        <div id="hero" className="w-full ">
+        <div id="hero" className="w-full">
             <div className="flex flex-col items-center justify-center my-8 lg:my-10 px-4">
-                <p className="rounded-lg bg-gray-800 px-4 py-2 text-sm sm:text-base text-center">
-                Our Clients Are Backed by the World&apos;s Leading Investors
+                <p className="rounded-lg bg-[#242425] px-4 py-2 text-sm sm:text-base text-center text-[#bcbcc0] font-normal leading-[32px]">
+                    Trusted By 100s of High-Growth Startups & Industry Leaders
                 </p>
             </div>
 
-            <div className="hidden sm:block relative w-full flex flex-col items-center justify-center overflow-hidden py-8 lg:py-1">
+            <div className="relative w-full flex flex-col items-center hidden md:block justify-center overflow-hidden py-8 lg:py-1">
                 <VelocityScroll />
             </div>
 
+              <div className="md:hidden flex justify-between items-center  px-7  gap-9">
+                        <div className="flex flex-col gap-10  items-center">
+                            <Image src={"/logos/accel.svg"} alt="tools" width={90} height={900}/>
+                            <Image src={"/logos/nea.svg"} alt="tools" width={40} height={900}/>
+                            <Image src={"/logos/bw.svg"} alt="tools" width={150} height={900}/>
+                            <Image src={"/logos/bu.svg"} alt="tools" width={110} height={900}/>
+                            <Image src={"/logos/google.svg"} alt="tools" width={90} height={900}/>
+                        </div>
+                        <div className="flex  flex-col gap-10  items-center">
+                        
+                            <Image src={"/logos/sf.svg"} alt="tools" width={80} height={900}/>
+                            <Image src={"/logos/sony.svg"} alt="tools" width={80} height={900}/>
+                            <Image src={"/logos/epson.svg"} alt="tools" width={90} height={900}/>
+                            <Image src={"/logos/ds.svg"} alt="tools" width={120} height={900}/>
+                            <Image src={"/logos/company-b.png"} alt="tools" width={120} height={900}/>
+                        </div>
+                     
+                    </div>
         </div>
     );
 };

@@ -62,16 +62,16 @@ const Kpi = () => {
                 ref={leftSectionRef}
                 className="flex flex-col items-start gap-6 lg:w-[50%] w-full"
             >
-                <p className="text-gray-400">Data-Driven</p>
-                <h1 className="text-[2.2em] font-bold">Your KPIs Are Our KPIs</h1>
-                <p className="text-[1.2em] text-gray-400">
+                <p className="text-[#bcbcc0] text-[16px]">Data-Driven</p>
+                <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[36px] font-semibold">Your KPIs Are Our KPIs</h1>
+                <p className="text-[16px] text-[#bcbcc0] leading-loose">
                     Rootstrap understands that results are the only thing that really matter. We take ownership of our work and provide strategic recommendations every step of the way based on what we believe is best for your business.
                 </p>
-              <Link href={"/Contact"}>
-              <button className="lg:mt-10  border bg-transparent p-3 rounded-xl cursor-pointer">
-                    Get In Touch ➔
+                <Link href={"/Contact"}>
+               <button className="mt-10 border bg-transparent px-3 py-3 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors">
+               Get In Touch <span className='ml-2'>➔</span>
                 </button>
-              </Link>
+               </Link>
             </div>
 
             <div ref={rightSectionRef} className="lg:w-[40%] relative flex justify-center">
@@ -80,7 +80,7 @@ const Kpi = () => {
                     alt="team"
                     width={900}
                     height={900}
-                    className="h-full w-full object-cover"
+                    className="lg:h-[550px] lg:w-[500px] h-[450px] w-full py-[3em]  md:py-0  object-cover"
                 />
             </div>
         </div>

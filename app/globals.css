@@ -123,6 +123,13 @@
   }
 }
 
+
+/* globals.css */
+body {
+  font-family: var(--font-inter), Arial, sans-serif;
+}
+
+
 /* html, body {
   overflow: hidden;
   height: 100%;
@@ -134,18 +141,7 @@ html {
   scroll-padding-top: 5rem; /* optional - if you have sticky nav */
 }
 /* Hide scrollbar for all elements */
-* {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* IE 10+ */
-}
 
-/* Hide scrollbar for WebKit browsers (Chrome, Safari) */
-*::-webkit-scrollbar {
-  display: none;
-}
-.grayscale {
-  filter: grayscale(100%);
-}
 
 body{
   background-color: black;

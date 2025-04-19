@@ -5,12 +5,14 @@ import Portfolio from '@/components/AI/Portfolio'
 import Team from '@/components/AI/Team'
 import Capabilities from '@/components/AI/Capabilities'
 import Us from '@/components/AI/Us'
-import Footer from '@/components/Home/Footer'
+import Footer from '@/components/AI/Footer'
+
+
 
 
 const page = () => {
   return (
-    <div className='text-white bg-black'>
+    <div className='text-white bg-[#191a1b]'>
 
        <div className='lg:ml-[11%] px-3 md:mt-10 mt-10 py-1'>
        <Hero />

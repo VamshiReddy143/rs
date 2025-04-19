@@ -60,18 +60,18 @@ const Roadmap = () => {
         <div className="lg:min-h-screen mt-[2em] lg:flex justify-between items-center">
             <div
                 ref={leftSectionRef}
-                className="flex flex-col items-start gap-6 lg:w-[50%]"
+                className="flex flex-col items-start gap-6 lg:w-[50%] w-full"
             >
-                <p className="text-gray-400">Scalable & Flexible</p>
-                <h1 className="text-[2.2em] font-bold">
+                 <p className="text-[#bcbcc0] text-[16px]">Scalable & Flexible</p>
+                 <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[36px] font-semibold">
                     Accelerate Your Roadmap with Multiple Cross-Functional Pods
                 </h1>
-                <p className="text-[1.2em] text-gray-400">
+                <p className="text-[16px] text-[#bcbcc0] leading-loose">
                     Rootstrap tackles large-scale projects with teams as large as 50 people operating across several independent working groups called &apos;pods&apos;, complete with engineers, PMs, QA, DevOps, designers, and more.
                 </p>
-               <Link href={"/Contact"}>
-               <button className="mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
-                    Get In Touch ➔
+                <Link href={"/Contact"}>
+               <button className="mt-10 border bg-transparent px-3 py-3 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors">
+               Get In Touch <span className='ml-2'>➔</span>
                 </button>
                </Link>
             </div>
@@ -82,7 +82,7 @@ const Roadmap = () => {
                     alt="team"
                     width={900}
                     height={900}
-                    className="h-full w-full"
+                    className="lg:h-[550px] lg:w-[500px]  h-[450px] w-full py-[3em]  md:py-0 object-cover"
                 />
             </div>
         </div>

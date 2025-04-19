@@ -18,14 +18,17 @@ const nextConfig: NextConfig = {
       }
     ]
   },
+
   theme: {
     extend: {
-      filter:['grayscale']
+      filter:['grayscale'],
+     
     },
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
+  
   plugins: [],
 
 };

@@ -5,20 +5,21 @@ import { FiLinkedin } from "react-icons/fi";
 import { FaXTwitter } from "react-icons/fa6";
 import { FaInstagram } from "react-icons/fa6";
 import arrow from "@/public/pr.png"
+import { LuLinkedin } from 'react-icons/lu';
 
 
 
 const Footer = () => {
     return (
         <div className=' mt-10'>
-            <div className='bg-gray-900 md:p-3 p-0 lg:p-0 rounded-xl flex items-center justify-between gap-10'>
+            <div className='bg-[#242425] md:p-3 p-0 lg:p-0 rounded-xl flex items-center justify-between gap-10'>
                 <div className='lg:pl-10 p-5'>
-                    <h1 className='lg:text-[3em] text-[2em] font-bold'>Never Miss an Update!</h1>
-                    <p className='text-gray-400 mt-5 text-[18px]'>Join our community of insiders and never miss out on exciting news, product launches, and more.</p>
+                    <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[36px] text-[2em]  font-semibold'>Never Miss an Update!</h1>
+                    <p className='text-[#bcbcc0] mt-2 text-[16px]'>Join our community of insiders and never miss out on exciting news, product launches, and more.</p>
                     <div className="md:flex items-center gap-4 mt-7 ">
                         <input
                             type="text"
-                            className="bg-gray-800 p-4 w-full rounded-t-lg border-b-2 border-transparent focus:outline-none focus:border-[#f6ff7a] transition-all duration-300"
+                            className="bg-[#3d3d3f] p-3 w-full rounded-t-lg border-b-2 border-transparent focus:outline-none focus:border-[#f6ff7a] transition-all duration-300"
                             placeholder="Enter your email here *"
                         />
                         <button className="bg-[#f6ff7a] w-full md:w-fit text-black px-6 py-3 rounded-xl mt-2 lg:mt-0 cursor-pointer hover:bg-[#f6ff7a]/80">
@@ -34,7 +35,7 @@ const Footer = () => {
 
 
 
-            <div className='mt-[6em] lg:flex items-center  justify-between'>
+            <div className='mt-[6em] lg:flex items-start  justify-between'>
                 <div className=''>
                     <svg width={99} height={37} viewBox="0 0 99 37" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M90.5376 0L63.5253 26.7557C60.8408 19.6916 55.7584 13.7731 49.1498 10.0152C42.5413 6.25735 34.8185 4.89445 27.3061 6.16028C19.7938 7.42614 12.9604 11.2419 7.97807 16.9528C2.99576 22.6639 0.175105 29.9142 0 37.46H11.4703C11.6784 32.1123 13.9238 27.0413 17.7547 23.2676C21.5855 19.4937 26.7174 17.2975 32.1175 17.1207C37.5174 16.9439 42.7845 18.7998 46.8587 22.3147C50.9327 25.8297 53.5114 30.7427 54.0755 36.0651L53.9632 36.1965H54.1061C54.1061 36.6312 54.1776 37.4094 54.1878 37.4094H68.7093L98.5789 7.9145L90.5376 0Z" fill="#969699" >
@@ -44,21 +45,31 @@ const Footer = () => {
                 </div>
                 <div className='lg:flex gap-30 '>
                     <div>
-                        <h1 className='lg:text-[1.5em] text-[1.2em] mt-8 lg:mt-0 font-bold text-gray-400'>Find us</h1>
-                        <div className='flex gap-4 mt-5'>
-                            <FiLinkedin size={25} />
-                            <FaXTwitter size={25} />
-                            <FaInstagram size={25} />
+                        <h1 className='lg:text-[18px] text-[1.2em] mt-8 lg:mt-0 font-bold text-[#969699]'>Find us</h1>
+                        <div className='flex gap-4 mt-5 '>
+                            <LuLinkedin
+                                size={25}
+                                stroke="#969699"
+                                className="hover:stroke-gray-700 cursor-pointer"
+                            />
+
+                            <FaXTwitter
+                                size={25}
+                                className="fill-[#969699] hover:fill-gray-700 cursor-pointer"
+                            />
+
+                            <FaInstagram size={25}
+                                className="fill-[#969699] hover:fill-gray-700 cursor-pointer" />
                         </div>
 
                     </div>
 
                     <div>
-                        <h1 className='lg:text-[1.5em] text-[1.2em] font-bold text-gray-400 mt-8 lg:mt-0 '>Never Miss an Update!</h1>
-                        <div className="flex items-center gap-4 mt-7 ">
+                        <h1 className='lg:text-[18px] text-[1.2em] font-bold text-[#969699] mt-8 lg:mt-0 leading-[32px]'>Never Miss an Update!</h1>
+                        <div className="flex items-center gap-4 mt-3 ">
                             <input
                                 type="text"
-                                className="bg-gray-800 p-4 w-full rounded-t-lg border-b-2 border-transparent focus:outline-none focus:border-[#f6ff7a] transition-all duration-300"
+                                className="bg-[#3d3d3f] p-3 w-[20em] rounded-t-lg border-b-2 border-transparent focus:outline-none focus:border-[#f6ff7a] transition-all duration-300"
                                 placeholder="Enter your email here *"
                             />
                             <Image src={arrow} alt="arrow" width={900} height={900} className='h-12 w-12' />
@@ -70,9 +81,9 @@ const Footer = () => {
             </div>
 
             <div className='lg:flex items-center justify-between mt-20'>
-                <p className='text-gray-400'>2025
-                © Rootstrap, Inc. All Rights Reserved.</p>
-                <p className='text-gray-400'>Privacy Policy</p>
+                <p className='text-[#969699] text-[14px]'>2025
+                    © Rootstrap, Inc. All Rights Reserved.</p>
+                <p className='text-[#969699] text-[14px]'>Privacy Policy</p>
             </div>
 
         </div>

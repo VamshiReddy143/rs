@@ -3,17 +3,17 @@ import React from 'react';
 
 const Team = () => {
     return (
-        <div className='mt-20 flex flex-col items-center justify-center'>
-            <div className='flex flex-col items-center justify-center gap-3'>
-                <h1 className='text-[2.4em] font-bold text-center'>Our Skilled Team</h1>
-                <p className='text-gray-400 text-center'>
-                    These represent common roles staffed to partners based on their unique needs.
-                </p>
-            </div>
+        <div className='mt-[8em] flex flex-col items-center justify-center'>
+        <div className='flex flex-col items-center justify-center gap-3'>
+            <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[36px] font-semibold text-center'>Our Skilled Team</h1>
+            <p className='text-[#bcbcc0]  text-center'>
+                These represent common roles staffed to partners based on their unique needs.
+            </p>
+        </div>
 
             <div className='grid lg:grid-cols-3 grid-cols-1 gap-5 mt-15'>
                 {/* Card 1 */}
-                <div className='flex flex-col gap-7 bg-gray-800 rounded-xl p-5 mb-10 relative min-h-[400px]'>
+                <div className='flex flex-col gap-7 bg-[#242425] rounded-xl p-5 mb-10 relative min-h-[400px]'>
                     <div className='flex gap-3 items-center justify-start'>
                         <Image
                             src={"/ml.png"}
@@ -22,14 +22,14 @@ const Team = () => {
                             alt='team'
                             className='h-15 w-15'
                         />
-                        <h1 className='font-bold text-[1.5em]'>Architect</h1>
+                         <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='font-bold text-[1.5em]'>Architect</h1>
                     </div>
 
-                    <h2 className='text-[1.1em] font-bold'>
+                    <h2 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[16px] font-bold leading-loose'>
                     Rails contributor and conference speaker with deep Ruby expertise
                     </h2>
 
-                    <p className='text-gray-300 text-[1em]'>
+                    <p className='text-[#bcbcc0]  text-[16px]'>
                     Led numerous high-impact projects, leverages deep expertise in Ruby on Rails to deliver exceptional results.
                     </p>
 
@@ -53,7 +53,7 @@ const Team = () => {
                 </div>
 
                 {/* Card 2 */}
-                <div className='flex flex-col gap-7 bg-gray-800 rounded-xl p-5 relative mb-10 min-h-[400px]'>
+                <div className='flex flex-col gap-7 bg-[#242425] rounded-xl p-5 relative mb-10 min-h-[400px]'>
                     <div className='flex gap-3 items-center justify-start'>
                         <Image
                             src={"/ds.png"}
@@ -62,14 +62,14 @@ const Team = () => {
                             alt='team'
                             className='h-15 w-15'
                         />
-                        <h1 className='font-bold text-[1.5em]'>Technical Lead</h1>
+                         <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='font-bold text-[1.5em]'>Technical Lead</h1>
                     </div>
 
-                    <h2 className='text-[1.1em] font-bold'>
+                    <h2 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[16px] font-bold leading-loose'>
                     Proven leader with a passion for AI
                     </h2>
 
-                    <p className='text-gray-300 text-[1em]'>
+                    <p className='text-[#bcbcc0]  text-[16px]'>
                     Excellent technical planner and communicator, researching ways to implement AI with Ruby.
                     </p>
 
@@ -97,7 +97,7 @@ const Team = () => {
                 </div>
 
                 {/* Card 3 */}
-                <div className='flex flex-col gap-7 bg-gray-800 rounded-xl p-5 relative mb-10 min-h-[400px]'>
+                <div className='flex flex-col gap-7 bg-[#242425] rounded-xl p-5 relative mb-10 min-h-[400px]'>
                     <div className='flex gap-3 items-center justify-start'>
                         <Image
                             src={"/mle.png"}
@@ -106,14 +106,14 @@ const Team = () => {
                             alt='team'
                             className='h-15 w-15'
                         />
-                        <h1 className='font-bold text-[1.5em]'>Senior Engineer</h1>
+                         <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='font-bold text-[1.5em]'>Senior Engineer</h1>
                     </div>
 
-                    <h2 className='text-[1.1em] font-bold'>
+                    <h2 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[16px] font-bold leading-loose'>
                     Versatile full-stack capabilities
                     </h2>
 
-                    <p className='text-gray-300 text-[1em]'>
+                    <p className='text-[#bcbcc0]  text-[16px]'>
                     Robust skills in Ruby, ReactJS, EmberJS, and AWS driving success across both backend and frontend projects
                     </p>
 

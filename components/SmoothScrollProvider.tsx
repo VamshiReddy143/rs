@@ -6,7 +6,7 @@ import { useEffect } from "react";
 const SmoothScrollProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1,
       easing: (t: number) => Math.min(1, 1 - Math.pow(2, -10 * t)),
     });
 

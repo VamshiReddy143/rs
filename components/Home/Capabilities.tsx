@@ -1,371 +1,265 @@
-"use client";
-
-import Image from "next/image";
-import React from "react";
-import line1 from "../public/lineimg1.png";
-import line2 from "../public/lineimg2.png";
-import line3 from "../public/lineimg3.png";
-import line4 from "../public/lineimg4.png";
-import line5 from "../public/lineimg5.png";
-import line6 from "../public/lineimg6.png";
-import { motion } from "framer-motion";
-
-// Test if images are loading correctly
-console.log({ line1, line2, line3, line4, line5, line6 });
+import React from 'react';
 
 const Capabilities = () => {
   return (
-    <div id="capabilities" className="min-h-screen mt-4 sm:mt-8 md:mt-12 lg:mt-20">
-      <div className="container mx-auto px-4 sm:px-6 md:px-8">
+    <div className=" lg:mt-4 min-h-[auto] lg:min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-0">
+      <div className="flex flex-col items-center justify-center gap-2 pt-[2em] text-center w-full">
+        <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[48px] sm:text-[2.2em] lg:text-[48px]  font-semibold leading-tight">
+          Our Capabilities
+        </h1>
+        <p className="text-[#bcbcc0] text-[21px] sm:text-[21px] font-normal lg:text-[21px] ">
+        We're proud to offer exceptional senior talent and teams across a variety of digital disciplines.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-5 !important w-full mt-8  max-w-7xl">
+        {/* Card 1: Artificial Intelligence */}
         <div
-          className="grid grid-cols-1 gap-4 sm:gap-6 md:gap-7 bg-gray-100 border border-red-500" // Debug: Red border to visualize grid
+          className="card h-[450px] w-full max-w-[400px] bg-[#242425] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
         >
-          {/* Mobile (≤ 639px): 1 column */}
-          {/* Small Tablet (640px–767px): 1 column */}
-          {/* Medium (768px–1023px): 2 columns */}
-          {/* Large (≥ 1024px): 3 columns */}
-          <div className="hidden sm:block md:hidden"></div> {/* Force sm breakpoint test */}
-          <div className="hidden md:block lg:hidden"></div> {/* Force md breakpoint test */}
+          <div
+            className="absolute inset-0 bg-center bg-no-repeat mb-[14em] h-[18em] transition-transform duration-500 group-hover:scale-110"
+            style={{
+              backgroundImage: "url('/lineimg1.png')",
+              backgroundSize: "contain",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+            }}
+          />
 
-          {/* Card 1: Artificial Intelligence */}
-          <motion.div
-            className="relative rounded-xl overflow-hidden group"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <motion.div
-              className="w-full h-[200px] sm:h-[250px] md:h-[300px] overflow-hidden"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-            >
-              <Image
-                src={line1}
-                alt="Artificial Intelligence"
-                width={900}
-                height={900}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-            </motion.div>
-
-            <motion.div
-              className="relative z-10 transition-all duration-300 group-hover:-translate-y-[80px] sm:group-hover:-translate-y-[100px] md:group-hover:-translate-y-[120px]"
-            >
-              <div className="p-3 sm:p-4 md:p-5 bg-gray-900 rounded-b-xl">
-                <h1 className="text-lg sm:text-2xl md:text-[2em] font-bold">Artificial Intelligence</h1>
-                <p className="text-gray-400 mt-2 sm:mt-3 md:mt-5">
-                  Gen AI, Custom LLMs, Machine Learning & Computer Vision
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 md:gap-4 mt-6 sm:mt-8 md:mt-12">
-                  <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                    OpenAI
-                  </p>
-                  <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                    Claude
-                  </p>
-                  <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                    Llama
-                  </p>
-                  <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                    Langchain
-                  </p>
-                  <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                    TensorFlow
-                  </p>
-                  <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                    Python
-                  </p>
+          <div className="absolute inset-0 transition-all  duration-500 group-hover:scale-110" />
+          <div className="flex flex-col items-center justify-end bg-[#242425] absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-10">
+            <div className="text-white  flex flex-col gap-3 sm:text-left">
+              <h2 className="text-[1.2em] sm:text-[1.5em] lg:text-[24px] font-semibold">
+                Artificial Intelligence
+              </h2>
+              <p className="text-[0.875em] text-[#bcbcc0] sm:text-[0.9em] font-normal lg:text-[16px]">
+                Gen AI, Custom LLMs, Machine Learning & Computer Vision
+              </p>
+            </div>
+            <div className="relative overflow-hidden h-[auto] sm:h-[12em] lg:h-0 lg:group-hover:h-[7em] transition-all duration-300 w-full mt-6">
+              <ul className="flex flex-col items-start gap-3 text-[0.875em] sm:text-[0.9em]">
+                <div className="flex flex-wrap gap-2">
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">OpenAI</li>
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Claude</li>
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Llama</li>
                 </div>
-              </div>
-            </motion.div>
-
-            <div className="absolute bg-black h-[8em] sm:h-[9em] md:h-[11em] w-full bottom-0 z-20" />
-          </motion.div>
-
-          {/* Card 2: Data */}
-          <motion.div
-            className="relative rounded-xl overflow-hidden group"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <motion.div
-              className="w-full h-[200px] sm:h-[250px] md:h-[300px] overflow-hidden"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-            >
-              <Image
-                src={line2}
-                alt="Data"
-                width={900}
-                height={900}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-            </motion.div>
-
-            <motion.div
-              className="relative z-10 transition-all duration-300 group-hover:-translate-y-[100px] sm:group-hover:-translate-y-[130px] md:group-hover:-translate-y-[170px]"
-            >
-              <div className="p-3 sm:p-4 md:p-5 bg-gray-900 rounded-b-xl">
-                <h1 className="text-xl sm:text-2xl md:text-[2em] font-bold">Data</h1>
-                <p className="text-gray-400 mt-2 sm:mt-3 md:mt-5">
-                  ETL & Storage, Visualization, Processing & Enrichment
-                </p>
-                <div className="gap-2 sm:gap-3 md:gap-4 mt-6 sm:mt-8 md:mt-12">
-                  <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4">
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      AWS Redshift
-                    </p>
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      Snowflake
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 mt-2 sm:mt-3 md:mt-4">
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      Databricks
-                    </p>
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      Apache
-                    </p>
-                  </div>
-                  <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base mt-2 sm:mt-3 md:mt-4">
-                    Google BigQuery
-                  </p>
+                <div className="flex flex-wrap gap-2">
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">LongChain</li>
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">TensorFlow</li>
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Python</li>
                 </div>
-              </div>
-            </motion.div>
-
-            <div className="absolute bg-black h-[8em] sm:h-[9em] md:h-[11em] w-full bottom-0 z-20" />
-          </motion.div>
-
-          {/* Card 3: Cloud */}
-          <motion.div
-            className="relative rounded-xl overflow-hidden group"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <motion.div
-              className="w-full h-[200px] sm:h-[250px] md:h-[300px] overflow-hidden"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-            >
-              <Image
-                src={line3}
-                alt="Cloud"
-                width={900}
-                height={900}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-            </motion.div>
-
-            <motion.div
-              className="relative z-10 transition-all duration-300 group-hover:-translate-y-[80px] sm:group-hover:-translate-y-[100px] md:group-hover:-translate-y-[120px]"
-            >
-              <div className="p-3 sm:p-4 md:p-5 bg-gray-900 rounded-b-xl">
-                <h1 className="text-xl sm:text-2xl md:text-[2em] font-bold">Cloud</h1>
-                <p className="text-gray-400 mt-2 sm:mt-3 md:mt-5">
-                  Infrastructure, DevOps, APIs Automation & Scalability
-                </p>
-                <div className="gap-2 sm:gap-3 md:gap-4 mt-6 sm:mt-8 md:mt-12">
-                  <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4">
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      AWS
-                    </p>
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      Heroku
-                    </p>
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      GCP
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 mt-2 sm:mt-3 md:mt-4">
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      Azure
-                    </p>
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      Vercel
-                    </p>
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      Contentful
-                    </p>
-                  </div>
+                <div className="flex flex-wrap gap-2">
                 </div>
-              </div>
-            </motion.div>
+              </ul>
+            </div>
+          </div>
+        </div>
 
-            <div className="absolute bg-black h-[8em] sm:h-[9em] md:h-[11em] w-full bottom-0 z-20" />
-          </motion.div>
-
-          {/* Card 4: Web Development */}
-          <motion.div
-            className="relative rounded-xl overflow-hidden group"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <motion.div
-              className="w-full h-[200px] sm:h-[250px] md:h-[300px] overflow-hidden"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-            >
-              <Image
-                src={line4}
-                alt="Web Development"
-                width={900}
-                height={900}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-            </motion.div>
-
-            <motion.div
-              className="relative z-10 transition-all duration-300 group-hover:-translate-y-[100px] sm:group-hover:-translate-y-[130px] md:group-hover:-translate-y-[170px]"
-            >
-              <div className="p-3 sm:p-4 md:p-5 bg-gray-900 rounded-b-xl">
-                <h1 className="text-xl sm:text-2xl md:text-[2em] font-bold">Web Development</h1>
-                <p className="text-gray-400 mt-2 sm:mt-3 md:mt-5">
-                  Content, Media & Video, Ecommerce, SaaS, & Websites
-                </p>
-                <div className="gap-2 sm:gap-3 md:gap-4 mt-6 sm:mt-8 md:mt-12">
-                  <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4">
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      React & NextJS
-                    </p>
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      Ruby on Rails
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 mt-2 sm:mt-3 md:mt-4">
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      NodeJS
-                    </p>
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      Shopify
-                    </p>
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      Webflow
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 mt-2 sm:mt-3 md:mt-4">
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      Wordpress
-                    </p>
-                  </div>
+        {/* Card 2: Data */}
+        <div
+          className="card h-[450px] w-full max-w-[400px] group rounded-[1.5em] bg-[#242425] relative overflow-hidden transition-all duration-500"
+        >
+          <div
+            className="absolute inset-0 bg-center bg-no-repeat mb-[14em] h-[18em] transition-transform duration-500 group-hover:scale-110"
+            style={{
+              backgroundImage: "url('/lineimg2.png')",
+              backgroundSize: "contain",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+            }}
+          />
+          <div className="absolute inset-0 transition-all duration-500 group-hover:scale-110" />
+          <div className="flex flex-col items-center justify-end bg-[#242425] absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-10">
+            <div className="text-white font-nunito flex flex-col gap-3 sm:text-left">
+              <h2 className="text-[1.2em] sm:text-[1.5em] lg:text-[24px] font-semibold">
+                Data
+              </h2>
+              <p className="text-[0.875em] text-[#bcbcc0] sm:text-[0.9em] font-normal lg:text-[16px]">
+                ETL & Storage, Visualization, Processing & Enrichment
+              </p>
+            </div>
+            <div className="relative overflow-hidden h-[auto] sm:h-[12em] lg:h-0 lg:group-hover:h-[10em] transition-all duration-500 w-full mt-6">
+              <ul className="flex flex-col items-start gap-3 text-[0.875em] sm:text-[0.9em]">
+                <div className="flex flex-wrap gap-2">
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">AWS Redshift</li>
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Snowflake</li>
                 </div>
-              </div>
-            </motion.div>
-
-            <div className="absolute bg-black h-[8em] sm:h-[9em] md:h-[11em] w-full bottom-0 z-20" />
-          </motion.div>
-
-          {/* Card 5: Mobile Development */}
-          <motion.div
-            className="relative rounded-xl overflow-hidden group"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <motion.div
-              className="w-full h-[200px] sm:h-[250px] md:h-[300px] overflow-hidden"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-            >
-              <Image
-                src={line5}
-                alt="Mobile Development"
-                width={900}
-                height={900}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-            </motion.div>
-
-            <motion.div
-              className="relative z-10 transition-all duration-300 group-hover:-translate-y-[80px] sm:group-hover:-translate-y-[100px] md:group-hover:-translate-y-[120px]"
-            >
-              <div className="p-3 sm:p-4 md:p-5 bg-gray-900 rounded-b-xl">
-                <h1 className="text-xl sm:text-2xl md:text-[2em] font-bold">Mobile Development</h1>
-                <p className="text-gray-400 mt-2 sm:mt-3 md:mt-5">
-                  Native iOS, Android & Hybrid Mobile Apps, Wearables & IoT
-                </p>
-                <div className="gap-2 sm:gap-3 md:gap-4 mt-6 sm:mt-8 md:mt-12">
-                  <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4">
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      iOS
-                    </p>
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      Kotlin
-                    </p>
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      ReactNative
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 mt-2 sm:mt-3 md:mt-4">
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      Flutter
-                    </p>
-                  </div>
+                <div className="flex flex-wrap gap-2">
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Databricks</li>
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Apache</li>
                 </div>
-              </div>
-            </motion.div>
-
-            <div className="absolute bg-black h-[8em] sm:h-[9em] md:h-[11em] w-full bottom-0 z-20" />
-          </motion.div>
-
-          {/* Card 6: UX/UI Design */}
-          <motion.div
-            className="relative rounded-xl overflow-hidden group"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-          >
-            <motion.div
-              className="w-full h-[200px] sm:h-[250px] md:h-[300px] overflow-hidden"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-            >
-              <Image
-                src={line6}
-                alt="UX/UI Design"
-                width={900}
-                height={900}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-            </motion.div>
-
-            <motion.div
-              className="relative z-10 transition-all duration-300 group-hover:-translate-y-[100px] sm:group-hover:-translate-y-[130px] md:group-hover:-translate-y-[170px]"
-            >
-              <div className="p-3 sm:p-4 md:p-5 bg-gray-900 rounded-b-xl">
-                <h1 className="text-xl sm:text-2xl md:text-[2em] font-bold">UX/UI Design</h1>
-                <p className="text-gray-400 mt-2 sm:mt-3 md:mt-5">
-                  User Research, Wireframes, Prototypes & User Validation
-                </p>
-                <div className="gap-2 sm:gap-3 md:gap-4 mt-6 sm:mt-8 md:mt-12">
-                  <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4">
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      Figma
-                    </p>
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      Adobe InDesign
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 mt-2 sm:mt-3 md:mt-4">
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      Material Design
-                    </p>
-                    <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base">
-                      Tailwind
-                    </p>
-                  </div>
-                  <p className="bg-gray-700 w-fit px-2 py-1 sm:px-2 sm:py-1 md:p-2 rounded-xl text-sm sm:text-base md:text-base mt-2 sm:mt-3 md:mt-4">
-                    Sketch
-                  </p>
+                <div className="flex flex-wrap gap-2">
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Google BigQuery</li>
                 </div>
-              </div>
-            </motion.div>
+              </ul>
+            </div>
+          </div>
+        </div>
 
-            <div className="absolute bg-black h-[8em] sm:h-[9em] md:h-[11em] w-full bottom-0 z-20" />
-          </motion.div>
+        {/* Card 3: Cloud */}
+        <div
+          className="card h-[450px] w-full max-w-[400px] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
+        >
+         <div
+            className="absolute inset-0 bg-center bg-no-repeat bg-[#242425] mb-[14em] h-[18em]  transition-transform duration-500 group-hover:scale-110"
+            style={{
+              backgroundImage: "url('/lineimg3.png')",
+              backgroundSize: "contain",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+            }}
+          />
+          <div className="absolute inset-0 transition-all duration-500 group-hover:scale-110" />
+          <div className="flex flex-col items-center justify-end bg-[#242425]  absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-10">
+            <div className="text-white font-nunito flex flex-col gap-3 sm:text-left">
+              <h2 className="text-[1.2em] sm:text-[1.5em] lg:text-[24px] font-semibold">
+                Cloud
+              </h2>
+              <p className="text-[0.875em] text-[#bcbcc0] sm:text-[0.9em] font-normal lg:text-[16px]">
+                Infrastructure, DevOps, APIs Automation & Scalability
+              </p>
+            </div>
+            <div className="relative overflow-hidden h-[auto] sm:h-[12em] lg:h-0 lg:group-hover:h-[12em] transition-all duration-500 w-full mt-6">
+              <ul className="flex flex-col items-start gap-3 text-[0.875em] sm:text-[0.9em]">
+                <div className="flex flex-wrap gap-2">
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">AWS</li>
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Heroku</li>
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">GCP</li>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Azure</li>
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Vercel</li>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Contentful</li>
+                </div>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 4: Web Development */}
+        <div
+          className="card h-[450px] w-full max-w-[400px] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
+        >
+          <div
+            className="absolute inset-0 bg-center bg-no-repeat bg-[#242425] mb-[14em] h-[18em]  transition-transform duration-500 group-hover:scale-110"
+            style={{
+              backgroundImage: "url('/lineimg4.png')",
+              backgroundSize: "contain",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+            }}
+          />
+          <div className="absolute inset-0 transition-all duration-500 group-hover:scale-110" />
+          <div className="flex flex-col items-center justify-end bg-[#242425]  absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-10">
+            <div className="text-white font-nunito flex flex-col gap-3 sm:text-left">
+              <h2 className="text-[1.2em] sm:text-[1.5em] lg:text-[24px] font-semibold">
+                Web Development
+              </h2>
+              <p className="text-[0.875em] text-[#bcbcc0] sm:text-[0.9em] font-normal lg:text-[16px]">
+                Content, Media & Video, Ecommerce, SaaS, & Websites
+              </p>
+            </div>
+            <div className="relative overflow-hidden h-[auto] sm:h-[12em] lg:h-0 lg:group-hover:h-[12em] transition-all duration-500 w-full mt-6">
+              <ul className="flex flex-col items-start gap-3 text-[0.875em] sm:text-[0.9em]">
+                <div className="flex flex-wrap gap-2">
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">React & NextJS</li>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Ruby on Rails</li>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">NodeJS</li>
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Shopify</li>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Webflow</li>
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Wordpress</li>
+                </div>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 5: Mobile Development */}
+        <div
+          className="card h-[450px] w-full max-w-[400px] group rounded-[1.5em]  relative overflow-hidden transition-all duration-500"
+        >
+          <div
+            className="absolute inset-0 bg-center bg-no-repeat bg-[#242425] mb-[14em] h-[18em]   transition-transform duration-500 group-hover:scale-110"
+            style={{
+              backgroundImage: "url('/lineimg5.png')",
+              backgroundSize: "contain",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+            }}
+          />
+          <div className="absolute inset-0 transition-all duration-500 group-hover:scale-110" />
+          <div className="flex flex-col items-center justify-end bg-[#242425]  absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-10">
+            <div className="text-white font-nunito flex flex-col gap-3 sm:text-left">
+              <h2 className="text-[1.2em] sm:text-[1.5em] lg:text-[24px] font-semibold">
+                Mobile Development
+              </h2>
+              <p className="text-[0.875em] text-[#bcbcc0] sm:text-[0.9em] font-normal lg:text-[16px]">
+                Native iOS, Android & Hybrid Mobile Apps, Wearables & IoT
+              </p>
+            </div>
+            <div className="relative overflow-hidden h-[auto] sm:h-[8em] lg:h-0 lg:group-hover:h-[8em] transition-all duration-500 w-full mt-6">
+              <ul className="flex flex-col items-start gap-3 text-[0.875em] sm:text-[0.9em]">
+                <div className="flex flex-wrap gap-2">
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">IOS</li>
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Kotlin</li>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">React Native</li>
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Flutter</li>
+                </div>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 6: UX/UI Design */}
+        <div
+          className="card h-[450px] w-full max-w-[400px] group rounded-[1.5em]  relative overflow-hidden transition-all duration-500"
+        >
+          <div
+            className="absolute inset-0 bg-center bg-no-repeat bg-[#242425] mb-[14em] h-[18em]   transition-transform duration-500 group-hover:scale-110"
+            style={{
+              backgroundImage: "url('/lineimg6.png')",
+              backgroundSize: "contain",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+            }}
+          />
+          <div className="absolute inset-0 transition-all duration-500 group-hover:scale-110" />
+          <div className="flex flex-col items-center justify-end bg-[#242425]  absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-10">
+            <div className="text-white font-nunito flex flex-col gap-3 sm:text-left">
+              <h2 className="text-[1.2em] sm:text-[1.5em] lg:text-[24px] font-semibold">
+                UX/UI Design
+              </h2>
+              <p className="text-[0.875em] text-[#bcbcc0] sm:text-[0.9em] font-normal lg:text-[16px]">
+                User Research, Wireframes, Prototypes & User Validation
+              </p>
+            </div>
+            <div className="relative overflow-hidden h-[auto] sm:h-[12em] lg:h-0 lg:group-hover:h-[10em] transition-all duration-500 w-full mt-6">
+              <ul className="flex flex-col items-start gap-3 text-[0.875em] sm:text-[0.9em]">
+                <div className="flex flex-wrap gap-2">
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Figma</li>
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Adobe InDesign</li>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Material Design</li>
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Tailwind</li>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <li className="bg-[#3d3d3f] px-3 py-2 font-semibold rounded-lg">Sketch</li>
+                </div>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>

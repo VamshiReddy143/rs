@@ -1,19 +1,20 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 
 const Team = () => {
     return (
-        <div className='mt-20 flex flex-col items-center justify-center'>
-            <div className='flex flex-col items-center justify-center gap-3'>
-                <h1 className='text-[2.4em] font-bold text-center'>Our Skilled Team</h1>
-                <p className='text-gray-400 text-center'>
-                    These represent common roles staffed to partners based on their unique needs.
-                </p>
-            </div>
+        <div className='mt-[8em] flex flex-col items-center justify-center'>
+        <div className='flex flex-col items-center justify-center gap-3'>
+            <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[36px] font-semibold text-center'>Our Skilled Team</h1>
+            <p className='text-[#bcbcc0]  text-center'>
+                These represent common roles staffed to partners based on their unique needs.
+            </p>
+        </div>
 
             <div className='grid lg:grid-cols-3 grid-cols-1 gap-5 mt-15'>
                 {/* Card 1 */}
-                <div className='flex flex-col gap-7 bg-gray-800 rounded-xl p-5 mb-10 relative min-h-[400px]'>
+                <div className='flex flex-col gap-7 bg-[#242425] rounded-xl p-5 mb-10 relative min-h-[400px]'>
                     <div className='flex gap-3 items-center justify-start'>
                         <Image
                             src={"/ml.png"}
@@ -22,14 +23,14 @@ const Team = () => {
                             alt='team'
                             className='h-15 w-15'
                         />
-                        <h1 className='font-bold text-[1.5em]'>Architect</h1>
+                         <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='font-bold text-[1.5em]'>Architect</h1>
                     </div>
 
-                    <h2 className='text-[1.1em] font-bold'>
+                    <h2 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[16px] font-bold leading-loose'>
                     Cybersecurity specialist with diverse technical background
                     </h2>
 
-                    <p className='text-gray-300 text-[1em]'>
+                    <p className='text-[#bcbcc0]  text-[16px]'>
                     Deep knowledge of Node.js with experience in frontend frameworks and cloud infrastructure. Can effectively lead a wide variety of projects
                     </p>
 
@@ -53,7 +54,7 @@ const Team = () => {
                 </div>
 
                 {/* Card 2 */}
-                <div className='flex flex-col gap-7 bg-gray-800 rounded-xl p-5 relative mb-10 min-h-[400px]'>
+                <div className='flex flex-col gap-7 bg-[#242425] rounded-xl p-5 relative mb-10 min-h-[400px]'>
                     <div className='flex gap-3 items-center justify-start'>
                         <Image
                             src={"/ds.png"}
@@ -62,14 +63,14 @@ const Team = () => {
                             alt='team'
                             className='h-15 w-15'
                         />
-                        <h1 className='font-bold text-[1.5em]'>Technical Lead</h1>
+                         <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='font-bold text-[1.5em]'>Technical Lead</h1>
                     </div>
 
-                    <h2 className='text-[1.1em] font-bold'>
+                    <h2 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[16px] font-bold leading-loose'>
                     Proven leader with a strong ability to adapt
                     </h2>
 
-                    <p className='text-gray-300 text-[1em]'>
+                    <p className='text-[#bcbcc0]  text-[16px]'>
                     Experienced in both traditional and serverless applications. Effective communicator with the capacity to adapt to the challenging situations.
                     </p>
 
@@ -97,7 +98,7 @@ const Team = () => {
                 </div>
 
                 {/* Card 3 */}
-                <div className='flex flex-col gap-7 bg-gray-800 rounded-xl p-5 relative mb-10 min-h-[400px]'>
+                <div className='flex flex-col gap-7 bg-[#242425] rounded-xl p-5 relative mb-10 min-h-[400px]'>
                     <div className='flex gap-3 items-center justify-start'>
                         <Image
                             src={"/mle.png"}
@@ -106,14 +107,14 @@ const Team = () => {
                             alt='team'
                             className='h-15 w-15'
                         />
-                        <h1 className='font-bold text-[1.5em]'>Senior Engineer</h1>
+                         <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='font-bold text-[1.5em]'>Senior Engineer</h1>
                     </div>
 
-                    <h2 className='text-[1.1em] font-bold'>
+                    <h2 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[16px] font-bold leading-loose'>
                     Seasoned Node developer with deep expertise in data-driven applications
                     </h2>
 
-                    <p className='text-gray-300 text-[1em]'>
+                    <p className='text-[#bcbcc0]  text-[16px]'>
                     Lengthy track record developing data-intensive Node applications. Can own the entire development cycle from architecture design to deployment and optimization.
                     </p>
 
@@ -140,6 +141,14 @@ const Team = () => {
                     </div>
                 </div>
             </div>
+            <Link href={"/Contact"}>
+                <div className='flex items-center justify-center '>
+
+                <button className='text-[16px] bg-transparent border text-white px-3 py-2 rounded-lg cursor-pointer  hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors mt-6'>
+                    Get in Touch ➔
+                </button>
+            </div>
+            </Link>
         </div>
     );
 };
