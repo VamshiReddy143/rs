@@ -159,9 +159,9 @@ const ScrollerDemo: React.FC = () => {
   const row3Images = ["/mcimg9.jpg", "/mcimg10.jpg", "/mcimg11.jpg", "/mcimg12.jpg"];
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div style={{ fontFamily: 'Poppins, sans-serif' }}  className="min-h-screen bg-[#212121] text-white">
       {/* Header Section */}
-      <div className="lg:px-[3.1em] pt-[3em] pb-[1em] text-[3.4em] font-semibold mx-auto">
+      <div className="lg:px-[3.1em] pt-[3em] pb-[1em] lg:text-[64px] text-[3.4em] font-medium mx-auto">
         Helping{" "}
         <span className="inline bg-gradient-to-t from-red-500 to-red-500 bg-[length:100%_0.3em] bg-no-repeat bg-bottom">
           MasterClass
@@ -175,19 +175,19 @@ const ScrollerDemo: React.FC = () => {
 
       {/* Text Section */}
       <div className="lg:px-[10em] pb-[10em] lg:pt-[17em] pt-[5em] px-3 mx-auto flex flex-col gap-10">
-        <p className="lg:text-[2.5em] text-[2em] leading-tight lg:w-[70%]">
+        <p className="lg:text-[32px] text-[#D6D5D1] text-[2em] leading-[48px] font-extralight lg:w-[70%]">
           Masterclass needed to scale its engineering function and{" "}
-          <span className="font-bold inline">
+          <span className="font-semibold text-white inline">
             enhance its product in pursuit of an ambitious growth plan
           </span>
           , but faced challenges sourcing local, talented programmers in ReactJS - their front-end programming language.
         </p>
-        <p className="lg:text-[2.5em] text-[2em] leading-tight lg:w-[70%]">
-          <span className="font-bold inline">
+        <p className="lg:text-[32px] text-[#D6D5D1] text-[2em] leading-[48px] font-extralight lg:w-[70%]">
+          <span className="font-semibold text-white inline">
             Rootstrap emerged as the ideal partner,
           </span>{" "}
           combining common{" "}
-          <span className="font-bold inline">
+          <span className="font-semibold text-white inline">
             values, deep technical and process expertise, and sufficient operating scale
           </span>{" "}
           for Masterclass to be able to achieve its ambitious goals.
@@ -229,12 +229,12 @@ const ScrollerDemo: React.FC = () => {
       </div>
 
       {/* Final Text Section */}
-      <div className="bg-white text-black  ">
+      <div className="bg-gray-100 text-black  ">
         <div className="lg:px-[10em] pb-[10em] lg:pt-[27em] md:pt-[20em] pt-[15em] px-3 mx-auto lg:flex gap-10">
-          <h1 className="lg:text-[2.7em] text-[2em] font-semibold leading-tight lg:w-[40em]">
+          <h1 className="lg:text-[48px] text-[2em] font-medium leading-[58px] lg:w-[46em]">
             Elevates Front-End Capabilities for Ambitious Growth
           </h1>
-          <p className="lg:text-[1.6em] text-[1.2em] leading-tight lg:mt-0 mt-5">
+          <p className="lg:text-[23px] leading-[36px] font-medium text-[1.2em] leading-[36px] lg:mt-0 mt-5 ">
             Our team seamlessly integrated with MasterClass, working closely alongside their development and product teams. We began by addressing ReactJS and web development requirements and later expanded our collaboration, establishing new teams and expanding existing ones to handle multiple projects.
           </p>
         </div>

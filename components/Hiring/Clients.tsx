@@ -13,7 +13,7 @@ const Clients = () => {
         {
             image: "/client1.png",
             testimonial:
-                "Since I joined the company, I feel that I have been experiencing constant learning, from the internal talks provided within the company to the continuous code reviews I receive from my colleagues.",
+                `Since I joined the company, I feel that I have been experiencing constant learning, from the internal talks provided within the company to the continuous code reviews I receive from my colleagues.`,
             name: "Belen Iglesias",
             role: "Engineering Lead",
         },
@@ -135,12 +135,12 @@ const Clients = () => {
                                 </div>
                             </div>
                             <div className='md:ml-10 lg:ml-0'>
-                                <p className="lg:text-[1.6em] text-[1.2em] mt-5 lg:mt-0 font-semibold">
+                                <p style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[34px] text-[1.2em] mt-5 lg:mt-0 font-medium leading-[50px]">
                                     {client.testimonial}
                                 </p>
                                 <div className="mt-5">
-                                    <h2 className="text-[1.6em]">{client.name}</h2>
-                                    <p className="text-[1.2em]">{client.role}</p>
+                                    <h2 className="text-[28px] font-medium leading-[34px]">{client.name}</h2>
+                                    <p className="text-[20px] text-[#6f6f6e]">{client.role}</p>
                                 </div>
                             </div>
                         </div>
@@ -156,7 +156,7 @@ const Clients = () => {
                         width={900}
                         height={900}
                         alt="left arrow"
-                        className="h-[5em] w-[5em] border-2 border-black p-2 cursor-pointer"
+                        className="h-[5em] w-[5em] border-1 border-[#6f6f6e] p-2 cursor-pointer"
                     />
                 </button>
                 <button onClick={handleNext}>
@@ -165,7 +165,7 @@ const Clients = () => {
                         width={900}
                         height={900}
                         alt="right arrow"
-                        className="h-[5em] w-[5em] border-2 border-black p-2 rotate-180 cursor-pointer"
+                        className="h-[5em] w-[5em] border-1 border-[#6f6f6e] p-2 rotate-180 cursor-pointer"
                     />
                 </button>
             </div>

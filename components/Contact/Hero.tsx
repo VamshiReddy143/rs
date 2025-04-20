@@ -65,43 +65,43 @@ const Hero: React.FC = () => {
   };
 
   return (
-    <div className="lg:mt-[10%] md:mt-[4em] mt-10 p-5 lg:min-h-screen px-2 text-white bg-black">
+    <div className="lg:pt-[10%] md:mt-[4em] mt-10 p-5 lg:min-h-screen px-2 text-white bg-[#191a1b]">
       <div className="flex flex-col lg:flex-row justify-between gap-8 pt-5 lg:pt-0">
         <div className="w-full lg:w-1/2">
-          <h1 className="lg:text-[3em] text-[2em] font-bold">Let&apos;s Build Together</h1>
-          <p className="lg:text-[20px] text-[15px] text-gray-400 mt-10">
+          <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[3em] text-[2em] font-bold">Let&apos;s Build Together</h1>
+          <p className="lg:text-[18px] text-[15px] text-[#BCBCC0] mt-10">
             Tell us about your project and we’ll get back to you as soon as possible:
           </p>
           <form action="" className="mt-3 flex flex-col gap-2">
             <input
               type="text"
-              className="bg-gray-800 p-4 w-full rounded-t-lg border-b-2 border-transparent focus:outline-none focus:border-[#f6ff7a] transition-all duration-300"
+              className="bg-[#3d3d3f] p-4 w-full rounded-t-lg border-b-2 border-transparent focus:outline-none focus:border-[#f6ff7a] transition-all duration-300"
               placeholder="Name *"
             />
             <input
               type="text"
-              className="bg-gray-800 p-4 w-full rounded-t-lg border-b-2 border-transparent focus:outline-none focus:border-[#f6ff7a] transition-all duration-300"
+              className="bg-[#3d3d3f] p-4 w-full rounded-t-lg border-b-2 border-transparent focus:outline-none focus:border-[#f6ff7a] transition-all duration-300"
               placeholder="Email *"
             />
             <input
               type="text"
-              className="bg-gray-800 p-4 w-full rounded-t-lg border-b-2 border-transparent focus:outline-none focus:border-[#f6ff7a] transition-all duration-300"
+              className="bg-[#3d3d3f] p-4 w-full rounded-t-lg border-b-2 border-transparent focus:outline-none focus:border-[#f6ff7a] transition-all duration-300"
               placeholder="Company *"
             />
             <textarea
-              className="bg-gray-800 p-4 w-full rounded-t-lg border-b-2 border-transparent focus:outline-none focus:border-[#f6ff7a] transition-all duration-300"
+              className="bg-[#3d3d3f] p-4 w-full rounded-t-lg border-b-2 border-transparent focus:outline-none focus:border-[#f6ff7a] transition-all duration-300"
               placeholder="Tell us what you're looking for? *"
             />
           </form>
           {/* Date Selector Section */}
-          <div className="mt-2 bg-gray-800 p-4 rounded-lg">
+          <div className="mt-2 bg-[#3d3d3f] p-4 rounded-lg">
             <p className="text-sm text-gray-400">Schedule a meeting with our experts:</p>
-            <div className="mt-2 bg-gray-900 p-5 rounded-xl">
+            <div className="mt-2 bg-[#242425] p-5 rounded-xl">
               <div className="flex justify-between items-center">
-                <span className="text-gray-300">Select a day</span>
+                <span className="text-[#969699]">Select a day</span>
                 <div className="flex items-center gap-1">
                   <span className="h-3 w-3 rounded-full bg-[#f6ff7a] z-10" />
-                  <span className="text-gray-300">30 min meeting</span>
+                  <span className="text-[#969699]">30 min meeting</span>
                 </div>
               </div>
               <div className="flex items-center justify-between mt-3">
@@ -112,13 +112,13 @@ const Hero: React.FC = () => {
                 >
                   {"◁"}
                 </button>
-                <div className="flex gap-2">
+                <div className="flex gap-4">
                   {availableDates.slice(currentWeek, currentWeek + dateCount).map((day, index) => (
                     <button
                       key={index}
-                      className="bg-gray-900 p-2 rounded-lg text-sm hover:bg-gray-800 border focus:outline-none"
+                      className="bg-[#242425] px-3 py-2 rounded-lg text-sm text-[#969699] border-1 border-[#969699] "
                     >
-                      {day.day} <br /> {day.date}
+                      <span className="text-[18px] leading-[32px] font-medium">{day.day}</span> <br /> {day.date}
                     </button>
                   ))}
                 </div>
@@ -132,53 +132,50 @@ const Hero: React.FC = () => {
               </div>
               <div className="flex items-center justify-between mt-5 text-sm">
                 <div className="flex gap-2">
-                  <select className="bg-gray-700 p-2 rounded-lg text-white focus:outline-none">
+                  <select className=" p-2 rounded-lg  outline-none">
                     <option>Timezone - EST</option>
                     <option>Timezone - PST</option>
                     <option>Timezone - GMT</option>
                   </select>
-                  {/* <button className="bg-[#f6ff7a] text-black p-2 rounded-lg hover:bg-yellow-500">
-                    Schedule Meeting
-                  </button> */}
                 </div>
               </div>
             </div>
           </div>
           <button className="bg-[#f6ff7a] text-black p-3 w-full mt-2 rounded-lg text-[1em] font-bold">
-            Loading..
+            Send
           </button>
         </div>
 
-        <div className="lg:w-[25em] h-fit bg-gray-800 p-7 rounded-xl">
+        <div className="lg:w-[20em] h-fit bg-[#242425] p-7 rounded-xl">
           <div>
             <div className="flex gap-7">
-              <Image src="/client11.jpg" alt="team" height={900} width={900} className="lg:h-[10em] lg:w-[10em]" />
-              <Image src="/client12.jpg" alt="team" height={900} width={900} className="lg:h-[10em] lg:w-[10em]" />
+              <Image src="/client11.jpg" alt="team" height={900} width={900} className="lg:h-[8em] lg:w-[8em]" />
+              <Image src="/client12.jpg" alt="team" height={900} width={900} className="lg:h-[8em] lg:w-[8em]" />
             </div>
             <div>
-              <p className="text-[1.2em] mt-3 w-full">
+              <p className="text-[17px] font-normal text-[#969699] mt-3 w-full leading-[32px]">
                 Meet our Principal Engineers for an assessment of your needs.
               </p>
             </div>
           </div>
 
           <div className="mt-10">
-            <h2 className="text-[1.5em] font-semibold">What will happen next?</h2>
+            <h2  style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[22px] font-semibold">What will happen next?</h2>
             <div className="steps-container flex flex-col gap-[3em] mt-10 relative">
               <div className="flex gap-10 items-center">
-                <span className="h-4 w-4 rounded-full bg-[#f6ff7a] z-10" />
-                <p>Technical consultation</p>
+                <span className="h-3 w-3 rounded-full bg-[#f6ff7a] z-10" />
+                <p className="text-[16px] font-medium text-gray-200">Technical consultation</p>
               </div>
               <div className="flex gap-10 items-center">
-                <span className="h-4 w-4 rounded-full bg-[#f6ff7a] z-10" />
+                <span className="h-3 w-3 rounded-full bg-[#f6ff7a] z-10" />
                 <p>Connect with the team</p>
               </div>
               <div className="flex gap-10 items-center">
-                <span className="h-4 w-4 rounded-full bg-[#f6ff7a] z-10" />
+                <span className="h-3 w-3 rounded-full bg-[#f6ff7a] z-10" />
                 <p>Onboarding the team</p>
               </div>
               <div className="flex gap-10 items-center">
-                <span className="h-4 w-4 rounded-full bg-[#f6ff7a] z-10" />
+                <span className="h-3 w-3 rounded-full bg-[#f6ff7a] z-10" />
                 <p>Kick off your project</p>
               </div>
             </div>

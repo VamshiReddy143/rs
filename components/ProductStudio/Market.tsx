@@ -57,24 +57,25 @@ const Market = () => {
     }, []);
 
     return (
-        <div className="lg:min-h-screen mt-[2em] lg:flex justify-between items-center">
-            <div
+        <div className="lg:py-[6em] lg:flex justify-between items-start">
+           <div className='lg:flex  items-center justify-center gap-[4em]'>
+           <div
                 ref={leftSectionRef}
-                className="flex flex-col items-start gap-6 lg:w-[40%]"
+                className="flex flex-col items-start gap-6 lg:w-[50%]"
             >
-                <p className="text-gray-400">Design, Development & QA</p>
-                <h1 className="text-[2.2em] font-bold">Go To Market With Confidence & Speed</h1>
-                <p className="text-[1.2em] text-gray-400">
+                 <p className="text-[#bcbcc0] text-[16px]">Design, Development & QA</p>
+                 <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[36px] font-semibold leading-tight">Go To Market With Confidence & Speed</h1>
+                 <p className="text-[16px] text-[#bcbcc0] leading-loose">
                 Rootstrap has owned more than 750 product launches over 13 years (more than 1 per week!) thanks to our full-service studio with product, design, development, QA, and DevOps, plus dedicated support during and after launch.
                 </p>
-               <Link href={"/Contact"}>
-               <button className="lg:mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
-                    Get In Touch ➔
+                <Link href={"/Contact"}>
+               <button className="mt-10 border bg-transparent px-3 py-2 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors">
+               Get In Touch <span className='ml-2'>➔</span>
                 </button>
                </Link>
             </div>
 
-            <div ref={rightSectionRef} className="lg:w-[40%] relative flex justify-center items-center mt-7 lg:mt-0">
+            <div ref={rightSectionRef} className="lg:w-[50%] relative flex justify-center items-center mt-7 lg:mt-0">
                 <Image
                     src="/market.jpg"
                     alt="team"
@@ -83,6 +84,7 @@ const Market = () => {
                     className="lg:h-full lg:w-full h-[80%] w-full object-cover"
                 />
             </div>
+           </div>
         </div>
     );
 };

@@ -9,12 +9,12 @@ import React from 'react'
 
 const page = () => {
   return (
-   <div>
+   <div className='bg-[#212121]'>
    <div className='bg-[#f4f3ef]'>
    <Hero/>
    </div>
     <MarketVideo/>
-     <div  className=' lg:max-w-[90em] mx-auto lg:px-[6em] pb-10 px-3'>
+     <div  className=' lg:max-w-[90em] mx-auto bg-[#212121] lg:px-[6em] pb-10 px-3'>
     
    <Connections/>
 

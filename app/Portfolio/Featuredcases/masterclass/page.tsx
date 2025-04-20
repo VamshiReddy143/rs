@@ -11,7 +11,7 @@ import React from 'react'
 
 const masterclass = () => {
   return (
-   <div className=''>
+   <div className='bg-[#212121]'>
      {/* <div className='text-white lg:max-w-[90em] bg-red-700 mx-auto lg:px-[6em] px-3'>
     </div> */}
       <Hero/>

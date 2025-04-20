@@ -57,33 +57,35 @@ const Rapid = () => {
     }, []);
 
     return (
-        <div className="lg:min-h-screen  flex mt-10 lg:mt-0  lg:flex-row md:flex-col-reverse flex-col-reverse  justify-between items-center">
-            <div ref={leftSectionRef} className="lg:w-[40%] relative mt-7 lg:mt-0 flex justify-center items-center">
+        <div className="  flex mt-10 lg:mt-[6em]  lg:flex-row md:flex-col-reverse flex-col-reverse  justify-between items-start">
+           <div className='lg:flex  items-center justify-center gap-[4em]'>
+           <div ref={leftSectionRef} className="lg:w-[50%] relative mt-7 lg:mt-0 flex justify-center items-center">
                 <Image
                     src="/rapid.jpg"
                     alt="team"
                     width={900}
                     height={900}
-                    className="lg:h-full lg:w-full h-[80%] w-[100%] object-cover"
+                      className="lg:h-[500px] lg:w-[750px] w-[80%] h-[100%] object-cover"
                 />
             </div>
             <div
                 ref={rightSectionRef}
-                className="flex flex-col items-start gap-6 lg:w-[42%]"
+                className="flex flex-col items-start gap-6 lg:w-[47%]"
             >
-                <p className="text-gray-400">Agile & Fast</p>
-                <h1 className="text-[2.2em] font-bold">
-                    Close Collaboration & Continuous Improvement
+                <p className="text-[#bcbcc0] text-[16px]">Prototyping & Validation</p>
+                <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[36px] font-semibold leading-tight">
+                Rapid Iterations & Data-Driven Decisions
                 </h1>
-                <p className="text-[1.2em] text-gray-400">
-                    Rootstrap practices agile development to maximize communication, user validation, and speed to market. This means sprint planning together, plus weekly demos, daily standups, and shared Slack so we always stay in sync.
+                <p className="text-[16px] text-[#bcbcc0] leading-loose">
+                Rootstrap believes in frequent user testing and iterative design cycles in order to validate a final product design before investing in development. We use qualitative and quantitative user data whenever possible to drive decisions.
                 </p>
-               <Link href={"/Contact"}>
-               <button className="lg:mt-10 border bg-transparent p-3 rounded-xl cursor-pointer">
-                    Get In Touch ➔
+                <Link href={"/Contact"}>
+               <button className="mt-10 border bg-transparent px-3 py-2 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors">
+               Get In Touch <span className='ml-2'>➔</span>
                 </button>
                </Link>
             </div>
+           </div>
         </div>
     );
 };

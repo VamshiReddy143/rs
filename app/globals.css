@@ -455,6 +455,7 @@ h3.apply-now:hover::before {
 h3.apply-now:hover {
   text-decoration: none !important;
   color: #000000 !important;
+  padding: 3px;
 }
 
 [data-scroll-container] h3.apply-now {
@@ -548,6 +549,7 @@ h3.apply-now:hover::before {
 h3.apply-now:hover {
   text-decoration: none !important;
   color: #000000 !important;
+  padding: 3px;
 }
 
 [data-scroll-container] h3.apply-now {
@@ -562,11 +564,11 @@ h3.apply-now:hover {
 .steps-container::before {
   content: "";
   position: absolute;
-  left: 8px;
+  left: 6px;
   top: 8px;
   bottom: 8px;
-  width: 2px;
-  background-color: #f6ff7a;
+  width: 1px;
+  background-color:#969699;
   z-index: 0;
 }
 

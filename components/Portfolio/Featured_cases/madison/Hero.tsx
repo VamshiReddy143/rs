@@ -91,12 +91,12 @@ const Hero = () => {
   }, []);
 
   return (
-    <div ref={sectionRef} className="min-h-screen bg-[#720058] flex flex-col items-center justify-center">
+    <div style={{ fontFamily: 'Poppins, sans-serif' }} ref={sectionRef} className="min-h-screen bg-[#720058] flex flex-col items-center justify-center">
       <div className="lg:mt-[15em] mt-[10em] text-center px-3 lg:px-[4em] lg:max-w-[90em] mx-auto">
         <div>
-          <h1 className="lg:text-[2.5em] text-[1.7em] font-semibold text-white">
+          <h1 className="lg:text-[36px] text-[1.7em] font-normal leading-[43px] text-white">
             Madison Reed and Rootstrap Coloring{' '}
-            <span className="font-extrabold">Outside the Lines</span>
+            <span className="font-semibold">Outside the Lines</span>
           </h1>
           <Image
             ref={imageRef}
@@ -104,55 +104,55 @@ const Hero = () => {
             alt="Team collaborating for online education"
             width={900}
             height={900}
-            className="object-cover w-full mt-[5em]"
+            className="object-cover w-full pt-[7em]"
           />
         </div>
 
-        <div className="mt-10 flex flex-col items-start">
-          <h1 className="lg:text-[4.5em] text-[2em] font-bold text-left text-white pr-5 leading-tight mt-5">
+        <div className="pt-[5em] flex flex-col items-start">
+          <h1 className="lg:text-[77px] text-[2em] font-medium text-left text-white pr-5 leading-[96px] mt-5">
             Beyond the App: Impacting the Beauty Industry and Consumers
           </h1>
-          <div className="lg:flex justify-between w-full mt-10 pb-10">
+          <div className="lg:flex justify-between w-full pt-[4em] pb-10">
             <div className="flex flex-col items-start">
-              <h1 className="lg:text-[2.5em] text-[1.6em] text-white mt-5">Services Provided</h1>
+              <h1 className="lg:text-[32px] font-normal leading-[38px] text-[1.6em] text-white mt-5">Services Provided</h1>
               <div className="md:flex items-center gap-10 mt-4">
                 <div className="flex flex-col items-start gap-5">
-                  <p className="text-white lg:text-[1.3em] text-[1.2em]">Project Type</p>
-                  <p className="border border-white py-2 px-6 rounded-xl w-fit lg:text-[1.4em] text-[1.2em]">
+                  <p className="text-white lg:text-[20px] leading-[30px] font-normal text-[1.2em]">Project Type</p>
+                  <p className="border border-white py-2 px-6 rounded-xl w-fit lg:text-[20px] leading-[30px] font-normal text-[1.2em]">
                     Mobile App development
                   </p>
                 </div>
                 <div className="h-[40px] hidden md:flex flex-col items-center mt-[50px] w-[1px] bg-white"/>
                 <div className="flex flex-col items-start gap-5 md:mt-0 mt-5">
-                  <p className="text-white lg:text-[1.3em] text-[1.2em]">Industry</p>
+                  <p className="text-white lg:text-[20px] leading-[30px] font-normal text-[1.2em]">Industry</p>
                   <div className="flex gap-5">
-                    <p className="border border-white py-2 px-6 rounded-xl w-fit lg:text-[1.4em] text-[1.2em]">
+                    <p className="border border-white py-2 px-6 rounded-xl w-fit lg:text-[20px] leading-[30px] font-normal text-[1.2em]">
                       Beauty
                     </p>
-                    <p className="border border-white py-2 px-6 rounded-xl w-fit lg:text-[1.4em] text-[1.2em]">
+                    <p className="border border-white py-2 px-6 rounded-xl w-fit lg:text-[20px] leading-[30px] font-normal text-[1.2em]">
                       Hair Care
                     </p>
                   </div>
                 </div>
               </div>
-              <button className="bg-black text-white py-2 px-6 rounded-xl w-fit text-[1em] mt-5">
+              <button className="bg-black text-white py-2 px-6 rounded-xl w-fit text-[20px] leading-[30px] font-[400] mt-9">
                 Mid 2020 - Q1 2021
               </button>
             </div>
 
             <div className="pb-10"> 
-              <h1 className="lg:text-[2.5em] text-[1.7em] text-white text-left lg:text-center mt-5">
+              <h1 className="lg:text-[32px] font-normal leading-[38px] text-[1.7em] text-white text-left lg:text-start mt-5">
                 The Team
               </h1>
-              <div className="h-fit flex gap-4 mt-3">
+              <div className="h-fit flex gap-4 mt-7">
                 <div className="flex flex-col items-center w-[1px] bg-white"/>
                 <div className="flex flex-col items-start gap-3">
-                  <p className="lg:text-[1.4em] text-[1em]">1 Project Manager</p>
-                  <p className="lg:text-[1.4em] text-[1em]">2 Product Designers</p>
-                  <p className="lg:text-[1.4em] text-[1em]">2 Product Managers</p>
-                  <p className="lg:text-[1.4em] text-[1em]">8 React Native developers</p>
-                  <p className="lg:text-[1.4em] text-[1em]">3 QA Analyst</p>
-                  <p className="lg:text-[1.4em] text-[1em]">1 Scrum Master</p>
+                  <p className="lg:text-[20px] font-normal leading-[24px] text-[1em]">1 Project Manager</p>
+                  <p className="lg:text-[20px] font-normal leading-[24px] text-[1em]">2 Product Designers</p>
+                  <p className="lg:text-[20px] font-normal leading-[24px] text-[1em]">2 Product Managers</p>
+                  <p className="lg:text-[20px] font-normal leading-[24px] text-[1em]">8 React Native developers</p>
+                  <p className="lg:text-[20px] font-normal leading-[24px] text-[1em]">3 QA Analyst</p>
+                  <p className="lg:text-[20px] font-normal leading-[24px] text-[1em]">1 Scrum Master</p>
                 </div>
               </div>
             </div>

@@ -4,11 +4,11 @@ import React from "react";
 const Fun: React.FC = () => {
   return (
     <div className="lg:p-[10%] md:p-[5%] p-5 lg:min-h-screen px-2 bg-gray-200 text-black">
-      <h1 className="lg:text-[4em] text-[2em] md:text-[4em] font-semibold">
+      <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[56px] text-[2em] md:text-[4em] font-medium  leading-[67px]">
         Having fun is a key part of the process.
       </h1>
 
-      <div className="mt-[7em] relative " style={{ minHeight: "800px" }}>
+      <div className="mt-[10em] relative " style={{ minHeight: "800px" }}>
         <div
           className="lg:h-[300px] lg:w-[400px] md:h-[200px] md:w-[300px] h-[100px] w-[200px] absolute"
           data-scroll
@@ -50,7 +50,7 @@ const Fun: React.FC = () => {
           />
         </div>
         <div
-          className="lg:h-[600px] lg:w-[600px] md:h-[350px] md:w-[350px] hidden md:block absolute lg:ml-[30em] md:ml-[22em]"
+          className="lg:h-[600px] lg:w-[600px] md:h-[350px] md:w-[350px] hidden md:block absolute lg:ml-[34em] md:ml-[22em]"
           data-scroll
           data-scroll-speed="1.5"
         >
@@ -63,7 +63,7 @@ const Fun: React.FC = () => {
           />
         </div>
         <div
-          className="lg:h-[300px]  h-[150px]  absolute lg:ml-[45em] lg:mt-[26em] md:mt-[20em] md:ml-[31em] mt-[25em] ml-[10em]"
+          className="lg:h-[300px]  h-[150px]  absolute lg:ml-[53em] lg:mt-[30em] md:mt-[20em] md:ml-[31em] mt-[25em] ml-[10em]"
           data-scroll
           data-scroll-speed="3"
         >
@@ -78,7 +78,7 @@ const Fun: React.FC = () => {
       </div>
 
       <div>
-        <h1 className="lg:mt-[2em] md:mt-0 lg:text-[4em] text-[2em] text-right font-semibold">
+        <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:mt-[4em] md:mt-0 lg:text-[56px] text-[2em] text-right font-medium">
           We believe that collaborative, close-knit{" "}
           <span>teams can achieve the unthinkable.</span>
         </h1>

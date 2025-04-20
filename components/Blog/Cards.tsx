@@ -110,28 +110,32 @@ const Cards: React.FC<CardsProps> = ({ searchTerm, selectedCategory }) => {
   return (
     <div className="mt-[5em]">
       {/* Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ">
         {currentCards.map((card, index) => (
           <div
             key={index}
-            className="flex flex-col min-h-[400px] bg-gray-800 rounded-xl overflow-hidden relative"
+            className="flex flex-col min-h-[500px] bg-[#242425] rounded-xl  overflow-hidden relative"
           >
             <Image
               src={card.image}
               width={900}
               height={900}
               alt="team"
-              className="h-[50%] w-full object-cover"
+              className="h-[55%] w-full object-cover"
             />
             {/* Content Container */}
-            <div className="p-7 flex flex-col gap-3 flex-grow">
-              <p className="text-gray-400 text-[1em]">{card.category}</p>
-              <h2 className="text-[1.6em] font-bold leading-tight">{card.title}</h2>
+          <div className="flex flex-col gap-4 ">
+          <div className="p-7 flex flex-col gap-4 flex-grow">
+              <p className="text-[#bcbcc0] text-[16px]">{card.category}</p>
+              <h2 style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[24px] font-semibold leading-tight">{card.title}</h2>
             </div>
             {/* Button at absolute bottom-right */}
-            <button className="text-[1em] font-bold border border-gray-400 px-4 py-2 rounded-lg absolute bottom-4 right-5 hover:bg-gray-700 transition-colors">
+           <div className="pb-10">
+           <button className="text-[16px] hover:border-[#bcbcc0] hover:text-[#bcbcc0] font-bold border border-gray-400 px-4 py-2 rounded-lg absolute bottom-4 right-5   transition-colors">
               Read ➔
             </button>
+           </div>
+          </div>
           </div>
         ))}
       </div>

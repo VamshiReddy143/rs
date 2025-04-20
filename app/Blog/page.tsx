@@ -13,7 +13,7 @@ const Page: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
   return (
-    <div>
+    <div className="bg-[#191a1b] pb-10">
       <div className="lg:ml-[11%] px-3 md:mt-10 mt-0 py-1">
         <Hero
           searchTerm={searchTerm}

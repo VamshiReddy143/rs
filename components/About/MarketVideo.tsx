@@ -43,7 +43,7 @@ const MarketVideo = () => {
   }, []);
 
   return (
-    <div ref={sectionRef} className="w-full bg-[#f4f3ef] py-10">
+    <div ref={sectionRef} className="w-full bg-[#f4f3ef] pb-10">
       {/* Video Section */}
       <div className="flex items-center justify-center overflow-hidden">
         {/* Wrapper with dynamic width */}
@@ -58,7 +58,7 @@ const MarketVideo = () => {
             muted
             loop
             playsInline
-            className="absolute top-0 left-0 w-full h-full object-cover z-0"
+            className="absolute top-0 left-0 w-full h-full  object-cover z-0"
           />
 
           {/* SVG Mask */}
@@ -67,7 +67,7 @@ const MarketVideo = () => {
               src="/mask.svg"
               alt="tools"
               fill
-              className="object-cover  pointer-events-none"
+              className="object-cover   pointer-events-none "
             />
           </div>
         </div>
@@ -89,25 +89,25 @@ const MarketVideo = () => {
       {/* Additional Sections */}
       <div className="text-black lg:flex gap-10 lg:max-w-[90em] mx-auto lg:px-[4em] px-3 lg:pt-[10em] pt-[5em] pb-[10em]">
         <div>
-          <h1 className="lg:text-[3em] text-[2em] font-semibold">
+          <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[45px] text-[2em] font-medium leading-[54px]">
             Our Goal Is Helping You Achieve Yours.
           </h1>
-          <p className="lg:text-[1.5em] text-[1.2em] lg:mt-10 mt-5">
+          <p style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[24px] text-[1.2em] lg:mt-10 mt-5">
             We are a nearshore software development consultancy that combines design,
             engineering, and strategic expertise to develop custom applications for clients
-            seeking to supercharge their impact and growth. Our unique, long-term approach
+            seeking to <span className="font-bold">supercharge their impact and growth</span>. Our unique, long-term approach
             to client relationships mirrors the ethos of craftsmanship and care with which
             we build their products.
           </p>
         </div>
 
         <div className="lg:pt-[10em] pt-[5em]">
-          <h1 className="lg:text-[3em] text-[2em] font-semibold">
+          <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[45px] text-[2em] font-medium leading-[54px] ">
             It's Simple. Technology Should Serve You.
           </h1>
-          <p className="lg:text-[1.5em] text-[1.2em] lg:mt-10 mt-5">
-            At the heart of each engagement we take on is this simple commitment: to
-            translate vision to value. For demanding clients in education, healthcare,
+          <p style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[24px] text-[1.2em] lg:mt-10 mt-5">
+            At the heart of each engagement we take on is this simple commitment: <span className="font-bold">
+            to translate vision to value</span>. For demanding clients in education, healthcare,
             financial services, e-commerce, retail, and more, we've done just that. Across
             such broad scope, each project is governed by a non-negotiable principle: Value
             doesn't end with Delivery - and Delivery doesn't end with Launch.

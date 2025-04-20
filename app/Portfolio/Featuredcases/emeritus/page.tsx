@@ -10,7 +10,7 @@ import Footer from '@/components/Portfolio/Footer'
 
 const page = () => {
   return (
-    <div>
+    <div className='bg-[#212121]'>
         <Hero/>
         <Clients/>
         <Challenges/>

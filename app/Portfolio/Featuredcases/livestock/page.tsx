@@ -5,8 +5,8 @@ import About from '@/components/Portfolio/Featured_cases/livestock/About'
 import Cows from '@/components/Portfolio/Featured_cases/livestock/Cows'
 import Breeding from '@/components/Portfolio/Featured_cases/livestock/Breeding'
 import Farming from '@/components/Portfolio/Featured_cases/livestock/Farming'
-import Projects from '@/components/Portfolio/Featured_cases/masterclass/Projects'
 import Footer from '@/components/Portfolio/Footer'
+import Projects from '@/components/Portfolio/Featured_cases/livestock/Projects'
 
 const page = () => {
   return (

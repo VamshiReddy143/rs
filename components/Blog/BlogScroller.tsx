@@ -1,49 +1,56 @@
+
+
+
+
+
+
+
 "use client";
 
 import { motion, useMotionValue, useScroll, useSpring, useTransform } from "framer-motion";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import Image from 'next/image';
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-// Separate company arrays for top and bottom
+// Company arrays with exactly 5 logos each, with unique widths
 const topCompanies = [
-    { name: "MasterClass", logo: "/logos/company-a.png" },
-    { name: "The Farmers Dog", logo: "/logos/company-b.png" },
-    { name: "brightwheel", logo: "/logos/company-c.png" },
-    { name: "BetterUp", logo: "/logos/company-d.png" },
-    { name: "Google", logo: "/logos/company-e.png" },
+    { logo: "/logos/mc.svg", width: 180 },
+    { logo: "/logos/fd.svg", width: 70 },
+    { logo: "/logos/bw.svg", width: 190 },
+    { logo: "/logos/bu.svg", width: 190 },
+    { logo: "/logos/google.svg", width: 140 },
 ];
 
 const bottomCompanies = [
-    { name: "salesforce", logo: "/logos/company-i.png" },
-    { name: "SONY", logo: "/logos/company-f.png" },
-    { name: "EPSON", logo: "/logos/company-g.png" },
-    { name: "DoorSpace", logo: "/logos/company-h.png" },
-    { name: "Globalization Partners", logo: "/logos/company-j.png" },
+    { logo: "/logos/sf.svg", width: 120 },
+    { logo: "/logos/sony.svg", width: 120 },
+    { logo: "/logos/epson.svg", width: 180 },
+    { logo: "/logos/ds.svg", width: 190 },
+    { logo: "/logos/company-b.png", width: 170 },
 ];
 
-// New ScrollNames component
+// ScrollNames component to display logos
 interface ScrollNamesProps {
     companies: typeof topCompanies;
 }
 
 const ScrollNames: React.FC<ScrollNamesProps> = ({ companies }) => {
     return (
-        <>
+        <div className="flex flex-row justify-center items-center gap-[11em] w-full">
             {companies.map((company, index) => (
-                <div key={index} className="inline-flex items-center mx-8">
-                    {/* <Image
-            src={company.logo}
-            alt={`${company.name} logo`}
-            width={100}
-            height={50}
-            className="object-contain"
-          /> */}
-                    <span className="text-4xl font-bold">{company.name}</span>
+                <div key={index} className="flex-shrink-0">
+                    <Image
+                        src={company.logo}
+                        alt={`logo-${index}`}
+                        width={company.width}
+                        height={10}
+                        className="object-contain"
+                        onError={() => console.error(`Failed to load logo: ${company.logo}`)}
+                    />
                 </div>
             ))}
-        </>
+        </div>
     );
 };
 
@@ -65,51 +72,27 @@ function ParallaxText({ children, direction }: ParallaxProps) {
         stiffness: 400,
     });
 
-    const [repetitions, setRepetitions] = useState(1);
-    const containerRef = useRef<HTMLDivElement>(null);
-    const textRef = useRef<HTMLSpanElement>(null);
-
-    useEffect(() => {
-        const calculateRepetitions = () => {
-            if (containerRef.current && textRef.current) {
-                const containerWidth = containerRef.current.offsetWidth;
-                const textWidth = textRef.current.offsetWidth;
-                const newRepetitions = Math.ceil(containerWidth / textWidth) + 2;
-                setRepetitions(newRepetitions);
-            }
-        };
-
-        calculateRepetitions();
-        window.addEventListener("resize", calculateRepetitions);
-        return () => window.removeEventListener("resize", calculateRepetitions);
-    }, [children]);
-
     const x = useTransform(
         scrollProgress,
         [0, 1000],
-        direction === 'left' ? [0, -200] : [-20, 100],
+        direction === 'left' ? [200, 130] : [0, 100],
         { clamp: false }
     );
 
     useEffect(() => {
         const unsubscribe = scrollProgress.onChange((latest) => {
-            const movement = direction === 'left' ? -latest * 0.2 : latest * 0.2;
+            const movement = direction === 'left' ? -latest * 0.1 : latest * 0.1;
             baseX.set(movement);
         });
         return () => unsubscribe();
     }, [baseX, scrollProgress, direction]);
 
     return (
-        <div
-            ref={containerRef}
-            className="w-full overflow-hidden whitespace-nowrap"
-        >
+        <div className="w-full overflow-hidden whitespace-nowrap">
             <motion.div className="inline-block" style={{ x }}>
-                {Array.from({ length: repetitions }).map((_, i) => (
-                    <span key={i} ref={i === 0 ? textRef : null} className="inline-flex items-center gap-16">
-                        {children}
-                    </span>
-                ))}
+                <span className="inline-flex items-center gap-16">
+                    {children}
+                </span>
             </motion.div>
         </div>
     );
@@ -119,7 +102,7 @@ export function VelocityScroll({ className, ...props }: VelocityScrollProps) {
     return (
         <div
             className={cn(
-                "relative w-full flex flex-col items-center justify-center gap-12",
+                "relative w-full flex flex-col items-center justify-center gap-10",
                 className
             )}
             {...props}
@@ -140,22 +123,42 @@ interface VelocityScrollProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const BlogScroller = () => {
     return (
-        <div id="hero" className="w-full mt-[10em]">
-            <div className="flex flex-col items-center justify-center my-8 lg:my-10 px-4">
-                <p className="rounded-lg bg-gray-800 px-4 py-2 text-sm sm:text-base text-center">
+        <div id="hero" className="w-full">
+            <div className="flex flex-col items-center justify-center my-8 lg:pt-[6em] px-4">
+                <p className="rounded-lg bg-[#242425] px-4 py-2 text-sm sm:text-base text-center text-[#bcbcc0] font-normal leading-[32px]">
                     Trusted By 100s of High-Growth Startups & Industry Leaders
                 </p>
             </div>
 
-            <div className="hidden sm:block relative w-full flex flex-col items-center justify-center overflow-hidden py-8 lg:py-1">
+            <div className="relative w-full flex flex-col items-center justify-center overflow-hidden hidden lg:block py-8 lg:py-1">
                 <VelocityScroll />
             </div>
 
-            <div className="flex flex-col gap-5 items-center justify-center text-center mt-[10em]">
-                <h1 className="text-[2.5em] font-bold">Be part of our mission!</h1>
-                <p className="text-gray-200 text-[1em]">Join a team of people who love what they do!</p>
+        <div className="md:hidden flex justify-between items-center  px-7  gap-9">
+            <div className="flex flex-col gap-10  items-center">
+                <Image src={"/logos/mc.svg"} alt="tools" width={130} height={900}/>
+                <Image src={"/logos/fd.svg"} alt="tools" width={40} height={900}/>
+                <Image src={"/logos/bw.svg"} alt="tools" width={150} height={900}/>
+                <Image src={"/logos/bu.svg"} alt="tools" width={110} height={900}/>
+                <Image src={"/logos/google.svg"} alt="tools" width={90} height={900}/>
+            </div>
+            <div className="flex  flex-col gap-10  items-center">
+            
+                <Image src={"/logos/sf.svg"} alt="tools" width={80} height={900}/>
+                <Image src={"/logos/sony.svg"} alt="tools" width={80} height={900}/>
+                <Image src={"/logos/epson.svg"} alt="tools" width={90} height={900}/>
+                <Image src={"/logos/ds.svg"} alt="tools" width={120} height={900}/>
+                <Image src={"/logos/company-b.png"} alt="tools" width={120} height={900}/>
+            </div>
+         
+        </div>
+
+
+        <div className="flex flex-col gap-10 items-center justify-center text-center pt-[10em] pb-10">
+                <h1   style={{ fontFamily: "Poppins, sans-serif" }} className="text-[36px] font-semibold">Be part of our mission!</h1>
+                <p className="text-gray-200 text-[16px] leading-[32px]">Join a team of people who love what they do!</p>
                <Link href={"/About"}>
-               <button className="border p-3 rounded-lg font-bold cursor-pointer">See All Open Positions →</button>
+               <button   style={{ fontFamily: "Poppins, sans-serif" }} className="border p-3 rounded-lg font-bold text-[16px] cursor-pointer hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors">See All Open Positions ➔</button>
                </Link>
             </div>
         </div>

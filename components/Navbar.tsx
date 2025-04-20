@@ -131,7 +131,7 @@ const Navbar = () => {
             </Link>
           </ul>
           <Link href="/Contact" onClick={closeAll}>
-            <button className="text-[16px] lg:text-[15px] bg-[#f6ff7a] text-black px-2 py-1 lg:px-4 lg:py-2 rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80 transition-colors">
+            <button className="text-[16px] lg:text-[15px] bg-[#f6ff7a] text-black px-2  lg:px-4 lg:py-2 rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80 transition-colors">
               Get in Touch ➔
             </button>
           </Link>
