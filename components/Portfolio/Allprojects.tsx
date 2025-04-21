@@ -119,14 +119,14 @@ const projects = [
 
 const Allprojects = () => {
   return (
-    <div className='bg-gray-100 text-black lg:py-[10em] mt-[5em]'>
+    <div className='bg-gray-100 text-black lg:py-[10em] py-[5em] mt-[5em]'>
       <div className='flex justify-between'>
-        <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[64px] font-medium'>
+        <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[64px] text-[42px] leading-[50px] font-medium'>
           All Projects
         </h1>
-        <div className='flex gap-3 items-center mt-[10em]'>
+        <div className='mdg:flex gap-3 items-center md:mt-[10em] mt-[5em]'>
           <p style={{ fontFamily: 'Poppins, sans-serif' }}  className='text-[16px] font-normal'>Sort by</p>
-          <select style={{ fontFamily: 'Poppins, sans-serif' }}  name="" id="" className='border border-gray-400 p-1 font-normal text-[14px] focus:border-none focus:outline-1 focus:outline-[#FFDF00]'>
+          <select style={{ fontFamily: 'Poppins, sans-serif' }}  name="" id="" className='border border-gray-400 p-1 font-normal mt-3 lg:mt-0 text-[14px] focus:border-none focus:outline-1 focus:outline-[#FFDF00]'>
             <option value="">Most recent</option>
             <option value="">Oldest</option>    
           </select>

@@ -94,7 +94,7 @@ const Hero = () => {
     <div style={{ fontFamily: 'Poppins, sans-serif' }}  ref={sectionRef} className="min-h-screen bg-[#203a33] flex flex-col pb-11 items-center justify-center">
       <div className="lg:mt-[15em] mt-[10em] text-center">
         <div className="lg:px-[10em] px-4">
-          <h1 className="lg:text-[36px] text-[1.5em] font-normal leading-[43px] text-white">
+          <h1 className="lg:text-[36px] text-[28px] leading-[34px] font-normal lg:leading-[43px] text-white">
             The Farmer’s Dog & Rootstrap: Building revenue streams for leading online pet food startup
           </h1>
           <Image
@@ -103,13 +103,13 @@ const Hero = () => {
             alt="Team collaborating for online education"
             width={900}
             height={900}
-            className="object-cover w-full mt-[9em]"
+            className="object-cover w-full lg:h-full h-[50vh] mt-[9em]"
           />
         </div>
 
         <div className="mt-10 flex flex-col items-start lg:px-[10em] px-4 pt-[5em]">
-          <h1 className="lg:text-[80px] leading-[96px] font-medium text-[2em]  text-white">The Farmer’s Dog</h1>
-          <div className="lg:flex justify-between w-full mt-[3em]">
+          <h1 className="lg:text-[80px] lg:leading-[96px] font-medium text-[35px] text-left  text-white">The Farmer’s Dog</h1>
+          <div className="lg:flex justify-between w-full lg:mt-[3em]">
             <div className="flex flex-col items-start">
               <h1 className="lg:text-[32px] font-normal leading-[38px] text-[1.4em] text-white mt-5">Services Provided</h1>
               <div className="md:flex items-center gap-10 mt-4">

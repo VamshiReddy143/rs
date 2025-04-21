@@ -161,7 +161,7 @@ const ScrollerDemo: React.FC = () => {
   return (
     <div style={{ fontFamily: 'Poppins, sans-serif' }}  className="min-h-screen bg-[#212121] text-white">
       {/* Header Section */}
-      <div className="lg:px-[3.1em] pt-[3em] pb-[1em] lg:text-[64px] text-[3.4em] font-medium mx-auto">
+      <div className="lg:px-[3.1em] pt-[3em] pb-[1em] lg:text-[64px] text-[60px] font-medium mx-auto">
         Helping{" "}
         <span className="inline bg-gradient-to-t from-red-500 to-red-500 bg-[length:100%_0.3em] bg-no-repeat bg-bottom">
           MasterClass
@@ -174,15 +174,15 @@ const ScrollerDemo: React.FC = () => {
       <Scroller row1Images={row1Images} row2Images={row2Images} row3Images={row3Images} />
 
       {/* Text Section */}
-      <div className="lg:px-[10em] pb-[10em] lg:pt-[17em] pt-[5em] px-3 mx-auto flex flex-col gap-10">
-        <p className="lg:text-[32px] text-[#D6D5D1] text-[2em] leading-[48px] font-extralight lg:w-[70%]">
+      <div className="lg:px-[10em] pb-[5em] lg:pt-[17em] pt-[5em] px-3 mx-auto flex flex-col gap-10">
+        <p className="lg:text-[32px] text-[#D6D5D1] text-[2em] lg:leading-[48px] font-extralight lg:w-[70%]">
           Masterclass needed to scale its engineering function and{" "}
           <span className="font-semibold text-white inline">
             enhance its product in pursuit of an ambitious growth plan
           </span>
           , but faced challenges sourcing local, talented programmers in ReactJS - their front-end programming language.
         </p>
-        <p className="lg:text-[32px] text-[#D6D5D1] text-[2em] leading-[48px] font-extralight lg:w-[70%]">
+        <p className="lg:text-[32px] text-[#D6D5D1] text-[2em] lg:leading-[48px] font-extralight lg:w-[70%]">
           <span className="font-semibold text-white inline">
             Rootstrap emerged as the ideal partner,
           </span>{" "}
@@ -231,10 +231,10 @@ const ScrollerDemo: React.FC = () => {
       {/* Final Text Section */}
       <div className="bg-gray-100 text-black  ">
         <div className="lg:px-[10em] pb-[10em] lg:pt-[27em] md:pt-[20em] pt-[15em] px-3 mx-auto lg:flex gap-10">
-          <h1 className="lg:text-[48px] text-[2em] font-medium leading-[58px] lg:w-[46em]">
+          <h1 className="lg:text-[48px] text-[2em] font-medium lg:leading-[58px] lg:w-[46em]">
             Elevates Front-End Capabilities for Ambitious Growth
           </h1>
-          <p className="lg:text-[23px] leading-[36px] font-medium text-[1.2em] leading-[36px] lg:mt-0 mt-5 ">
+          <p className="lg:text-[23px] lg:leading-[36px] font-normal text-[18px] leading-[26px] lg:mt-0 mt-5 ">
             Our team seamlessly integrated with MasterClass, working closely alongside their development and product teams. We began by addressing ReactJS and web development requirements and later expanded our collaboration, establishing new teams and expanding existing ones to handle multiple projects.
           </p>
         </div>

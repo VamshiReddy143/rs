@@ -6,9 +6,9 @@ const Portfolio = () => {
     return (
         <div className="flex flex-col items-center justify-center gap-6 lg:pt-[8em] pt-[7em]">
             <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[36px] text-[2em] font-semibold text-center">
-                Our Portfolio: Ruby On Rails
+                Our Portfolio: <span className='block md:inline'>Ruby on Rails</span>
             </h1>
-            <p className="text-[#bcbcc0] text-[16px] text-center">
+            <p className="text-[#bcbcc0] text-[16px] leading-[32px] text-center">
                 We have partnered with some of the world‘s fastest-growing startups and most innovative corporations.
             </p>
 

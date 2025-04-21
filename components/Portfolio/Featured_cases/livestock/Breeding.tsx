@@ -5,9 +5,9 @@ const Breeding = () => {
        <div style={{ fontFamily: 'Poppins, sans-serif' }} className='bg-gray-200 text-black min-h-screen'>
          <div className=' flex items-center relative'>
             <div className='lg:pl-[11%] w-[70%] lg:px-[6em] px-3 py-[7em] '>
-                <h1 className='lg:text-[61px] text-[2.4em] leading-[77px] font-medium'>Addressing the needs of a cow breeding entrepreneur.</h1>
+                <h1 className='lg:text-[61px] text-[45px] leading-[54px] lg:leading-[77px] font-medium'>Addressing the needs of a cow breeding entrepreneur.</h1>
                 <div>
-                    <p className='lg:pt-[4em] lg:text-[32px] font-extralight leading-[48px] pt-[3em] text-[1.8em]'>We <span className='font-semibold'>researched and selected suitable algorithms for image segmentation</span> using machine learning. <span className='font-semibold'> Our goal was to detect and outline objects in images</span>.</p>
+                    <p className='lg:pt-[4em] lg:text-[32px] font-extralight lg:leading-[48px] leading-[42px] pt-[3em] text-[28px]'>We <span className='font-semibold'>researched and selected suitable algorithms for image segmentation</span> using machine learning. <span className='font-semibold'> Our goal was to detect and outline objects in images</span>.</p>
                     <p className='mt-7 lg:text-[32px] lg:pt-[32px] font-extralight leading-[48px] text-[1.9em]'>
                         We evaluated both supervised and unsupervised options for automatic segmentation, involving intensive model training and data labeling. We utilized Mask R CNN with a labeled training dataset, COCO, to build an initial binary classifier for identifying healthy and unhealthy cows.
                     </p>

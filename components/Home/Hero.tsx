@@ -146,7 +146,7 @@ const Hero = () => {
           <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[48px]  text-[40px] sm:text-[2em] font-poppins md:text-[2.5em] font-semibold  lg:mt-0  leading-tight text-left'>
             Accelerate Your <span className='block'>Development</span> & Drive Innovation
           </h1>
-          <p style={{ fontFamily: 'Inter, Arial, sans-serif' }} className='text-base sm:text-[18px] text-[18px] text-[#bcbcc0] mt-4 font-normal leading-[1.8] text-left'>
+          <p style={{ fontFamily: 'Inter, Arial, sans-serif' }} className='text-base sm:text-[18px] text-[17px] text-[#bcbcc0] mt-4 font-normal lg:leading-[1.8] leading-[32px] text-left'>
             We are a data-driven, nearshore software agency that values speed, performance, and scalability. That‘s why we consistently surpass benchmarks for client retention after 750+ product launches and 13 years in business.
           </p>
          <Link href={"/Contact"}>

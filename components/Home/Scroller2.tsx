@@ -138,21 +138,22 @@ const BlogScroller = () => {
                 <VelocityScroll />
             </div>
 
-              <div className="md:hidden flex justify-between items-center  px-7  gap-9">
-                        <div className="flex flex-col gap-10  items-center">
-                            <Image src={"/logos/accel.svg"} alt="tools" width={90} height={900}/>
-                            <Image src={"/logos/nea.svg"} alt="tools" width={40} height={900}/>
+              <div className="md:hidden flex justify-between items-start  px-7  gap-9">
+                        <div className="flex flex-col gap-15  items-center">
+                            <Image src={"/logos/accel.svg"} alt="tools" width={80} height={900}/>
+                            <Image src={"/logos/nea.svg"} alt="tools" width={70} height={900}/>
                             <Image src={"/logos/bw.svg"} alt="tools" width={150} height={900}/>
-                            <Image src={"/logos/bu.svg"} alt="tools" width={110} height={900}/>
-                            <Image src={"/logos/google.svg"} alt="tools" width={90} height={900}/>
+                            <Image src={"/logos/br.svg"} alt="tools" width={110} height={900}/>
+                            <Image src={"/logos/bg.svg"} alt="tools" width={120} height={900}/>
+                            <Image src={"/logos/72.svg"} alt="tools" width={120} height={900}/>
                         </div>
-                        <div className="flex  flex-col gap-10  items-center">
+                        <div className="flex  flex-col gap-12  items-center">
                         
-                            <Image src={"/logos/sf.svg"} alt="tools" width={80} height={900}/>
-                            <Image src={"/logos/sony.svg"} alt="tools" width={80} height={900}/>
-                            <Image src={"/logos/epson.svg"} alt="tools" width={90} height={900}/>
-                            <Image src={"/logos/ds.svg"} alt="tools" width={120} height={900}/>
-                            <Image src={"/logos/company-b.png"} alt="tools" width={120} height={900}/>
+                            <Image src={"/logos/bvp.svg"} alt="tools" width={100} height={900}/>
+                            <Image src={"/logos/ga.svg"} alt="tools" width={140} height={900}/>
+                            <Image src={"/logos/insight.svg"} alt="tools" width={90} height={900}/>
+                            <Image src={"/logos/la.svg"} alt="tools" width={130} height={900}/>
+                            <Image src={"/logos/aeq.svg"} alt="tools" width={120} height={900}/>
                         </div>
                      
                     </div>

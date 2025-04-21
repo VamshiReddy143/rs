@@ -4,7 +4,7 @@ const Quote = () => {
   return (
     <div style={{ fontFamily: 'Poppins, sans-serif' }} className='bg-white'>
          <div className='lg:max-w-[90em] bg-white text-black mx-auto lg:px-[6em] px-3 lg:py-[15em] py-[7em] pb-[10em]'>
-                <h1 className='lg:text-[67px] font-medium leading-[81px] text-[2em]'>
+                <h1 className='lg:text-[67px] font-medium lg:leading-[81px] text-[32px] leading-[38px]'>
                 “This app is just like the products... <span className='text-[#720058]'>everything I need</span>, without all the extras! Excited to set up a reorder so I don't have to think about it ever again. Recommend!
                 </h1>
                 <div className='lg:mt-[4em] mt-[2em]'>

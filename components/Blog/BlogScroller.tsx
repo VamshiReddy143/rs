@@ -1,10 +1,5 @@
 
 
-
-
-
-
-
 "use client";
 
 import { motion, useMotionValue, useScroll, useSpring, useTransform } from "framer-motion";
@@ -37,7 +32,7 @@ interface ScrollNamesProps {
 
 const ScrollNames: React.FC<ScrollNamesProps> = ({ companies }) => {
     return (
-        <div className="flex flex-row justify-center items-center gap-[11em] w-full">
+        <div className="flex flex-row justify-center items-center gap-[11em]  w-full">
             {companies.map((company, index) => (
                 <div key={index} className="flex-shrink-0">
                     <Image
@@ -123,18 +118,18 @@ interface VelocityScrollProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const BlogScroller = () => {
     return (
-        <div id="hero" className="w-full">
+        <div id="hero" className="w-full pt-[5em] md:pt-[1em]">
             <div className="flex flex-col items-center justify-center my-8 lg:pt-[6em] px-4">
                 <p className="rounded-lg bg-[#242425] px-4 py-2 text-sm sm:text-base text-center text-[#bcbcc0] font-normal leading-[32px]">
                     Trusted By 100s of High-Growth Startups & Industry Leaders
                 </p>
             </div>
 
-            <div className="relative w-full flex flex-col items-center justify-center overflow-hidden hidden lg:block py-8 lg:py-1">
+            <div className="relative w-full flex flex-col items-center justify-center overflow-hidden hidden md:block py-8 lg:py-1">
                 <VelocityScroll />
             </div>
 
-        <div className="md:hidden flex justify-between items-center  px-7  gap-9">
+        <div className="md:hidden flex justify-between items-center  px-7   gap-9">
             <div className="flex flex-col gap-10  items-center">
                 <Image src={"/logos/mc.svg"} alt="tools" width={130} height={900}/>
                 <Image src={"/logos/fd.svg"} alt="tools" width={40} height={900}/>

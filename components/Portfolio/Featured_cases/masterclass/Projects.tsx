@@ -101,8 +101,8 @@ const Projects = () => {
         {/* Header Section */}
         <div className="flex items-end justify-between px-3 lg:px-[4em] lg:max-w-[90em] mx-auto">
           <div>
-            <h2 className="md:text-[32px] text-[1.5em] leading-[38px]">More</h2>
-            <h1 className="md:text-[64px] text-[2.5em] font-semibold leading-[77px]">Projects</h1>
+            <h2 className="md:text-[32px] text-[1.5em] lg:leading-[38px]">More</h2>
+            <h1 className="md:text-[64px] text-[2.5em] font-semibold lg:leading-[77px]">Projects</h1>
             <div className="h-[2px] w-[60px] bg-black rounded-full mt-2" />
           </div>
 
@@ -116,7 +116,7 @@ const Projects = () => {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="black"
-                className="w-15 h-15"
+                className="lg:w-10 lg:h-10 w-6 h-6"
               >
                 <path d="M13.1717 12.0007L8.22192 7.05093L9.63614 5.63672L16.0001 12.0007L9.63614 18.3646L8.22192 16.9504L13.1717 12.0007Z"></path>
               </svg>
@@ -131,7 +131,7 @@ const Projects = () => {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="black"
-                className="w-15 h-15"
+                className="lg:w-10 lg:h-10 w-6 h-6"
               >
                 <path d="M13.1717 12.0007L8.22192 7.05093L9.63614 5.63672L16.0001 12.0007L9.63614 18.3646L8.22192 16.9504L13.1717 12.0007Z"></path>
               </svg>
@@ -157,8 +157,8 @@ const Projects = () => {
                     className="h-[30em] w-full object-cover rounded-lg image-hover hover:shadow-lg will-change-transform"
                   />
                 </div>
-                <h2 className="text-[32px] font-medium leading-[38px] mt-4">{project.title}</h2>
-                <p className="text-[20px] leading-[30px] font-medium text-[#6F6F6E]">{project.description}</p>
+                <h2 className="lg:text-[32px] text-[21px] leading-[25px] font-medium lg:leading-[38px] mt-4">{project.title}</h2>
+                <p className="lg:text-[20px] text-[16px] leading-[24px] lg:leading-[30px] mt-4 font-medium text-[#6F6F6E]">{project.description}</p>
               </div>
             ))}
           </div>

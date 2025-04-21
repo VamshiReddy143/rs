@@ -5,9 +5,9 @@ import React from 'react';
 const Team = () => {
     return (
         <div className='mt-[8em] flex flex-col items-center justify-center'>
-            <div className='flex flex-col items-center justify-center gap-3'>
+            <div className='flex flex-col items-center justify-center gap-7'>
                 <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[36px] font-semibold text-center'>Our Skilled Team</h1>
-                <p className='text-[#bcbcc0]  text-center'>
+                <p className='text-[#bcbcc0]  text-center text-[16px] leading-[32px]'>
                     These represent common roles staffed to partners based on their unique needs.
                 </p>
             </div>

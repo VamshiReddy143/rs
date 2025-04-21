@@ -7,7 +7,7 @@ const Team = () => {
     <div className='mt-[8em] flex flex-col items-center justify-center'>
             <div className='flex flex-col items-center justify-center gap-3'>
                 <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[36px] font-semibold text-center'>Our Skilled Team</h1>
-                <p className='text-[#bcbcc0]  text-center'>
+                <p className='text-[#bcbcc0] text-[16px] leading-[32px]  text-center'>
                     These represent common roles staffed to partners based on their unique needs.
                 </p>
             </div>

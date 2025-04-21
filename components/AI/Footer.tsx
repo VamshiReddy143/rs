@@ -9,7 +9,7 @@ import { LuLinkedin } from 'react-icons/lu';
 
 const Footer = () => {
     return (
-        <div className=' pt-[5em] pb-[2em]'>
+        <div className=' lg:pt-[5em] pt-[2em] pb-[2em]'>
           
 
 

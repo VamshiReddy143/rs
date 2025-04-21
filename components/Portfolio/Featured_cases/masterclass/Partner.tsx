@@ -7,7 +7,7 @@ const Partner = () => {
         <div style={{ fontFamily: 'Poppins, sans-serif' }}   className=' '>
             <div className="bg-white lg:h-[110em] h-[50em]  text-black pt-[10em]">
                 {/* Heading */}
-                <h1 className="lg:text-[32px] text-[1em] max-w-5xl mx-auto px-4 text-center leading-[48px]">
+                <h1 className="lg:text-[32px] text-[15px] lg:max-w-5xl mx-auto px-4 text-center lg:leading-[48px]">
                     Throughout our partnership, <span className="font-bold">we introduced insights based on our extensive product development experience</span>, instituted new methodologies, refined working practices, and delivered designs that not only captivated users but also increased conversion rates.
                 </h1>
 
@@ -27,7 +27,7 @@ const Partner = () => {
 
                         {/* Text inside the circle */}
                         <div className="flex-1   lg:w-[70%] w-[90%]">
-                            <p className="lg:text-[32px] text-[1em] leading-[48px] text-center">
+                            <p className="lg:text-[32px] text-[18px] font-normal leading-[26px] lg:leading-[48px] text-center">
                                 We assisted MasterClass in <span className='font-bold'>modernizing its payment infrastructure and initiated strategies</span> to amplify its reach and foster user growth and engagement. This included <span className='font-bold'>promoting peer-to-peer incentives to stimulate user recommendations</span>.
                             </p>
                         </div>
@@ -37,7 +37,7 @@ const Partner = () => {
 
 
             <div className=' bg-[#212121] text-white lg:mt-[30em] mt-[15em] font-sans'>
-                <h1 className='lg:text-[44px]  text-[1.9em] max-w-7xl mx-auto px-4 font-semibold  leading-[58px'>
+                <h1 className='lg:text-[44px]  text-[30px] lg:max-w-7xl mx-auto px-4 font-semibold  lg:leading-[58px'>
                     In 2021, we supported MasterClass's globalization efforts by tailoring our product to resonate with diverse linguistic audiences, prepping it for a global stage.
                 </h1>
                 <div className='h-[4px] w-full bg-red-700 max-w-7xl mx-auto px-3 mt-[7em]' />
@@ -57,8 +57,8 @@ const Partner = () => {
              "
             >
             <div className='max-w-7xl mx-auto pt-[7em] px-3'>
-                <h1 className='md:text-[43px] text-[1.9em] lg:w-[65%] font-semibold leading-[58px] '>Accelerated Growth During COVID Pandemic</h1>
-                <p className='md:text-[22px] text-[1.3em] lg:w-[70%] mt-5 leading-[36px] text-gray-200'>The COVID pandemic produced an exponential increase in demand for high quality streaming content and presented MasterClass with a rapid expansion challenge during a global shortage of technical talent. As their partners, we doubled the size of an already-large team in less than two months, playing a crucial role in responding to unprecedented consumer demand, spearheading their global expansion, and introducing a new enterprise business strategy.</p>
+                <h1 className='md:text-[43px] text-[32px] leading-[38px] lg:w-[65%] w-[70%] font-semibold lg:leading-[58px] '>Accelerated Growth During COVID Pandemic</h1>
+                <p className='md:text-[22px] text-[18px] leading-[26px] lg:w-[70%] w-[70%] mt-5 lg:leading-[36px] text-gray-200'>The COVID pandemic produced an exponential increase in demand for high quality streaming content and presented MasterClass with a rapid expansion challenge during a global shortage of technical talent. As their partners, we doubled the size of an already-large team in less than two months, playing a crucial role in responding to unprecedented consumer demand, spearheading their global expansion, and introducing a new enterprise business strategy.</p>
             </div>
             </div>
 

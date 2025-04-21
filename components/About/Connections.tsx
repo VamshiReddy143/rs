@@ -4,10 +4,10 @@ const Connections = () => {
   return (
     <div className='text-white bg-[#212121] min-h-screen pt-[12em] lg:mb-10'>
          <div className='flex flex-col gap-7 lg:w-[75%]'>
-            <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[72px] text-[2.5em] font-semibold leading-[86px]'>Our <span className='text-[#ffc83f]'>Core Values</span> nurture
+            <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[72px] text-[35px] font-medium lg:leading-[86px] leading-[42px]'>Our <span className='text-[#ffc83f]'>Core Values</span> nurture
             <span className='lg:block'>human connections</span></h1>
             <div className='h-[2px] w-[70px] bg-white rounded-full'/>
-            <p style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[24px] font-normal'>Developed collaboratively in partnership with our entire team, our values are irrefutable foundations for the company that guide how we think, live, and interact with each other and with our client partners.</p>
+            <p style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[24px] text-[18px] leading-[26px] lg:leading-[36px] font-normal'>Developed collaboratively in partnership with our entire team, our values are irrefutable foundations for the company that guide how we think, live, and interact with each other and with our client partners.</p>
          </div>
 
          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 mt-10'>

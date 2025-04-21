@@ -75,24 +75,24 @@ const MarketVideo = () => {
 
       {/* Text Content */}
       <div className="text-black flex flex-col md:items-end items-start lg:mt-0 mt-10 px-3 lg:px-0  lg:pr-[9%] leading-tight">
-        <h1 className="lg:text-[3.5em] text-[2em] font-semibold">
+        <h1 className="lg:text-[3.5em] text-[32px] leading-[38px] lg:leading-[59px] font-medium">
           Our Product Is
           <span className="block">Our People.</span>
         </h1>
-        <p className="lg:text-[1.7em] text-[1.2em] lg:mt-10 mt-5">
+        <p className="lg:text-[24px] text-[18px] leading-[26px] lg:leading-[36px] font-normal lg:mt-10 mt-5">
           We utilize the collective knowledge and{" "}
           <span className="block">experience of a large, diverse, world-</span>
-          <span className="block">class team in order to consistently deliver</span> results.
+          <span className="block">class team in order to consistently deliver results.</span>
         </p>
       </div>
 
       {/* Additional Sections */}
       <div className="text-black lg:flex gap-10 lg:max-w-[90em] mx-auto lg:px-[4em] px-3 lg:pt-[10em] pt-[5em] pb-[10em]">
         <div>
-          <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[45px] text-[2em] font-medium leading-[54px]">
+          <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[45px] text-[2em] font-medium lg:leading-[54px] leading-[34px]">
             Our Goal Is Helping You Achieve Yours.
           </h1>
-          <p style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[24px] text-[1.2em] lg:mt-10 mt-5">
+          <p style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[24px] font-normal text-[1.2em] lg:mt-10 mt-5">
             We are a nearshore software development consultancy that combines design,
             engineering, and strategic expertise to develop custom applications for clients
             seeking to <span className="font-bold">supercharge their impact and growth</span>. Our unique, long-term approach
@@ -102,10 +102,10 @@ const MarketVideo = () => {
         </div>
 
         <div className="lg:pt-[10em] pt-[5em]">
-          <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[45px] text-[2em] font-medium leading-[54px] ">
+          <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[45px] text-[2em] font-medium lg:leading-[54px] leading-[34px] ">
             It's Simple. Technology Should Serve You.
           </h1>
-          <p style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[24px] text-[1.2em] lg:mt-10 mt-5">
+          <p style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[24px] font-normal text-[1.2em] lg:mt-10 mt-5">
             At the heart of each engagement we take on is this simple commitment: <span className="font-bold">
             to translate vision to value</span>. For demanding clients in education, healthcare,
             financial services, e-commerce, retail, and more, we've done just that. Across

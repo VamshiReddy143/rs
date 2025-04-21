@@ -88,7 +88,7 @@ const Clients = () => {
     };
 
     return (
-        <div className="bg-gray-300 lg:px-[10%] px-2 text-black  py-[5%] mb-10">
+        <div className="bg-gray-300 lg:px-[10%] px-2 text-black  py-[5%] pb-[7em]">
             {/* Carousel Container */}
             <div className="relative overflow-hidden">
                 <div
@@ -135,7 +135,7 @@ const Clients = () => {
                                 </div>
                             </div>
                             <div className='md:ml-10 lg:ml-0'>
-                                <p style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[34px] text-[1.2em] mt-5 lg:mt-0 font-medium leading-[50px]">
+                                <p style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[34px] text-[21px] mt-5 lg:mt-0 leading-[32px] font-medium lg:leading-[50px]">
                                     {client.testimonial}
                                 </p>
                                 <div className="mt-5">

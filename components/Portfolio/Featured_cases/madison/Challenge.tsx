@@ -13,8 +13,8 @@ const Challenge = () => {
                 </div>
 
                     <div className="lg:max-w-[90em] bg-[#212121]  text-white mx-auto lg:px-[5em] px-3 flex flex-col gap-10">
-                        <p className='lg:text-[24px] leading-[36px] font-normal text-[1.2em] lg:w-[70%]'>Madison Reed faced a challenge: developing a mobile app to enhance their digital presence and integrate seamlessly with their customers' mobile experience. The tight schedule added urgency, requiring careful framing and prioritization.</p>
-                        <p className=' lg:text-[24px] leading-[36px] font-normal lg:w-[70%]'>Rootstrap, their chosen partner, had the responsibility of building the app within the timeframe while ensuring a smooth transition for Madison Reed's internal team. Knowledge continuity was crucial for a successful launch and maintenance.</p>
+                        <p className='lg:text-[24px] lg:leading-[36px] leading-[26px] font-normal text-[18px] lg:w-[70%]'>Madison Reed faced a challenge: developing a mobile app to enhance their digital presence and integrate seamlessly with their customers' mobile experience. The tight schedule added urgency, requiring careful framing and prioritization.</p>
+                        <p className=' lg:text-[24px] lg:leading-[36px] leading-[26px] font-normal text-[18px] font-normal lg:w-[70%]'>Rootstrap, their chosen partner, had the responsibility of building the app within the timeframe while ensuring a smooth transition for Madison Reed's internal team. Knowledge continuity was crucial for a successful launch and maintenance.</p>
                     </div>
 
 

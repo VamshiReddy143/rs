@@ -6,7 +6,7 @@ const Team = () => {
     <div className='text-white bg-[#1b1b1b] pt-[8em] pb-[7em]'>
       <h1
         style={{ fontFamily: 'Poppins, sans-serif' }}
-        className='lg:text-[72px] text-[2.2em] font-semibold leading-tight text-center'
+        className='lg:text-[72px] text-[31px] text-left font-medium leading-[42px] lg:leading-tight text-center'
       >
         Join our team and unlock <span className='lg:block'>your potential!</span>
       </h1>
@@ -22,14 +22,14 @@ const Team = () => {
           />
           <h2
             style={{ fontFamily: 'Poppins, sans-serif' }}
-            className='font-semibold text-[35px]'
+            className='font-semibold lg:text-[35px] text-[32px]'
           >
             Growth and Development
           </h2>
           <div className='h-[3px] w-[20%] bg-[#ffc83f] rounded-full mt-3' />
           <p
             style={{ fontFamily: 'Poppins, sans-serif' }}
-            className='text-gray-200 text-[20px] font-normal line-clamp-3'
+            className='text-gray-200 lg:text-[20px] text-[16px] font-normal line-clamp-3'
           >
             Reach your full potential with training, mentorship, feedback program.
           </p>
@@ -45,14 +45,14 @@ const Team = () => {
           />
           <h2
             style={{ fontFamily: 'Poppins, sans-serif' }}
-            className='font-semibold text-[35px]'
+            className='font-semibold lg:text-[35px] text-[32px]'
           >
             Wellness
           </h2>
           <div className='h-[3px] w-[20%] bg-[#ffc83f] rounded-full mt-3' />
           <p
             style={{ fontFamily: 'Poppins, sans-serif' }}
-            className='text-gray-200 text-[20px] font-normal line-clamp-3'
+            className='text-gray-200 lg:text-[20px] text-[16px] font-normal line-clamp-3'
           >
             Prioritize your well-being with a comprehensive set of options for you.
           </p>
@@ -68,14 +68,14 @@ const Team = () => {
           />
           <h2
             style={{ fontFamily: 'Poppins, sans-serif' }}
-            className='font-semibold text-[35px]'
+            className='font-semibold lg:text-[35px] text-[32px]'
           >
             Find your own balance
           </h2>
           <div className='h-[3px] w-[20%] bg-[#ffc83f] rounded-full mt-3' />
           <p
             style={{ fontFamily: 'Poppins, sans-serif' }}
-            className='text-gray-200 text-[20px] font-normal line-clamp-3'
+            className='text-gray-200 lg:text-[20px] text-[16px] font-normal line-clamp-3'
           >
             Achieve balance and fulfillment with flexible work arrangements.
           </p>
@@ -91,14 +91,14 @@ const Team = () => {
           />
           <h2
             style={{ fontFamily: 'Poppins, sans-serif' }}
-            className='font-semibold text-[35px]'
+            className='font-semibold lg:text-[35px] text-[32px]'
           >
             Team building
           </h2>
           <div className='h-[3px] w-[20%] bg-[#ffc83f] rounded-full mt-3' />
           <p
             style={{ fontFamily: 'Poppins, sans-serif' }}
-            className='text-gray-200 text-[20px] font-normal line-clamp-3'
+            className='text-gray-200 lg:text-[20px] text-[16px] font-normal line-clamp-3'
           >
             Foster connections and teamwork with opportunities for social events,
             team-building activities, and more.
@@ -115,14 +115,14 @@ const Team = () => {
           />
           <h2
             style={{ fontFamily: 'Poppins, sans-serif' }}
-            className='font-semibold text-[35px]'
+            className='font-semibold lg:text-[35px] text-[32px]'
           >
             Customized processes
           </h2>
           <div className='h-[3px] w-[20%] bg-[#ffc83f] rounded-full mt-3' />
           <p
             style={{ fontFamily: 'Poppins, sans-serif' }}
-            className='text-gray-200 text-[20px] font-normal line-clamp-3'
+            className='text-gray-200 lg:text-[20px] text-[16px] font-normal line-clamp-3'
           >
             Receive prizes and recognitions, while enjoying working with the latest
             technologies.
@@ -139,14 +139,14 @@ const Team = () => {
           />
           <h2
             style={{ fontFamily: 'Poppins, sans-serif' }}
-            className='font-semibold text-[35px]'
+            className='font-semibold lg:text-[35px] text-[32px]'
           >
             Digital empowerment
           </h2>
           <div className='h-[3px] w-[20%] bg-[#ffc83f] rounded-full mt-3' />
           <p
             style={{ fontFamily: 'Poppins, sans-serif' }}
-            className='text-gray-200 text-[20px] font-normal line-clamp-3'
+            className='text-gray-200 lg:text-[20px] text-[16px] font-normal line-clamp-3'
           >
             Enjoy advanced digital tools for improved collaboration and efficiency.
           </p>

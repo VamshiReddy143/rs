@@ -92,11 +92,11 @@ const Hero = () => {
 
   return (
     <div style={{ fontFamily: 'Poppins, sans-serif' }}  ref={sectionRef} className="min-h-screen bg-red-700 pb-[5em] ">
-      <div className="lg:pt-[15em] pt-[7em] text-center lg:max-w-[90em]  lg:px-[6em] px-3 mx-auto">
+      <div className="lg:pt-[15em] pt-[13em] text-center lg:max-w-[90em]  lg:px-[6em] px-3 mx-auto">
         <div>
-          <h1 className="lg:text-[36px] text-[1.7em] font-semibold text-white">
+          <h1 className="lg:text-[36px] text-[1.7em] font-medium text-white">
             A Dynamic Partnership{' '}
-            <span className="font-extrabold">Shaping the Future</span> of Online Education
+            <span className="font-semibold">Shaping the Future</span> of Online Education
           </h1>
           <Image 
             ref={imageRef}
@@ -104,7 +104,7 @@ const Hero = () => {
             alt="Team collaborating for online education" 
             width={900} 
             height={900} 
-            className="object-cover w-full lg:mt-[10em] mt-[6em]" 
+            className="object-cover w-full lg:mt-[10em] lg:h-full lg:w-full h-[20em] mt-[6em]" 
           />
         </div>
 

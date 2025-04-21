@@ -4,10 +4,10 @@ import React from 'react'
 
 const Fprojects = () => {
   return (
-    <div className='flex flex-col items-start justify-center pb-10'>
+    <div className='flex flex-col items-start pt-[7em] lg:pt-[0em] justify-center pb-10'>
       <div className='flex flex-col gap-1 leading-snug'>
-        <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[32px] font-medium'>Featured</h1>
-        <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[64px] font-medium'>Projects</h1>
+        <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[32px] text-[21px] font-medium'>Featured</h1>
+        <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[64px] text-[42px] font-medium'>Projects</h1>
         <div className='bg-white w-[70px] h-[4px] mt-5' />
       </div>
 
@@ -25,7 +25,7 @@ const Fprojects = () => {
               />
             </div>
             <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[32px] font-medium mt-4'>MasterClass</h1>
-            <p style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[20px]'>A dynamic partnership shaping the future of online education</p>
+            <p style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[20px] text-[16px] leading-[26px]'>A dynamic partnership shaping the future of online education</p>
           </div>
          </Link>
 
@@ -41,7 +41,7 @@ const Fprojects = () => {
               />
             </div>
             <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[32px] font-medium mt-4'>Emeritus</h1>
-            <p style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[20px]'>Delving into the progressive transformation that boosted user experience and conversions.</p>
+            <p style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[20px] text-[16px] leading-[26px]'>Delving into the progressive transformation that boosted user experience and conversions.</p>
           </div>
           </Link>
 
@@ -57,7 +57,7 @@ const Fprojects = () => {
               />
             </div>
             <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[32px] font-medium mt-4'>Livestock Health</h1>
-            <p style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[20px]'>A revolutionary step in animal health: AI-based illness detection</p>
+            <p style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[20px] text-[16px] leading-[26px]'>A revolutionary step in animal health: AI-based illness detection</p>
           </div>
           </Link>
 
@@ -73,7 +73,7 @@ const Fprojects = () => {
               />
             </div>
             <h1 className='text-[2em] font-bold mt-4'>Madison Reed</h1>
-            <p className='text-[1.3em]'>Elevating an omnichannel customer experience</p>
+            <p className='lg:text-[20px] text-[16px] leading-[26px]'>Elevating an omnichannel customer experience</p>
           </div>
           </Link>
         </div>

@@ -41,14 +41,14 @@ const Community = () => {
       >
         <div className="flex flex-col justify-center h-screen lg:w-[45%]">
           <div className="leading-tight">
-            <h1 className="lg:text-[80px] text-[#ffc83f] text-[3em] leading-[96px]">
+            <h1 className="lg:text-[80px] text-[#ffc83f] text-[3em] lg:leading-[96px]">
               Talent <span className="text-[#ffc83f]">✩</span>
             </h1>
             <h1 className="lg:text-[80px] text-[3em] leading-[96px]">
               Community!
             </h1>
           </div>
-          <p className="lg:text-[32px] text-[1.5em] mt-5 font-medium leading-[48px]">
+          <p className="lg:text-[32px] text-[1.5em] mt-5 font-medium lg:leading-[48px]">
             Subscribe to our community and be the first to hear about our news and
             special updates from our team.
           </p>

@@ -12,7 +12,7 @@ const page = () => {
       
       <div className="flex flex-col items-start lg:w-[60%] w-full lg:pb-26 md:pb-[20em] justify-center h-screen leading-tight">
       <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[64px] md:text-[56px] text-[40px]  font-bold">
-                Accelerate Your Node<span className="block">Roadmap</span>
+                Accelerate Your Node<span className="lg:block">Roadmap</span>
                 </h1>
                 <p className="mt-5 text-[16px] text-[#bcbcc0] lg:w-[89%] md:w-[70%] leading-[1.9]">
                 We consistently deliver top-tier Node.js engineering services for partners across a wide range of projects. Our expertise is perfect for real-time applications and operating in complex, data-intensive environments because we always optimize for performance and scalability.
@@ -77,7 +77,7 @@ const page = () => {
                         <p>↓</p>
                     </div>
                     <div>
-                        <ul className='flex gap-2 items-center justify-center mt-5'>
+                        <ul className='flex gap-2 items-center justify-start mt-5'>
                             <li className="relative text-[#49895c] font-bold text-[1em] px-3 py-1 rounded-full border border-[#49895c] border-b-0">
                                 AI
                                 <span className="absolute bottom-0 left-0 w-full h-[8px] bg-gradient-to-t from-[#2424225] to-transparent rounded-b-full"></span>
@@ -99,7 +99,7 @@ const page = () => {
                         </ul>
 
 
-                        <ul className='flex gap-2 items-left justify-center  mt-5'>
+                        <ul className='flex gap-2 items-left justify-start  mt-5'>
                            
                             
                             <li className="relative text-[#75ff9C] font-bold text-[1em] px-3 py-1 rounded-full border border-[#75ff9C] border-b-0">

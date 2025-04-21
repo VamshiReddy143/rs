@@ -38,10 +38,11 @@ const Hero = () => {
     }, []); // Empty dependency array to run once on mount
 
     return (
-        <div className=' relative mt-[4em] bg-[#212121] lg:mt-0 md:mt-[4em] mb-[4em]  flex justify-between items-center overflow-x-hidden'>
+      <div>
+          <div className=' relative lg:pt-[0em] pt-[10em] bg-[#212121] lg:mt-0 md:mt-[4em] mb-[4em]  flex justify-between items-center overflow-x-hidden'>
             <div className='flex flex-col items-start gap-7 lg:w-[50%]'>
-                <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[80px] text-[3em] font-medium'>Our Work</h1>
-                <h2  style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[32px] text-[1.5em] text-gray-200 font-normal'>
+                <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[80px] text-[56px] leading-[67px] font-medium'>Our Work</h1>
+                <h2  style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[32px] text-[21px] leading-[32px] text-gray-200 font-normal'>
                     Explore our portfolio to see how we turn ideas into exceptional experiences.
                 </h2>
             </div>
@@ -102,6 +103,9 @@ const Hero = () => {
                 </div>
             </div>
         </div>
+
+        <div className='w-full h-[2px] bg-[#383838] md:hidden'/>
+      </div>
     );
 };
 

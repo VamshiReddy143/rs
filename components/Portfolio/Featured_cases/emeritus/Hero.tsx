@@ -105,7 +105,7 @@ const Hero = () => {
             alt="Team collaborating for online education"
             width={900}
             height={900}
-            className="object-cover w-full mt-[5em]"
+            className="object-cover w-full h-[40vh] lg:h-full mt-[5em]"
           />
         </div>
 

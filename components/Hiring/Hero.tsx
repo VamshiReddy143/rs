@@ -90,9 +90,9 @@ const Hero = () => {
   }, []);
 
   return (
-    <div className="lg:p-[10%] lg:pt-[10%] mt-[2em] p-5 lg:pt-0 bg-gray-200 text-black">
-      <div className="flex flex-col pt-10 gap-5">
-        <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[72px] text-[2em] font-medium">We Grow Together!</h1>
+    <div className="lg:p-[10%] lg:pt-[10%] mt-[2em] p-5 lg:pt-0 bg-gray-200 text-black pb-[10em]">
+      <div className="flex flex-col pt-[4em] gap-5">
+        <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[72px] text-[33px] font-medium">We Grow Together!</h1>
         <p  style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[20px] leading-[30px]">
           If you want to level up your career at a company in constant motion, you’ve come to the right place.
         </p>
@@ -109,20 +109,20 @@ const Hero = () => {
       </div>
       <div className="flex flex-col md:flex-col lg:flex-row justify-between gap-[5em] mt-[10em]">
         <div className="">
-          <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[45px] w-[120%] text-[2em] font-medium leading-[54px]">
+          <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[45px] lg:w-[120%] text-[35px] leading-[38px]  font-normal lg:leading-[54px]">
             We believe in fostering a culture of creativity, autonomy, and ownership.
           </h1>
-          <p  style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[20px] text-[1.2em] font-normal mt-10 leading-[30px]">
+          <p  style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[20px] text-[18px] font-normal leading-[26px] mt-10 lg:leading-[30px]">
             We encourage every member of our team to propose new ideas and make important decisions. By empowering
             individuals to think and act as leaders, we create a dynamic and innovative environment that drives growth
             and success. <span className="font-bold"> We nurture talent</span>.
           </p>
         </div>
-        <div className="lg:mt-[10em] mt-[7em]">
-          <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[45px] text-[2em] font-medium leading-[54px]">
+        <div className="lg:mt-[10em] mt-[4em]">
+          <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[45px] lg:w-[120%] text-[35px] leading-[38px]  font-normal lg:leading-[54px]">
             We aim to achieve the highest quality outcomes.
           </h1>
-          <p  style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[20px] text-[1.2em] font-normal mt-10 leading-[30px]">
+          <p  style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[20px] text-[18px] font-normal mt-10 leading-[26px] lg:leading-[30px]">
             Our challenging projects require excellent results. As a team, we embrace continuous improvement in all
             aspects of our work, from processes and capabilities to services. We seek self-improvement. We strive as a
             team. <span className="font-bold">We grow together</span>.

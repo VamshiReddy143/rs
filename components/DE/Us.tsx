@@ -7,8 +7,8 @@ const Us = () => {
     <div className='mt-[9em] flex flex-col items-center justify-center '>
 
 <div className='text-center flex flex-col lg:gap-9 gap-2'>
-            <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[36px] text-[2.2em] font-semibold text-center'>Get Started in as Little as Two Weeks</h1>
-            <p className='lg:text-[16px] text-[15px] text-[#bcbcc0] text-center'>We provide a free and guaranteed estimate for cost and timeline with every engagement.</p>
+            <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[36px] text-[36px] leading-[43px] font-semibold text-center'>Get Started in as Little as Two Weeks</h1>
+            <p className='lg:text-[16px] text-[16px] text-[#bcbcc0] text-center leading-[32px]'>We provide a free and guaranteed estimate for cost and timeline with every engagement.</p>
         </div>
 
 
@@ -35,7 +35,7 @@ const Us = () => {
 
 
 <Link href={"/contact"}>
-      <div className='mt-10'>
+      <div className='mt-10 hidden md:block'>
       <button className='text-[16px] bg-[#f6ff7a] text-black px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
             Get in Touch ➔
           </button>

@@ -94,8 +94,8 @@ const Hero = () => {
   return (
     <div style={{ fontFamily: 'Poppins, sans-serif' }}  ref={sectionRef} className="min-h-screen bg-[#b84d00]">
       <div className="lg:max-w-[90em] mx-auto lg:px-[4em] px-3">
-        <h1 className="lg:text-[36px] leading-[43px] font-medium text-[1.7em] text-center  lg:pt-[6em] pt-[5em]">
-          Leading the Future of <span className="font-semibold">Livestock Health</span> with Advanced AI Technology.
+        <h1 className="lg:text-[36px] lg:leading-[43px] font-medium text-[28px] leading-[34px] text-center  lg:pt-[6em] pt-[5em]">
+          Leading the Future of <span className="font-semibold">Livestock Health</span> with Advanced <span className="block lg:inline">AI Technology.</span>
         </h1>
         <video
           ref={videoRef}
@@ -103,12 +103,12 @@ const Hero = () => {
           autoPlay
           muted
           loop
-          className="w-full h-auto lg:h-[35em] object-cover rounded-xl lg:mt-[10em] mt-[5em]"
+          className="w-full  lg:h-[35em] h-[32em] object-cover  lg:mt-[10em] mt-[5em]"
         />
       </div>
 
       <div className="mt-10 flex flex-col lg:pt-[5em] items-start lg:px-[10em] lg:pb-[10em] px-4">
-        <h1 className="lg:text-[80px] leading-[96px]   text-[2em] font-semibold text-white leading-tight">
+        <h1 className="lg:text-[80px] lg:leading-[96px] leading-[50px]   text-[40px] font-semibold text-white ">
           Revolutionizing Livestock Health:An AI-Driven Approach to Illness Detection
         </h1>
         <div className="lg:flex justify-between w-full mt-10">

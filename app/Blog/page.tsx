@@ -28,7 +28,7 @@ const Page: React.FC = () => {
           selectedCategory={selectedCategory}
         />
       </div>
-      <div className="mx-auto hidden md:block px-3">
+      <div className="mx-auto px-3">
         <Scroller />
       </div>
       <div className="lg:max-w-[90em] mx-auto lg:px-[6em] px-3">

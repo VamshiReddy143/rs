@@ -101,8 +101,8 @@ const Projects = () => {
         {/* Header Section */}
         <div className="flex items-end justify-between px-3 lg:px-[4em] lg:max-w-[90em] mx-auto">
           <div>
-            <h2 className="md:text-[32px] text-[1.5em] leading-[38px]">More</h2>
-            <h1 className="md:text-[64px] text-[2.5em] font-semibold leading-[77px]">Projects</h1>
+            <h2 className="md:text-[32px] text-[1.5em] lg:leading-[38px]">More</h2>
+            <h1 className="md:text-[64px] text-[2.5em] font-semibold lg:leading-[77px]">Projects</h1>
             <div className="h-[2px] w-[60px] bg-black rounded-full mt-2" />
           </div>
 
@@ -116,7 +116,7 @@ const Projects = () => {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="black"
-                className="w-15 h-15"
+                className="lg:w-15 lg:h-15 w-10 h-10"
               >
                 <path d="M13.1717 12.0007L8.22192 7.05093L9.63614 5.63672L16.0001 12.0007L9.63614 18.3646L8.22192 16.9504L13.1717 12.0007Z"></path>
               </svg>
@@ -131,7 +131,7 @@ const Projects = () => {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="black"
-                className="w-15 h-15"
+                className="lg:w-15 lg:h-15 w-10 h-10"
               >
                 <path d="M13.1717 12.0007L8.22192 7.05093L9.63614 5.63672L16.0001 12.0007L9.63614 18.3646L8.22192 16.9504L13.1717 12.0007Z"></path>
               </svg>

@@ -18,7 +18,7 @@ const Capabilities = () => {
           className="card h-[450px] w-full max-w-[400px] bg-[#242425] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
         >
           <div
-            className="absolute inset-0 bg-center bg-no-repeat mb-[14em] h-[18em] transition-transform duration-500 group-hover:scale-110"
+            className="absolute inset-0 bg-center bg-no-repeat lg:mb-[14em] lg:h-[18em] mb-[16em] h-[15em] transition-transform duration-500 group-hover:scale-110"
             style={{
               backgroundImage: "url('/lineimg1.png')",
               backgroundSize: "contain",
@@ -61,7 +61,7 @@ const Capabilities = () => {
           className="card h-[450px] w-full max-w-[400px] group rounded-[1.5em] bg-[#242425] relative overflow-hidden transition-all duration-500"
         >
           <div
-            className="absolute inset-0 bg-center bg-no-repeat mb-[14em] h-[18em] transition-transform duration-500 group-hover:scale-110"
+            className="absolute inset-0 bg-center bg-no-repeat lg:mb-[14em] lg:h-[18em] mb-[16em] h-[15em] transition-transform duration-500 group-hover:scale-110"
             style={{
               backgroundImage: "url('/lineimg2.png')",
               backgroundSize: "contain",
@@ -102,7 +102,7 @@ const Capabilities = () => {
           className="card h-[450px] w-full max-w-[400px] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
         >
          <div
-            className="absolute inset-0 bg-center bg-no-repeat bg-[#242425] mb-[14em] h-[18em]  transition-transform duration-500 group-hover:scale-110"
+            className="absolute inset-0 bg-center bg-no-repeat bg-[#242425] lg:mb-[14em] lg:h-[18em] mb-[16em] h-[15em]  transition-transform duration-500 group-hover:scale-110"
             style={{
               backgroundImage: "url('/lineimg3.png')",
               backgroundSize: "contain",
@@ -144,7 +144,7 @@ const Capabilities = () => {
           className="card h-[450px] w-full max-w-[400px] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"
         >
           <div
-            className="absolute inset-0 bg-center bg-no-repeat bg-[#242425] mb-[14em] h-[18em]  transition-transform duration-500 group-hover:scale-110"
+            className="absolute inset-0 bg-center bg-no-repeat bg-[#242425] lg:mb-[14em] lg:h-[18em] mb-[16em] h-[15em]  transition-transform duration-500 group-hover:scale-110"
             style={{
               backgroundImage: "url('/lineimg4.png')",
               backgroundSize: "contain",
@@ -188,7 +188,7 @@ const Capabilities = () => {
           className="card h-[450px] w-full max-w-[400px] group rounded-[1.5em]  relative overflow-hidden transition-all duration-500"
         >
           <div
-            className="absolute inset-0 bg-center bg-no-repeat bg-[#242425] mb-[14em] h-[18em]   transition-transform duration-500 group-hover:scale-110"
+            className="absolute inset-0 bg-center bg-no-repeat bg-[#242425] lg:mb-[14em] lg:h-[18em] mb-[16em] h-[15em]   transition-transform duration-500 group-hover:scale-110"
             style={{
               backgroundImage: "url('/lineimg5.png')",
               backgroundSize: "contain",
@@ -226,7 +226,7 @@ const Capabilities = () => {
           className="card h-[450px] w-full max-w-[400px] group rounded-[1.5em]  relative overflow-hidden transition-all duration-500"
         >
           <div
-            className="absolute inset-0 bg-center bg-no-repeat bg-[#242425] mb-[14em] h-[18em]   transition-transform duration-500 group-hover:scale-110"
+            className="absolute inset-0 bg-center bg-no-repeat bg-[#242425] lg:mb-[14em] lg:h-[18em] mb-[16em] h-[15em]   transition-transform duration-500 group-hover:scale-110"
             style={{
               backgroundImage: "url('/lineimg6.png')",
               backgroundSize: "contain",

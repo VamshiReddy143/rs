@@ -4,7 +4,7 @@ import React from "react";
 const Fun: React.FC = () => {
   return (
     <div className="lg:p-[10%] md:p-[5%] p-5 lg:min-h-screen px-2 bg-gray-200 text-black">
-      <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[56px] text-[2em] md:text-[4em] font-medium  leading-[67px]">
+      <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[56px] w-[70%] lg:w-full text-[2em] md:text-[4em] font-medium  lg:leading-[67px]">
         Having fun is a key part of the process.
       </h1>
 
@@ -78,7 +78,7 @@ const Fun: React.FC = () => {
       </div>
 
       <div>
-        <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:mt-[4em] md:mt-0 lg:text-[56px] text-[2em] text-right font-medium">
+        <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:mt-[4em] md:mt-0 lg:text-[56px] leading-[42px] lg:leading-[84px] text-[35px] text-right font-medium">
           We believe that collaborative, close-knit{" "}
           <span>teams can achieve the unthinkable.</span>
         </h1>

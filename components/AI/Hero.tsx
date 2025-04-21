@@ -29,7 +29,7 @@ const page = () => {
                 <div className='bg-[#242425] lg:flex hidden md:block items-center absolute md:bottom-20 lg:bottom-0 left-1/2 -translate-x-1/2 justify-center lg:p-5 md:p-10 lg:rounded-full  lg:w-fit md:w-full'>
                     <div className='flex md:flex-col  items-center justify-center gap-5 py-3'>
                         <p className="whitespace-nowrap overflow-hidden text-ellipsis text-[16px] text-[#bcbcc0] flex">Staff Augmentation & Product Studio Available Across: <span className='hidden lg:block ml-4'>➔</span> </p>         
-                        <p className='lg:hidden md:block'>↓</p>
+                        <p className='lg:hidden text-[#bcbcc0] md:block'>↓</p>
                     </div>
                     <div>
                         <ul className='flex gap-2 items-center justify-center ml-5 md:mt-5 lg:mt-0'>
@@ -76,7 +76,7 @@ const page = () => {
                         <p>↓</p>
                     </div>
                     <div>
-                        <ul className='flex gap-2 items-center justify-center mt-5'>
+                        <ul className='flex gap-2 items-start justify-start mt-5'>
                             <li className="relative text-[#49895c] font-bold text-[1em] px-3 py-1 rounded-full border border-[#49895c] border-b-0">
                                 AI
                                 <span className="absolute bottom-0 left-0 w-full h-[8px] bg-gradient-to-t from-[#2424225] to-transparent rounded-b-full"></span>
@@ -98,7 +98,7 @@ const page = () => {
                         </ul>
 
 
-                        <ul className='flex gap-2 items-left justify-center  mt-5'>
+                        <ul className='flex gap-2 items-left justify-start  mt-5'>
                            
                             
                             <li className="relative text-[#75ff9C] font-bold text-[1em] px-3 py-1 rounded-full border border-[#75ff9C] border-b-0">

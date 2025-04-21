@@ -2,17 +2,17 @@ import React from 'react';
 
 const Capabilities = () => {
   return (
-    <div className=" lg:mt-4 min-h-[auto] lg:min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-0">
+    <div className=" lg:mt-4 min-h-[auto] lg:min-h-screen flex flex-col items-center justify-center  sm:px-6 lg:px-0">
       <div className="flex flex-col items-center justify-center gap-2 pt-[6em] text-center w-full">
-        <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[48px] sm:text-[2.2em] lg:text-[36px]  font-semibold leading-tight">
+        <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[36px] sm:text-[2.2em] lg:text-[36px]  font-semibold leading-tight">
           Our Capabilities
         </h1>
-        <p className="text-[#bcbcc0] text-[21px] sm:text-[21px] font-normal lg:text-[16px] ">
+        <p className="text-[#bcbcc0] text-[16px] leading-[32px] sm:text-[21px] font-normal lg:text-[16px] ">
         We're proud to offer exceptional talent across a variety of digital disciplines.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-y-5 items-center !important w-full mt-[5em]  gap-3 max-w-5xl">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-y-5 items-center !important w-full lg:mt-[5em] mt-[3em]  gap-3 max-w-5xl">
         {/* Card 1: Artificial Intelligence */}
         <div
           className="card h-[450px] w-full max-w-[350px] bg-[#242425] group rounded-[1.5em] relative overflow-hidden transition-all duration-500"

@@ -94,7 +94,7 @@ const Hero = () => {
     <div style={{ fontFamily: 'Poppins, sans-serif' }} ref={sectionRef} className="min-h-screen bg-[#720058] flex flex-col items-center justify-center">
       <div className="lg:mt-[15em] mt-[10em] text-center px-3 lg:px-[4em] lg:max-w-[90em] mx-auto">
         <div>
-          <h1 className="lg:text-[36px] text-[1.7em] font-normal leading-[43px] text-white">
+          <h1 className="lg:text-[36px] text-[1.7em] font-normal lg:leading-[43px] text-white">
             Madison Reed and Rootstrap Coloring{' '}
             <span className="font-semibold">Outside the Lines</span>
           </h1>
@@ -104,12 +104,12 @@ const Hero = () => {
             alt="Team collaborating for online education"
             width={900}
             height={900}
-            className="object-cover w-full pt-[7em]"
+            className="object-cover w-full h-[55vh] lg:h-full pt-[7em]"
           />
         </div>
 
         <div className="pt-[5em] flex flex-col items-start">
-          <h1 className="lg:text-[77px] text-[2em] font-medium text-left text-white pr-5 leading-[96px] mt-5">
+          <h1 className="lg:text-[77px] text-[2em] font-medium text-left text-white pr-5 lg:leading-[96px] mt-5">
             Beyond the App: Impacting the Beauty Industry and Consumers
           </h1>
           <div className="lg:flex justify-between w-full pt-[4em] pb-10">

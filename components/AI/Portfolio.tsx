@@ -5,10 +5,10 @@ import React from 'react';
 const Portfolio = () => {
     return (
         <div className="flex flex-col items-center justify-center gap-6 lg:pt-[8em] pt-[7em]">
-            <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[2.4em] text-[2em] font-bold text-center">
+            <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[2.4em] leading-[43px] text-[36px] font-bold text-center">
                 Our Portfolio: Artificial Intelligence & Machine Learning
             </h1>
-            <p className="text-[#bcbcc0] text-center">
+            <p className="text-[#bcbcc0] text-center leading-[32px]">
                 We have partnered with some of the world‘s fastest-growing startups and most innovative corporations.
             </p>
 

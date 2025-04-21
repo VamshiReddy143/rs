@@ -6,17 +6,17 @@ const Hero = () => {
   return (
     <div className="relative lg:max-w-[100em] mx-auto lg:px-[6em]  bg-[#f4f3ef]    text-black ">
       <div className="min-h-screen flex items-center  px-3 justify-between">
-        <div className="text-black  lg:w-[80%]">
-          <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[72px] text-[2.5em]  font-[500] leading-tight">
+        <div className="text-black w-full  lg:w-[80%]">
+          <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[72px] text-[37px] lg:leading-[86px]  font-[500] leading-[48px]">
             Calm, Steady Hands for the New Digital Economy
           </h1>
-          <p style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[20px] text-[#1b1b1b] font-normal leading-tight lg:mt-9 mt-3 lg:w-[90%]">
+          <p style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[20px] text-[18px] leading-[26px] text-[#1b1b1b] font-normal  lg:mt-9 mt-3 lg:w-[90%]">
             Since 2011, we&apos;ve navigated accelerating technological change,
             developing custom software that enables our clients to embrace the
             future with confidence.
           </p>
         </div>
-        <div className="absolute lg:right-[8em] lg:top-[14em] right-10 top-[11em] transform -translate-y-1/2">
+        <div className="absolute hidden lg:block lg:right-[8em] lg:top-[14em] right-10 top-[11em] transform -translate-y-1/2">
           <Image
             src={"/triangle.svg"}
             alt="tools"

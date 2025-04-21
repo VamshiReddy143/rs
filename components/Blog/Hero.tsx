@@ -22,10 +22,10 @@ const Hero: React.FC<HeroProps> = ({ searchTerm, setSearchTerm, selectedCategory
   return (
     <div className="bg-[#191a1b] text-white lg:min-h-screen pt-10 lg:pt-0 md:pt-5 bg-no-repeat bg-none md:bg-[position:calc(100%+300px)_top] lg:bg-[position:calc(100%+50px)_top] md:bg-[length:1100px_auto] lg:bg-[length:1000px_auto] md:bg-[url('https://cdn.prod.website-files.com/63f902d79a33f71d496cde07/67210c73068849a398c9bf41_blog-hero-bg.webp')]">
       <div className="flex justify-between items-center">
-        <div className="pt-[4%]">
+        <div className="lg:pt-[4%] pt-[5em]">
           <h1
             style={{ fontFamily: "Poppins, sans-serif" }}
-            className="text-white lg:text-[4em] md:text-[3.5em] text-[2.5em] lg:w-[40%] md:w-[80%] font-bold leading-[74px]"
+            className="text-white lg:text-[4em] md:text-[3.5em] text-[40px] leading-[48px] lg:w-[40%] md:w-[80%] font-bold lg:leading-[74px]"
           >
             Data-Centric News & Insights From Our Team
           </h1>
@@ -38,7 +38,7 @@ const Hero: React.FC<HeroProps> = ({ searchTerm, setSearchTerm, selectedCategory
       </div>
 
       <div className="flex lg:flex-row flex-col-reverse lg:gap-[5em] gap-[2em] mt-[7em]">
-        <ul className="flex flex-wrap gap-3 lg:w-[50%]">
+        <ul className="flex flex-wrap gap-3 lg:w-[48%] w-[80%]">
           {[
             "AI/MachineLearning",
             "Agile",
@@ -76,7 +76,7 @@ const Hero: React.FC<HeroProps> = ({ searchTerm, setSearchTerm, selectedCategory
             placeholder="I am looking for..."
           />
           <svg
-            className="absolute right-3 top-1/5 transform -translate-y-1/2 h-6 w-6 text-gray-300 z-10"
+            className="absolute right-3 lg:top-1/5 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-300 z-10"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

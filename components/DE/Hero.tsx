@@ -72,7 +72,7 @@ const page = () => {
                         <p>↓</p>
                     </div>
                     <div>
-                        <ul className='flex gap-2 items-center justify-center mt-5'>
+                        <ul className='flex gap-2 items-center justify-start mt-5'>
                             <li className="relative text-[#49895c] font-bold text-[1em] px-3 py-1 rounded-full border border-[#49895c] border-b-0">
                                 AI
                                 <span className="absolute bottom-0 left-0 w-full h-[8px] bg-gradient-to-t from-[#2424225] to-transparent rounded-b-full"></span>
@@ -94,7 +94,7 @@ const page = () => {
                         </ul>
 
 
-                        <ul className='flex gap-2 items-left justify-center  mt-5'>
+                        <ul className='flex gap-2 items-left justify-start  mt-5'>
                            
                             
                             <li className="relative text-[#75ff9C] font-bold text-[1em] px-3 py-1 rounded-full border border-[#75ff9C] border-b-0">

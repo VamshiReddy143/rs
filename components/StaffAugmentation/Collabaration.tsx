@@ -35,10 +35,10 @@ const Collabaration = () => {
         // Animation for the right section (text content)
         gsap.fromTo(
             rightSectionRef.current,
-            { opacity: 0, x: 100 }, // Start state: invisible and shifted right
+            { opacity: 0, y: 100 }, // Start state: invisible and shifted down
             {
                 opacity: 1,
-                x: 0, // End state: fully visible and in position
+                y: 0, // End state: fully visible and in position
                 duration: 1,
                 ease: 'power3.out',
                 scrollTrigger: {
@@ -57,14 +57,14 @@ const Collabaration = () => {
     }, []);
 
     return (
-        <div className="lg:min-h-screen  flex  lg:flex-row md:flex-col-reverse flex-col-reverse  justify-between items-center">
-            <div ref={leftSectionRef} className="  relative">
+        <div className="lg:min-h-screen flex lg:flex-row md:flex-col-reverse flex-col-reverse justify-between items-center">
+            <div ref={leftSectionRef} className="relative">
                 <Image
                     src="/collabaration.png"
                     alt="team"
                     width={900}
                     height={900}
-                     className="lg:h-[550px] lg:w-[500px]  h-[450px] w-full py-[3em]  md:py-0 object-cover"
+                    className="lg:h-[550px] lg:w-[500px] h-[450px] w-full py-[3em] md:py-0 object-cover"
                 />
             </div>
             <div
@@ -79,10 +79,10 @@ const Collabaration = () => {
                     Rootstrap practices agile development to maximize communication, user validation, and speed to market. This means sprint planning together, plus weekly demos, daily standups, and shared Slack so we always stay in sync.
                 </p>
                 <Link href={"/Contact"}>
-               <button className="mt-10 border bg-transparent px-3 py-3 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors">
-               Get In Touch <span className='ml-2'>➔</span>
-                </button>
-               </Link>
+                    <button className="mt-10 border bg-transparent px-3 py-3 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors">
+                        Get In Touch <span className='ml-2'>➔</span>
+                    </button>
+                </Link>
             </div>
         </div>
     );

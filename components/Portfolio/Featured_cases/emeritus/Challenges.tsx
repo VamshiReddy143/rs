@@ -177,7 +177,7 @@ const Challenges = () => {
 
   return (
     <div style={{ fontFamily: 'Poppins, sans-serif' }} className="bg-[#212121] text-white overflow-hidden pt-[10em]">
-      <div className="lg:px-[2em] pt-[1em] pb-[1em] lg:text-[55px] text-[2em] font-medium mx-auto leading-[77px]">
+      <div className="lg:px-[2em] pt-[1em] pb-[1em] lg:text-[55px] text-[32px] leading-[38px] font-medium mx-auto lg:leading-[77px]">
         A progressive transformation that enhanced{" "}
         <span className="inline bg-gradient-to-t from-green-600 to-green-600 bg-[length:100%_0.3em] bg-no-repeat bg-bottom">
           Digital Presence
@@ -210,18 +210,18 @@ const Challenges = () => {
       <div className="lg:flex items-center justify-between lg:max-w-[90em] mx-auto lg:px-[4em] px-3 pt-[3em] pb-[1em]">
         <h1 className="lg:text-[48px] leading-[58px]  text-[2.4em] font-semibold w-[90%]">Challenge</h1>
         <div className="flex flex-col items-center gap-10">
-          <p className="lg:text-[24px] text-[1.3em] font-medium leading-[36px]">
+          <p className="lg:text-[24px] text-[18px] leading-[26px] font-normal lg:leading-[36px]">
             Emeritus turned to Rootstrap to modernize the tech stack and enhance
             the performance of and results delivered by a mission-critical web
             application.
           </p>
-          <p className="lg:text-[24px] text-[1.3em] font-medium leading-[36px]">
+          <p className="lg:text-[24px] text-[18px] leading-[26px] font-normal lg:leading-[36px]">
             The Emeritus Enrollment Engine was suffering from recurrent platform
             crashes that impacted enrollment and revenue generation, and needed a
             complete revamp to improve website performance, functionality, and end
             results.
           </p>
-          <p className="lg:text-[24px] text-[1.3em] font-medium leading-[36px]">
+          <p className="lg:text-[24px] text-[18px] leading-[26px] font-normal lg:leading-[36px]">
             Our team was also tasked with the creation and execution of a
             migration plan to help Emeritus transition away from a legacy,
             underperforming technical solution.
@@ -230,7 +230,7 @@ const Challenges = () => {
       </div>
 
       <div className="lg:flex items-start justify-between gap-[10em] lg:pl-[10em] mx-auto lg:pl-[4em] lg:pt-[20em] pt-[5em] px-3 pb-[1em]">
-        <h1 className="lg:text-[48px] leading-[58px] text-[2em] font-semibold">
+        <h1 className="lg:text-[48px] lg:leading-[58px] text-[2em] font-semibold">
           What <span className="block">we did?</span>
         </h1>
 
@@ -263,10 +263,10 @@ const Challenges = () => {
       </div>
 
       <div className="mt-10 lg:pl-[10em]  lg:pl-[4em]  px-3 pb-[10em] lg:w-[70%]">
-        <p className="lg:text-[24px] leading-[36px] pt-[3em]  text-[1.4em] font-medium ">
+        <p className="lg:text-[24px] lg:leading-[36px] pt-[3em]  text-[18px] leading-[26px] font-normal ">
           We progressively grew the team from 4 engineers to a cross-functional team of more than 30 people.
         </p>
-        <p className="lg:text-[24px] leading-[36px]  pb-[1em] text-[1.4em] font-medium ">
+        <p className="lg:text-[24px] lg:leading-[36px] mt-3  text-[18px] leading-[26px] font-normal ">
           We successfully migrated Emeritus’s previous Salesforce-based system onto a new platform while maintaining website functionality
         </p>
       </div>

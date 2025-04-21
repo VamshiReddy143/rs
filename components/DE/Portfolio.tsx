@@ -5,10 +5,10 @@ import React from 'react';
 const Portfolio = () => {
     return (
         <div className="flex flex-col items-center justify-center gap-9 lg:pt-[8em] pt-[7em]">
-            <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[2.4em] text-[2em] font-bold text-center">
-                Our Portfolio: Data Services
+            <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[2.4em] text-[36px] leading-[43px] font-bold text-center">
+                Our Portfolio: <span className="block lg:inline"> Data Services</span>
             </h1>
-            <p className="text-[#bcbcc0] text-center">
+            <p className="text-[#bcbcc0] text-center text-[16px] leading-[32px]">
                 We have partnered with some of the world‘s fastest-growing startups and most innovative corporations.
             </p>
 

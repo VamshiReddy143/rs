@@ -110,7 +110,7 @@ const CountryMap = () => {
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-[#1a1a1a] pb-[10em] text-white px-4 sm:px-8 lg:pl-[6em]">
-      <div className="lg:w-1/3 w-full relative pt-[15em]">
+      <div className="lg:w-1/3 w-full relative lg:pt-[15em] pt-[6em]">
         <div className="mb-8 sm:mb-12">
           <h3 className="text-2xl sm:text-3xl lg:text-[32px] font-normal leading-[38px] mb-2">Our</h3>
           <h1 className="text-3xl sm:text-4xl lg:text-[72px] font-semibold text-[#FFB800]">
@@ -173,7 +173,7 @@ const CountryMap = () => {
         </div>
       </div>
 
-      <div className="flex-1 w-full h-[50vh] sm:h-[60vh] lg:h-screen">
+      <div className="flex-1 w-full h-[50vh] pt-10 sm:h-[60vh] lg:h-screen">
         <ComposableMap
           projection="geoMercator"
           projectionConfig={{ scale: 120, center: [0, 20] }}

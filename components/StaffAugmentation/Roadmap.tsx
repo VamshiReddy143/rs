@@ -16,10 +16,10 @@ const Roadmap = () => {
         // Animation for the left section (text content)
         gsap.fromTo(
             leftSectionRef.current,
-            { opacity: 0, x: -100 }, // Start state: invisible and shifted left
+            { opacity: 0, y: 100 }, // Start state: invisible and shifted down
             {
                 opacity: 1,
-                x: 0, // End state: fully visible and in position
+                y: 0, // End state: fully visible and in position
                 duration: 1,
                 ease: 'power3.out',
                 scrollTrigger: {
@@ -62,18 +62,18 @@ const Roadmap = () => {
                 ref={leftSectionRef}
                 className="flex flex-col items-start gap-6 lg:w-[50%] w-full"
             >
-                 <p className="text-[#bcbcc0] text-[16px]">Scalable & Flexible</p>
-                 <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[36px] font-semibold">
+                <p className="text-[#bcbcc0] text-[16px]">Scalable & Flexible</p>
+                <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="text-[36px] font-semibold">
                     Accelerate Your Roadmap with Multiple Cross-Functional Pods
                 </h1>
                 <p className="text-[16px] text-[#bcbcc0] leading-loose">
-                    Rootstrap tackles large-scale projects with teams as large as 50 people operating across several independent working groups called &apos;pods&apos;, complete with engineers, PMs, QA, DevOps, designers, and more.
+                    Rootstrap tackles large-scale projects with teams as large as 50 people operating across several independent working groups called 'pods', complete with engineers, PMs, QA, DevOps, designers, and more.
                 </p>
                 <Link href={"/Contact"}>
-               <button className="mt-10 border bg-transparent px-3 py-3 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors">
-               Get In Touch <span className='ml-2'>➔</span>
-                </button>
-               </Link>
+                    <button className="mt-10 border bg-transparent px-3 py-3 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors">
+                        Get In Touch <span className='ml-2'>➔</span>
+                    </button>
+                </Link>
             </div>
 
             <div ref={rightSectionRef} className="lg:w-[40%] relative">
@@ -82,7 +82,7 @@ const Roadmap = () => {
                     alt="team"
                     width={900}
                     height={900}
-                    className="lg:h-[550px] lg:w-[500px]  h-[450px] w-full py-[3em]  md:py-0 object-cover"
+                    className="lg:h-[550px] lg:w-[500px] h-[450px] w-full py-[3em] md:py-0 object-cover"
                 />
             </div>
         </div>

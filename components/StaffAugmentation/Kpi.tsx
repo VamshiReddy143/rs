@@ -16,10 +16,10 @@ const Kpi = () => {
         // Animation for the left section (text content)
         gsap.fromTo(
             leftSectionRef.current,
-            { opacity: 0, x: -100 }, // Start state: invisible and shifted left
+            { opacity: 0, y: 100 }, // Start state: invisible and shifted down
             {
                 opacity: 1,
-                x: 0, // End state: fully visible and in position
+                y: 0, // End state: fully visible and in position
                 duration: 1,
                 ease: 'power3.out',
                 scrollTrigger: {
@@ -34,10 +34,10 @@ const Kpi = () => {
         // Animation for the right section (image)
         gsap.fromTo(
             rightSectionRef.current,
-            { opacity: 0, x: 100, scale: 0.8 }, // Start state: invisible, shifted right, and slightly scaled down
+            { opacity: 0, y: 100, scale: 0.8 }, // Start state: invisible, shifted down, and slightly scaled down
             {
                 opacity: 1,
-                x: 0,
+                y: 0,
                 scale: 1, // End state: fully visible, in position, and normal size
                 duration: 1.2,
                 ease: 'power3.out',
@@ -68,10 +68,10 @@ const Kpi = () => {
                     Rootstrap understands that results are the only thing that really matter. We take ownership of our work and provide strategic recommendations every step of the way based on what we believe is best for your business.
                 </p>
                 <Link href={"/Contact"}>
-               <button className="mt-10 border bg-transparent px-3 py-3 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors">
-               Get In Touch <span className='ml-2'>➔</span>
-                </button>
-               </Link>
+                    <button className="mt-10 border bg-transparent px-3 py-3 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors">
+                        Get In Touch <span className='ml-2'>➔</span>
+                    </button>
+                </Link>
             </div>
 
             <div ref={rightSectionRef} className="lg:w-[40%] relative flex justify-center">
@@ -80,7 +80,7 @@ const Kpi = () => {
                     alt="team"
                     width={900}
                     height={900}
-                    className="lg:h-[550px] lg:w-[500px] h-[450px] w-full py-[3em]  md:py-0  object-cover"
+                    className="lg:h-[550px] lg:w-[500px] h-[450px] w-full py-[3em] md:py-0 object-cover"
                 />
             </div>
         </div>
