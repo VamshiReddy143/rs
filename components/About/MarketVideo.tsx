@@ -49,7 +49,7 @@ const MarketVideo = () => {
         {/* Wrapper with dynamic width */}
         <div
           ref={videoWrapperRef}
-          className="relative w-[80%] aspect-[19/10] overflow-hidden transition-all duration-500 ease-in-out"
+          className="relative w-[80%] aspect-[20/10] overflow-hidden transition-all duration-500 ease-in-out"
         >
           {/* Video */}
           <video
@@ -64,10 +64,10 @@ const MarketVideo = () => {
           {/* SVG Mask */}
           <div className="absolute inset-0 overflow-hidden">
             <Image
-              src="/mask.svg"
+              src="/mask3.svg"
               alt="tools"
               fill
-              className="object-cover   pointer-events-none "
+              className="     pointer-events-none "
             />
           </div>
         </div>

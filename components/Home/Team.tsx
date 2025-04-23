@@ -133,7 +133,7 @@ const Team: React.FC = () => {
       </div>
 
       <div className="mt-5 lg:flex gap-5">
-        <div className="relative lg:w-[70%] w-full overflow-hidden group">
+        <div className="relative lg:w-[70%] w-full rounded-xl overflow-hidden group">
           <Link href="/Portfolio/Featuredcases/masterclass">
             {/* Image with zoom effect on hover */}
             <Image
@@ -160,7 +160,7 @@ const Team: React.FC = () => {
 
 
 
-        <div className="relative lg:w-[35%] overflow-hidden group">
+        <div className="relative lg:w-[35%] rounded-xl overflow-hidden group">
           <Link href="/Portfolio/Featuredcases/farmers_dog">
             {/* Image with zoom effect */}
             <Image
@@ -186,7 +186,7 @@ const Team: React.FC = () => {
 
       </div>
 
-      <div className="lg:flex justify-center gap-5 text-center">
+      <div className="lg:flex justify-center rounded-xl gap-5 text-center">
         <div className="flex flex-col lg:gap-6 gap-5 lg:w-[35%] mx-auto lg:mt-5 mt-5 relative">
           <div className="relative overflow-hidden group">
             <Link href="/Portfolio/Featuredcases/emeritus">
@@ -213,7 +213,7 @@ const Team: React.FC = () => {
           </div>
 
 
-          <div className="relative overflow-hidden group">
+          <div className="relative overflow-hidden rounded-xl group">
             <Link href="/Portfolio/Featuredcases/madison">
               {/* Image with subtle zoom on hover */}
               <Image

@@ -5,9 +5,8 @@ import React from 'react';
 const page = () => {
     return (
 
-        <div
-        className="bg-[#191a1b] text-white lg:min-h-screen pt-[7em] lg:pt-0 md:pt-5 bg-no-repeat md:bg-[position:calc(100%+500px)_top] lg:bg-[position:calc(100%+220px)_top] md:bg-[length:1300px_auto] md:bg-[url('/linebg.png')]"
-      >
+        <div className="bg-[#191a1b] text-white lg:min-h-screen pt-16 lg:pt-0 md:pt-5 bg-no-repeat md:bg-[position:calc(100%+500px)_top] lg:bg-[position:calc(100%+220px)_top] md:bg-[length:1300px_auto] md:bg-[url('/linebg.png')]">
+
       
             <div className="flex flex-col items-start lg:w-[60%] w-full lg:pb-10 md:pb-[20em] justify-center h-screen leading-tight ">
               <div className='pb-10'>

@@ -1,179 +1,163 @@
-
-
-
-
 "use client";
 
-import Image from 'next/image';
-import React, { useState, useEffect } from 'react';
+import Image from "next/image";
+import React, { useState, useEffect } from "react";
 
-const Clients = () => {
-    // Sample data for 5 clients
-    const clients = [
-        {
-            image: "/client1.png",
-            testimonial:
-                `Since I joined the company, I feel that I have been experiencing constant learning, from the internal talks provided within the company to the continuous code reviews I receive from my colleagues.`,
-            name: "Belen Iglesias",
-            role: "Engineering Lead",
-        },
-        {
-            image: "/client2.png",
-            testimonial:
-                "Started out as a back-end Junior developer 8 years ago, and now I am an Engineering Manager. I can't just say this is the company I work for; it's the place where I get to work with many of my closest friends and the smartest people I've met, growing both personally and professionally together.",
-            name: "John Doe",
-            role: "Senior Developer",
-        },
-        {
-            image: "/client3.png",
-            testimonial:
-                "I choose Rootstrap because it pursues technical excellence and outstanding client service, and it also provides a unique environment for us to thrive, professionally and personally. The culture, the values, people around actually cares, it’s not just a slogan.",
-            name: "Jane Smith",
-            role: "Product Manager",
-        },
-        {
-            image: "/client4.png",
-            testimonial:
-                "I empathize with Rootstrap’s values. I work in a company that allows me to be authentic, surrounded by people who care for my well-being, and provides ample opportunities for personal growth and learning. And all this while enjoying the process.",
-            name: "Alice Johnson",
-            role: "UX Designer",
-        },
+interface TeamMember {
+  _id: string;
+  image: string;
+  testimonial: string;
+  name: string;
+  role: string;
+}
 
-        {
-            image: "/client5.png",
-            testimonial:
-                "I empathize with Rootstrap’s values. I work in a company that allows me to be authentic, surrounded by people who care for my well-being, and provides ample opportunities for personal growth and learning. And all this while enjoying the process.",
-            name: "Alice Johnson",
-            role: "UX Designer",
-        },
+const Clients: React.FC = () => {
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-        {
-            image: "/client6.png",
-            testimonial:
-                "I've always felt the support of the company and my coworkers whenever I wanted to achieve something. It was here that I started getting involved with the Ruby community, which resulted in contributing to the Rails framework, attending conferences, and being a speaker at RailsConf.",
-            name: "Santiago Bartesaghi",
-            role: "Architect",
-        },
-
-        {
-            image: "/client7.png",
-            testimonial:
-                "I empathize with Rootstrap’s values. I work in a company that allows me to be authentic, surrounded by people who care for my well-being, and provides ample opportunities for personal growth and learning. And all this while enjoying the process.",
-            name: "Alice Johnson",
-            role: "UX Designer",
-        },
-
-    ];
-
-    const [currentIndex, setCurrentIndex] = useState(0);
-
-    // Auto-scroll every 3 seconds
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentIndex((prevIndex) => (prevIndex + 1) % clients.length);
-        }, 3000);
-
-        return () => clearInterval(interval); // Cleanup interval on unmount
-    }, [clients.length]);
-
-    // Handle arrow button clicks
-    const handleNext = () => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % clients.length);
+  // Fetch team members from API
+  useEffect(() => {
+    const fetchTeamMembers = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("/api/team");
+        if (!response.ok) throw new Error("Failed to fetch team members");
+        const data = await response.json();
+        setTeamMembers(data);
+        setError(null);
+      } catch (err: any) {
+        setError(`Error: ${err.message}`);
+      } finally {
+        setLoading(false);
+      }
     };
+    fetchTeamMembers();
+  }, []);
 
-    const handlePrev = () => {
-        setCurrentIndex((prevIndex) =>
-            prevIndex === 0 ? clients.length - 1 : prevIndex - 1
-        );
-    };
+  // Auto-scroll every 3 seconds
+  useEffect(() => {
+    if (teamMembers.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % teamMembers.length);
+      }, 3000);
+      return () => clearInterval(interval); // Cleanup interval on unmount
+    }
+  }, [teamMembers.length]);
 
-    return (
-        <div className="bg-gray-300 lg:px-[10%] px-2 text-black  py-[5%] pb-[7em]">
-            {/* Carousel Container */}
-            <div className="relative overflow-hidden">
-                <div
-                    className="flex transition-transform duration-500 ease-in-out"
-                    style={{
-                        transform: `translateX(-${currentIndex * 100}%)`,
-                    }}
-                >
-                    {clients.map((client, index) => (
-                        <div
-                            key={index}
-                            className="w-full flex flex-col lg:flex-row md:flex-col lg:items-center md:items-start justify-center gap-7 min-w-[100%]"
-                        >
-                            <div className='flex items-center justify-between md:ml-10 lg:ml-0'>
-                               <div className='lg:h-[20em] lg:w-[20em] h-[8em] w-[8em]'>
-                               <Image
-                                    src={client.image}
-                                    width={800}
-                                    height={800}
-                                    alt="team"
-                                    className="rounded-full   object-cover"
-                                />
-                               </div>
+  // Handle arrow button clicks
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % teamMembers.length);
+  };
 
-                                <div className="flex gap-7 mt-10 md:hidden items-center ml-10">
-                                    <button onClick={handlePrev}>
-                                        <Image
-                                            src="/leftarrow.png"
-                                            width={900}
-                                            height={900}
-                                            alt="left arrow"
-                                            className="h-[4em] w-[4em] border-2 border-gray-400 p-2 cursor-pointer"
-                                        />
-                                    </button>
-                                    <button onClick={handleNext}>
-                                        <Image
-                                            src="/rightarrow.png"
-                                            width={900}
-                                            height={900}
-                                            alt="right arrow"
-                                            className="h-[4em] w-[4em] border-2 border-gray-400 p-2 rotate-180 cursor-pointer"
-                                        />
-                                    </button>
-                                </div>
-                            </div>
-                            <div className='md:ml-10 lg:ml-0'>
-                                <p style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[34px] text-[21px] mt-5 lg:mt-0 leading-[32px] font-medium lg:leading-[50px]">
-                                    {client.testimonial}
-                                </p>
-                                <div className="mt-5">
-                                    <h2 className="text-[28px] font-medium leading-[34px]">{client.name}</h2>
-                                    <p className="text-[20px] text-[#6f6f6e]">{client.role}</p>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Arrow Buttons */}
-            <div className="md:flex gap-7 mt-10 hidden   items-center ml-10">
-                <button onClick={handlePrev}>
-                    <Image
-                        src="/leftarrow.png"
-                        width={900}
-                        height={900}
-                        alt="left arrow"
-                        className="h-[5em] w-[5em] border-1 border-[#6f6f6e] p-2 cursor-pointer"
-                    />
-                </button>
-                <button onClick={handleNext}>
-                    <Image
-                        src="/rightarrow.png"
-                        width={900}
-                        height={900}
-                        alt="right arrow"
-                        className="h-[5em] w-[5em] border-1 border-[#6f6f6e] p-2 rotate-180 cursor-pointer"
-                    />
-                </button>
-            </div>
-        </div>
+  const handlePrev = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? teamMembers.length - 1 : prevIndex - 1
     );
+  };
+
+  return (
+    <div className="bg-gray-300 lg:px-[10%] px-2 text-black py-[5%] pb-[7em]">
+      {/* Loading or Error State */}
+      {loading && <p className="text-center">Loading team members...</p>}
+      {error && <p className="text-center text-red-600">{error}</p>}
+      {!loading && !error && teamMembers.length === 0 && (
+        <p   style={{ fontFamily: "Poppins, sans-serif" }} className="text-center text-2xl font-bold text-gray-600">No team members found.</p>
+      )}
+
+      {/* Carousel Container */}
+      {!loading && teamMembers.length > 0 && (
+        <>
+          <div className="relative overflow-hidden">
+            <div
+              className="flex transition-transform duration-500 ease-in-out"
+              style={{
+                transform: `translateX(-${currentIndex * 100}%)`,
+              }}
+            >
+              {teamMembers.map((member) => (
+                <div
+                  key={member._id}
+                  className="w-full flex flex-col lg:flex-row md:flex-col lg:items-center md:items-start justify-center gap-7 min-w-[100%]"
+                >
+                  <div className="flex items-center justify-between md:ml-10 lg:ml-0">
+                    <div className="lg:h-[20em] lg:w-[20em] h-[8em] w-[8em]">
+                      <Image
+                        src={member.image}
+                        width={800}
+                        height={800}
+                        alt={member.name}
+                        className="rounded-full object-cover"
+                      />
+                    </div>
+
+                    <div className="flex gap-7 mt-10 md:hidden items-center ml-10">
+                      <button onClick={handlePrev}>
+                        <Image
+                          src="/leftarrow.png"
+                          width={900}
+                          height={900}
+                          alt="left arrow"
+                          className="h-[4em] w-[4em] border-2 border-gray-400 p-2 cursor-pointer"
+                        />
+                      </button>
+                      <button onClick={handleNext}>
+                        <Image
+                          src="/rightarrow.png"
+                          width={900}
+                          height={900}
+                          alt="right arrow"
+                          className="h-[4em] w-[4em] border-2 border-gray-400 p-2 rotate-180 cursor-pointer"
+                        />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="md:ml-10 lg:ml-0">
+                    <p
+                      style={{ fontFamily: "Poppins, sans-serif" }}
+                      className="lg:text-[34px] text-[21px] mt-5 lg:mt-0 leading-[32px] font-medium lg:leading-[50px] line-clamp-5"
+                    >
+                      {member.testimonial}
+                    </p>
+                    <div className="mt-5">
+                      <h2 className="text-[28px] font-medium leading-[34px]">
+                        {member.name}
+                      </h2>
+                      <p className="text-[20px] text-[#6f6f6e]">{member.role}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Arrow Buttons */}
+          <div className="md:flex gap-7 mt-10 hidden items-center ml-10">
+            <button onClick={handlePrev}>
+              <Image
+                src="/leftarrow.png"
+                width={900}
+                height={900}
+                alt="left arrow"
+                className="h-[5em] w-[5em] border-1 border-[#6f6f6e] p-2 cursor-pointer"
+              />
+            </button>
+            <button onClick={handleNext}>
+              <Image
+                src="/rightarrow.png"
+                width={900}
+                height={900}
+                alt="right arrow"
+                className="h-[5em] w-[5em] border-1 border-[#6f6f6e] p-2 rotate-180 cursor-pointer"
+              />
+            </button>
+            </div>
+          </>
+        )}
+      </div>
+    
+  );
 };
 
 export default Clients;
-
-
-
