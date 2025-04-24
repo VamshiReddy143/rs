@@ -7,6 +7,11 @@ import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { Document, Page, pdfjs } from "react-pdf";
+import { FaBell } from "react-icons/fa";
+
+// Set up PDF.js worker
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 interface ContentItem {
   type: "heading" | "paragraph" | "image" | "code";
@@ -32,35 +37,85 @@ interface TeamMember {
   role: string;
 }
 
+interface Job {
+  _id: string;
+  title: string;
+  location: string;
+  description: string;
+  employmentType: string;
+  postedDate: string;
+}
+
+interface Application {
+  _id: string;
+  jobId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  resume: string;
+  linkedIn?: string;
+  website?: string;
+  country: string;
+  knewRootstrap: string;
+  heardFrom?: string;
+  heardFromDetails?: string;
+  submittedAt: string;
+}
+
 const AdminDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"create" | "blogs" | "team">("create");
+  const [activeTab, setActiveTab] = useState<"create" | "blogs" | "team" | "jobs">("create");
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [applications, setApplications] = useState<Application[]>([]);
   const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
   const [editingTeamMember, setEditingTeamMember] = useState<TeamMember | null>(null);
+  const [editingJob, setEditingJob] = useState<Job | null>(null);
   const [title, setTitle] = useState<string>("");
   const [category, setCategory] = useState<string>("");
   const [customCategory, setCustomCategory] = useState<string>("");
   const [author, setAuthor] = useState<string>("");
   const [primaryImage, setPrimaryImage] = useState<File | null>(null);
   const [primaryImagePreview, setPrimaryImagePreview] = useState<string>("");
-  const [content, setContent] = useState<ContentItem[]>([]);
   const [teamImage, setTeamImage] = useState<File | null>(null);
   const [teamImagePreview, setTeamImagePreview] = useState<string>("");
   const [testimonial, setTestimonial] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [role, setRole] = useState<string>("");
+  const [jobTitle, setJobTitle] = useState<string>("");
+  const [jobLocation, setJobLocation] = useState<string>("");
+  const [jobDescription, setJobDescription] = useState<string>("");
+  const [employmentType, setEmploymentType] = useState<string>("Full-Time");
+  const [content, setContent] = useState<ContentItem[]>([]); // Added content state
   const [loading, setLoading] = useState<boolean>(false);
   const [newContentType, setNewContentType] = useState<string>("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [viewingApplicationsForJob, setViewingApplicationsForJob] = useState<string | null>(null);
+  const [viewResumeUrl, setViewResumeUrl] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showBroadcastForm, setShowBroadcastForm] = useState<boolean>(false);
+  const [broadcastSubject, setBroadcastSubject] = useState<string>("");
+  const [broadcastMessage, setBroadcastMessage] = useState<string>("");
   const router = useRouter();
 
   const quillInstancesRef = useRef<(any | null)[]>([]);
+  const { quill, quillRef } = useQuill({
+    theme: "snow",
+    modules: {
+      toolbar: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["link"],
+        ["clean"],
+      ],
+    },
+  });
 
-  // Fetch blogs for Blogs tab
   useEffect(() => {
-    if (activeTab === "blogs") {
-      const fetchBlogs = async () => {
+    const fetchData = async () => {
+      if (activeTab === "blogs") {
         try {
           const response = await fetch("/api/blogs/allblogs");
           if (!response.ok) throw new Error("Failed to fetch blogs");
@@ -69,15 +124,7 @@ const AdminDashboard: React.FC = () => {
         } catch (error: any) {
           alert(`Error fetching blogs: ${error.message}`);
         }
-      };
-      fetchBlogs();
-    }
-  }, [activeTab]);
-
-  // Fetch team members for Team tab
-  useEffect(() => {
-    if (activeTab === "team") {
-      const fetchTeamMembers = async () => {
+      } else if (activeTab === "team") {
         try {
           const response = await fetch("/api/team");
           if (!response.ok) throw new Error("Failed to fetch team members");
@@ -86,52 +133,67 @@ const AdminDashboard: React.FC = () => {
         } catch (error: any) {
           alert(`Error fetching team members: ${error.message}`);
         }
-      };
-      fetchTeamMembers();
-    }
+      } else if (activeTab === "jobs") {
+        try {
+          const [jobsResponse, appsResponse] = await Promise.all([
+            fetch("/api/jobs"),
+            fetch("/api/applications"),
+          ]);
+          if (!jobsResponse.ok) throw new Error("Failed to fetch jobs");
+          if (!appsResponse.ok) throw new Error("Failed to fetch applications");
+          const [jobsData, appsData] = await Promise.all([
+            jobsResponse.json(),
+            appsResponse.json(),
+          ]);
+          setJobs(jobsData);
+          setApplications(appsData);
+        } catch (error: any) {
+          alert(`Error fetching jobs or applications: ${error.message}`);
+        }
+      }
+    };
+    fetchData();
   }, [activeTab]);
 
-  // Real-time validation for blog form
   useEffect(() => {
     const newErrors: { [key: string]: string } = {};
     if (activeTab === "create") {
-      if (title && title.length < 3) {
-        newErrors.title = "Title must be at least 3 characters";
-      }
-      if (author && author.length < 2) {
-        newErrors.author = "Author name must be at least 2 characters";
-      }
-      if (category === "Other" && customCategory.length < 2) {
+      if (title && title.length < 3) newErrors.title = "Title must be at least 3 characters";
+      if (author && author.length < 2) newErrors.author = "Author name must be at least 2 characters";
+      if (category === "Other" && customCategory.length < 2)
         newErrors.customCategory = "Custom category must be at least 2 characters";
-      }
     } else if (activeTab === "team") {
-      if (name && name.length < 2) {
-        newErrors.name = "Name must be at least 2 characters";
-      }
-      if (role && role.length < 2) {
-        newErrors.role = "Role must be at least 2 characters";
-      }
+      if (name && name.length < 2) newErrors.name = "Name must be at least 2 characters";
+      if (role && role.length < 2) newErrors.role = "Role must be at least 2 characters";
       if (testimonial) {
         const lines = testimonial.split("\n");
-        if (lines.length > 5) {
-          newErrors.testimonial = "Testimonial cannot exceed 5 lines";
-        } else if (testimonial.length > 500) {
+        if (lines.length > 5) newErrors.testimonial = "Testimonial cannot exceed 5 lines";
+        else if (testimonial.length > 500)
           newErrors.testimonial = "Testimonial cannot exceed 500 characters";
-        }
       }
+    } else if (activeTab === "jobs") {
+      if (jobTitle && jobTitle.length < 3) newErrors.jobTitle = "Job title must be at least 3 characters";
+      if (jobLocation && jobLocation.length < 3) newErrors.jobLocation = "Location must be at least 3 characters";
+      if (jobDescription && quill && quill.getText().length < 10)
+        newErrors.jobDescription = "Description must be at least 10 characters";
     }
     setErrors(newErrors);
-  }, [title, author, category, customCategory, name, role, testimonial, activeTab]);
+  }, [title, author, category, customCategory, name, role, testimonial, jobTitle, jobLocation, jobDescription, quill]);
 
-  // Handle category change
+  useEffect(() => {
+    if (quill && activeTab === "jobs") {
+      quill.root.innerHTML = jobDescription;
+      const handleTextChange = () => setJobDescription(quill.root.innerHTML);
+      quill.on("text-change", handleTextChange);
+      return () => quill.off("text-change", handleTextChange);
+    }
+  }, [quill, jobDescription, activeTab]);
+
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCategory(e.target.value);
-    if (e.target.value !== "Other") {
-      setCustomCategory("");
-    }
+    if (e.target.value !== "Other") setCustomCategory("");
   };
 
-  // Handle primary image upload for blog
   const handlePrimaryImageChange = (file: File | null) => {
     if (file) {
       setPrimaryImage(file);
@@ -142,7 +204,6 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  // Handle team image upload
   const handleTeamImageChange = (file: File | null) => {
     if (file) {
       setTeamImage(file);
@@ -153,43 +214,43 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  // Handle drag-and-drop for primary image
-  const handlePrimaryImageDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith("image/")) {
-      handlePrimaryImageChange(file);
-    }
-  }, []);
+  const handlePrimaryImageDrop = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith("image/")) handlePrimaryImageChange(file);
+    },
+    []
+  );
 
-  // Handle drag-and-drop for team image
-  const handleTeamImageDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith("image/")) {
-      handleTeamImageChange(file);
-    }
-  }, []);
+  const handleTeamImageDrop = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith("image/")) handleTeamImageChange(file);
+    },
+    []
+  );
 
-  // Add new content item for blog
+  const handleImageDrop = useCallback(
+    (index: number, e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith("image/")) handleContentChange(index, "value", file);
+    },
+    []
+  );
+
   const addContentItem = (type: ContentItem["type"]) => {
     let newItem: ContentItem = { type, value: "" };
-    if (type === "image") {
-      newItem = { type, value: null, imagePreview: "" };
-    } else if (type === "code") {
-      newItem = { type, value: "", language: "javascript" };
-    }
+    if (type === "image") newItem = { type, value: null, imagePreview: "" };
+    else if (type === "code") newItem = { type, value: "", language: "javascript" };
     setContent([...content, newItem]);
     quillInstancesRef.current = [...quillInstancesRef.current, null];
     setNewContentType("");
   };
 
-  // Handle content change for blog
-  const handleContentChange = (
-    index: number,
-    field: "value" | "language",
-    value: string | File | null
-  ) => {
+  const handleContentChange = (index: number, field: "value" | "language", value: string | File | null) => {
     const updatedContent = [...content];
     updatedContent[index][field] = value;
     if (field === "value" && updatedContent[index].type === "image" && value instanceof File) {
@@ -198,7 +259,6 @@ const AdminDashboard: React.FC = () => {
     setContent(updatedContent);
   };
 
-  // Remove content item for blog
   const removeContentItem = (index: number) => {
     const updatedContent = [...content];
     updatedContent.splice(index, 1);
@@ -208,19 +268,6 @@ const AdminDashboard: React.FC = () => {
     quillInstancesRef.current = updatedQuills;
   };
 
-  // Handle image drop for blog content sections
-  const handleImageDrop = useCallback(
-    (index: number, e: React.DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith("image/")) {
-        handleContentChange(index, "value", file);
-      }
-    },
-    []
-  );
-
-  // Handle blog form submission
   const handleBlogSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (Object.keys(errors).length > 0) {
@@ -228,29 +275,20 @@ const AdminDashboard: React.FC = () => {
       return;
     }
     setLoading(true);
-
     try {
-      if (!title || !category || !author) {
-        throw new Error("Title, category, and author are required");
-      }
-
+      if (!title || !category || !author) throw new Error("Title, category, and author are required");
       const effectiveCategory = category === "Other" ? customCategory : category;
-      if (!effectiveCategory) {
-        throw new Error("Please specify a category");
-      }
+      if (!effectiveCategory) throw new Error("Please specify a category");
 
       const formData = new FormData();
       formData.append("title", title);
       formData.append("category", effectiveCategory);
       formData.append("author", author);
-      if (primaryImage) {
-        formData.append("primaryImage", primaryImage);
-      }
+      if (primaryImage) formData.append("primaryImage", primaryImage);
 
       const processedContent = content.map((item, index) => {
         const quill = quillInstancesRef.current[index];
-        const value =
-          item.type === "paragraph" && quill ? quill.root.innerHTML : item.value;
+        const value = item.type === "paragraph" && quill ? quill.root.innerHTML : item.value;
         return {
           type: item.type,
           value: typeof value === "string" ? value : `image-${index}`,
@@ -268,15 +306,8 @@ const AdminDashboard: React.FC = () => {
       const url = editingBlog ? `/api/blogs/${editingBlog._id}` : "/api/blogs/create";
       const method = editingBlog ? "PUT" : "POST";
 
-      const response = await fetch(url, {
-        method,
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to ${editingBlog ? "update" : "create"} blog: ${errorText}`);
-      }
+      const response = await fetch(url, { method, body: formData });
+      if (!response.ok) throw new Error(`Failed to ${editingBlog ? "update" : "create"} blog: ${await response.text()}`);
 
       alert(`Blog ${editingBlog ? "updated" : "created"} successfully!`);
       if (editingBlog) {
@@ -292,7 +323,6 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  // Handle team form submission
   const handleTeamSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (Object.keys(errors).length > 0) {
@@ -300,43 +330,25 @@ const AdminDashboard: React.FC = () => {
       return;
     }
     setLoading(true);
-
     try {
-      if (!teamImage && !editingTeamMember) {
-        throw new Error("Image is required");
-      }
-      if (!testimonial || !name || !role) {
-        throw new Error("Testimonial, name, and role are required");
-      }
+      if (!teamImage && !editingTeamMember) throw new Error("Image is required");
+      if (!testimonial || !name || !role) throw new Error("Testimonial, name, and role are required");
 
       const formData = new FormData();
       formData.append("testimonial", testimonial);
       formData.append("name", name);
       formData.append("role", role);
-      if (teamImage) {
-        formData.append("image", teamImage);
-      }
+      if (teamImage) formData.append("image", teamImage);
 
       const url = editingTeamMember ? `/api/team/${editingTeamMember._id}` : "/api/team";
       const method = editingTeamMember ? "PUT" : "POST";
 
-      const response = await fetch(url, {
-        method,
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to ${editingTeamMember ? "update" : "create"} team member: ${errorText}`);
-      }
+      const response = await fetch(url, { method, body: formData });
+      if (!response.ok)
+        throw new Error(`Failed to ${editingTeamMember ? "update" : "create"} team member: ${await response.text()}`);
 
       alert(`Team member ${editingTeamMember ? "updated" : "created"} successfully!`);
-      setEditingTeamMember(null);
-      setTeamImage(null);
-      setTeamImagePreview("");
-      setTestimonial("");
-      setName("");
-      setRole("");
+      resetTeamForm();
       setActiveTab("team");
     } catch (error: any) {
       alert(`Error: ${error.message}`);
@@ -345,23 +357,32 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  // Handle blog deletion
-  const handleBlogDelete = async (blogId: string) => {
-    if (!confirm("Are you sure you want to delete this blog?")) return;
+  const handleJobSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (Object.keys(errors).length > 0) {
+      alert("Please fix form errors before submitting");
+      return;
+    }
     setLoading(true);
-
     try {
-      const response = await fetch(`/api/blogs/${blogId}`, {
-        method: "DELETE",
-      });
+      if (!jobTitle || !jobLocation || !jobDescription)
+        throw new Error("Title, location, and description are required");
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to delete blog: ${errorText}`);
-      }
+      const formData = new FormData();
+      formData.append("title", jobTitle);
+      formData.append("location", jobLocation);
+      formData.append("description", jobDescription);
+      formData.append("employmentType", employmentType);
 
-      setBlogs(blogs.filter((blog) => blog._id !== blogId));
-      alert("Blog deleted successfully!");
+      const url = editingJob ? `/api/jobs/${editingJob._id}` : "/api/jobs";
+      const method = editingJob ? "PUT" : "POST";
+
+      const response = await fetch(url, { method, body: formData });
+      if (!response.ok) throw new Error(`Failed to ${editingJob ? "update" : "create"} job: ${await response.text()}`);
+
+      alert(`Job ${editingJob ? "updated" : "created"} successfully!`);
+      resetJobForm();
+      setActiveTab("jobs");
     } catch (error: any) {
       alert(`Error: ${error.message}`);
     } finally {
@@ -369,23 +390,25 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  // Handle team member deletion
-  const handleTeamDelete = async (teamId: string) => {
-    if (!confirm("Are you sure you want to delete this team member?")) return;
+  const handleBroadcastSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!broadcastSubject || !broadcastMessage) {
+      alert("Please provide both a subject and a message");
+      return;
+    }
     setLoading(true);
-
     try {
-      const response = await fetch(`/api/team/${teamId}`, {
-        method: "DELETE",
+      const response = await fetch("/api/broadcast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subject: broadcastSubject, message: broadcastMessage }),
       });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to delete team member: ${errorText}`);
-      }
-
-      setTeamMembers(teamMembers.filter((member) => member._id !== teamId));
-      alert("Team member deleted successfully!");
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Failed to send broadcast email");
+      alert(data.message);
+      setShowBroadcastForm(false);
+      setBroadcastSubject("");
+      setBroadcastMessage("");
     } catch (error: any) {
       alert(`Error: ${error.message}`);
     } finally {
@@ -393,44 +416,30 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  // Handle edit blog
-  const handleEditBlog = (blog: Blog) => {
-    setEditingBlog(blog);
-    setTitle(blog.title);
-    setCategory(blog.category);
-    setCustomCategory(
-      blog.category !== "Technology" &&
-      blog.category !== "Lifestyle" &&
-      blog.category !== "Education" &&
-      blog.category !== "Travel"
-        ? blog.category
-        : ""
-    );
-    setAuthor(blog.author);
-    setPrimaryImage(null);
-    setPrimaryImagePreview(blog.primaryImage || "");
-    setContent(
-      blog.content?.map((item) => ({
-        ...item,
-        value: item.type === "image" ? null : item.value,
-        imagePreview: item.type === "image" ? item.value as string : undefined,
-      }))
-    );
-    setActiveTab("create");
+  const handleJobDelete = async (jobId: string) => {
+    if (!confirm("Are you sure you want to delete this job?")) return;
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/jobs/${jobId}`, { method: "DELETE" });
+      if (!response.ok) throw new Error(`Failed to delete job: ${await response.text()}`);
+      setJobs(jobs.filter((job) => job._id !== jobId));
+      alert("Job deleted successfully!");
+    } catch (error: any) {
+      alert(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Handle edit team member
-  const handleEditTeamMember = (member: TeamMember) => {
-    setEditingTeamMember(member);
-    setTeamImage(null);
-    setTeamImagePreview(member.image);
-    setTestimonial(member.testimonial);
-    setName(member.name);
-    setRole(member.role);
-    setActiveTab("team");
+  const handleEditJob = (job: Job) => {
+    setEditingJob(job);
+    setJobTitle(job.title);
+    setJobLocation(job.location);
+    setJobDescription(job.description);
+    setEmploymentType(job.employmentType);
+    setActiveTab("jobs");
   };
 
-  // Reset blog form
   const resetBlogForm = () => {
     setEditingBlog(null);
     setTitle("");
@@ -439,12 +448,11 @@ const AdminDashboard: React.FC = () => {
     setAuthor("");
     setPrimaryImage(null);
     setPrimaryImagePreview("");
-    setContent([]);
+    setContent([]); // Reset content
     setErrors({});
     quillInstancesRef.current = [];
   };
 
-  // Reset team form
   const resetTeamForm = () => {
     setEditingTeamMember(null);
     setTeamImage(null);
@@ -455,24 +463,38 @@ const AdminDashboard: React.FC = () => {
     setErrors({});
   };
 
-  const quillModules = {
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline", "strike"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["link"],
-      ["clean"],
-    ],
+  const resetJobForm = () => {
+    setEditingJob(null);
+    setJobTitle("");
+    setJobLocation("");
+    setJobDescription("");
+    setEmploymentType("Full-Time");
+    setErrors({});
+  };
+
+  const handleViewResume = (resumeUrl: string) => {
+    setErrorMessage(null);
+    if (!resumeUrl || !resumeUrl.startsWith("https://res.cloudinary.com")) {
+      setErrorMessage("Invalid resume URL. Please check the database entry.");
+      return;
+    }
+
+    const baseUrl = resumeUrl.split("?")[0];
+    const inlineUrl = `${baseUrl}/fl_attachment:false,fl_inline,f_pdf`;
+    console.log("Attempting to view resume with URL:", inlineUrl);
+    setViewResumeUrl(inlineUrl);
+  };
+
+  const closeModal = () => {
+    setViewResumeUrl(null);
+    setErrorMessage(null);
   };
 
   const inputStyle =
     "bg-[#3d3d3f] p-4 w-full rounded-t-lg border-b-2 border-transparent focus:outline-none focus:border-[#f6ff7a] transition-all duration-300 text-white placeholder-gray-400";
 
   return (
-    <div
-      style={{ fontFamily: "Poppins, sans-serif" }}
-      className="min-h-screen bg-[#191a1b] text-white pt-[7em]"
-    >
+    <div style={{ fontFamily: "Poppins, sans-serif" }} className="min-h-screen bg-[#191a1b] text-white pt-[7em]">
       <style jsx>{`
         .container {
           --color-pure: #f6ff7a;
@@ -486,7 +508,6 @@ const AdminDashboard: React.FC = () => {
           justify-content: center;
           flex-direction: column;
         }
-
         .wrap {
           --round: 10px;
           --p-x: 8px;
@@ -505,7 +526,6 @@ const AdminDashboard: React.FC = () => {
           top: 0;
           z-index: 1;
         }
-
         .wrap input {
           height: 0;
           width: 0;
@@ -514,7 +534,6 @@ const AdminDashboard: React.FC = () => {
           display: none;
           visibility: hidden;
         }
-
         .label {
           cursor: pointer;
           outline: none;
@@ -538,18 +557,15 @@ const AdminDashboard: React.FC = () => {
           z-index: 2;
           -webkit-tap-highlight-color: transparent;
         }
-
         .label span {
           overflow: hidden;
           display: -webkit-box;
           -webkit-box-orient: vertical;
           -webkit-line-clamp: 1;
         }
-
         .wrap input[class*="rd-"]:checked + .label {
           color: var(--color-pure);
         }
-
         .bar {
           display: flex;
           align-items: center;
@@ -562,7 +578,6 @@ const AdminDashboard: React.FC = () => {
           z-index: 0;
           transition: transform 0.5s cubic-bezier(0.33, 0.83, 0.99, 0.98);
         }
-
         .bar::before,
         .bar::after {
           content: "";
@@ -571,17 +586,14 @@ const AdminDashboard: React.FC = () => {
           width: 100%;
           background: var(--color-secondary);
         }
-
         .bar::before {
           top: 0;
           border-radius: 0 0 9999px 9999px;
         }
-
         .bar::after {
           bottom: 0;
           border-radius: 9999px 9999px 0 0;
         }
-
         .slidebar {
           position: absolute;
           height: calc(100% - (var(--p-y) * 4));
@@ -592,27 +604,92 @@ const AdminDashboard: React.FC = () => {
           z-index: 0;
           transition: transform 0.5s cubic-bezier(0.33, 0.83, 0.99, 0.98);
         }
-
         .rd-1:checked ~ .bar,
         .rd-1:checked ~ .slidebar,
         .rd-1 + .label:hover ~ .slidebar {
           transform: translateX(0) scaleX(1);
         }
-
         .rd-2:checked ~ .bar,
         .rd-2:checked ~ .slidebar,
         .rd-2 + .label:hover ~ .slidebar {
           transform: translateX(100%) scaleX(1);
         }
-
         .rd-3:checked ~ .bar,
         .rd-3:checked ~ .slidebar,
         .rd-3 + .label:hover ~ .slidebar {
           transform: translateX(200%) scaleX(1);
         }
+        .rd-4:checked ~ .bar,
+        .rd-4:checked ~ .slidebar,
+        .rd-4 + .label:hover ~ .slidebar {
+          transform: translateX(300%) scaleX(1);
+        }
       `}</style>
-      <div className="max-w-4xl mx-auto bg-[#191a1b] rounded-xl shadow-2xl p-8 ">
-        {/* Tabs */}
+      <div className="max-w-4xl mx-auto bg-[#191a1b] rounded-xl shadow-2xl p-8 relative">
+        {/* Bell Icon */}
+        <button
+          onClick={() => setShowBroadcastForm(true)}
+          className="absolute top-4 right-4 text-[#f6ff7a] hover:text-yellow-500"
+          title="Send Broadcast Message"
+        >
+          <FaBell size={24} />
+        </button>
+
+        {/* Broadcast Popup Form */}
+        {showBroadcastForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-[#3d3d3f] p-6 rounded-lg w-96">
+              <h2 className="text-xl font-semibold text-[#f6ff7a] mb-4">Send Update to Subscribers</h2>
+              <form onSubmit={handleBroadcastSubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="subject" className="block text-sm font-medium text-gray-200">
+                    Subject
+                  </label>
+                  <input
+                    type="text"
+                    id="subject"
+                    value={broadcastSubject}
+                    onChange={(e) => setBroadcastSubject(e.target.value)}
+                    required
+                    className={inputStyle}
+                    placeholder="Enter email subject"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-gray-200">
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    value={broadcastMessage}
+                    onChange={(e) => setBroadcastMessage(e.target.value)}
+                    required
+                    rows={5}
+                    className={`${inputStyle} rounded-lg`}
+                    placeholder="Enter your message"
+                  />
+                </div>
+                <div className="flex gap-4">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex-1 py-2 bg-[#f6ff7a] text-black font-bold rounded-lg hover:bg-yellow-500 disabled:opacity-50"
+                  >
+                    {loading ? "Sending..." : "Send"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowBroadcastForm(false)}
+                    className="flex-1 py-2 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-500"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         <div className="container">
           <div className="wrap">
             <input
@@ -629,7 +706,6 @@ const AdminDashboard: React.FC = () => {
             <label htmlFor="rd-1" className="label">
               <span>Create</span>
             </label>
-
             <input
               type="radio"
               id="rd-2"
@@ -641,7 +717,6 @@ const AdminDashboard: React.FC = () => {
             <label htmlFor="rd-2" className="label">
               <span>Blogs</span>
             </label>
-
             <input
               type="radio"
               id="rd-3"
@@ -653,7 +728,17 @@ const AdminDashboard: React.FC = () => {
             <label htmlFor="rd-3" className="label">
               <span>Team</span>
             </label>
-
+            <input
+              type="radio"
+              id="rd-4"
+              name="radio"
+              className="rd-4"
+              checked={activeTab === "jobs"}
+              onChange={() => setActiveTab("jobs")}
+            />
+            <label htmlFor="rd-4" className="label">
+              <span>Jobs</span>
+            </label>
             <div className="bar"></div>
             <div className="slidebar"></div>
           </div>
@@ -661,21 +746,11 @@ const AdminDashboard: React.FC = () => {
 
         {activeTab === "create" && (
           <form onSubmit={handleBlogSubmit} className="space-y-8 mt-6">
-            {/* Category */}
             <div>
-              <label
-                htmlFor="category"
-                className="block text-lg font-medium mb-2 text-gray-200"
-              >
+              <label htmlFor="category" className="block text-lg font-medium mb-2 text-gray-200">
                 Category
               </label>
-              <select
-                id="category"
-                value={category}
-                onChange={handleCategoryChange}
-                required
-                className={inputStyle}
-              >
+              <select id="category" value={category} onChange={handleCategoryChange} required className={inputStyle}>
                 <option value="">Select a category</option>
                 <option value="Technology">Technology</option>
                 <option value="Lifestyle">Lifestyle</option>
@@ -692,19 +767,12 @@ const AdminDashboard: React.FC = () => {
                     placeholder="Enter custom category"
                     className={`${inputStyle} mt-2`}
                   />
-                  {errors.customCategory && (
-                    <p className="text-red-400 text-sm mt-1">{errors.customCategory}</p>
-                  )}
+                  {errors.customCategory && <p className="text-red-400 text-sm mt-1">{errors.customCategory}</p>}
                 </>
               )}
             </div>
-
-            {/* Title */}
             <div>
-              <label
-                htmlFor="title"
-                className="block text-lg font-medium mb-2 text-gray-200"
-              >
+              <label htmlFor="title" className="block text-lg font-medium mb-2 text-gray-200">
                 Blog Title
               </label>
               <input
@@ -716,17 +784,10 @@ const AdminDashboard: React.FC = () => {
                 className={inputStyle}
                 placeholder="Enter your blog title"
               />
-              {errors.title && (
-                <p className="text-red-400 text-sm mt-1">{errors.title}</p>
-              )}
+              {errors.title && <p className="text-red-400 text-sm mt-1">{errors.title}</p>}
             </div>
-
-            {/* Author */}
             <div>
-              <label
-                htmlFor="author"
-                className="block text-lg font-medium mb-2 text-gray-200"
-              >
+              <label htmlFor="author" className="block text-lg font-medium mb-2 text-gray-200">
                 Author Name
               </label>
               <input
@@ -738,17 +799,10 @@ const AdminDashboard: React.FC = () => {
                 className={inputStyle}
                 placeholder="Enter author name"
               />
-              {errors.author && (
-                <p className="text-red-400 text-sm mt-1">{errors.author}</p>
-              )}
+              {errors.author && <p className="text-red-400 text-sm mt-1">{errors.author}</p>}
             </div>
-
-            {/* Primary Image */}
             <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
-              <label
-                htmlFor="primary-image"
-                className="block text-lg font-medium mb-2 text-gray-200"
-              >
+              <label htmlFor="primary-image" className="block text-lg font-medium mb-2 text-gray-200">
                 Primary Blog Image (Drag & Drop or Click)
               </label>
               <input
@@ -780,52 +834,42 @@ const AdminDashboard: React.FC = () => {
                   </button>
                 </div>
               )}
-              <div
-                onDrop={handlePrimaryImageDrop}
-                onDragOver={(e) => e.preventDefault()}
-                className="h-20"
-              />
+              <div onDrop={handlePrimaryImageDrop} onDragOver={(e) => e.preventDefault()} className="h-20" />
             </div>
-
-            {/* Content Sections */}
             <div>
-              <h2 className="text-2xl font-bold mb-6 text-[#f6ff7a]">
-                Blog Content
-              </h2>
-              {content?.map((item, index) => (
-                <div
-                  key={index}
-                  className="border border-gray-600 rounded-xl p-6 mb-6 bg-gray-900 shadow-lg"
-                >
+              <h2 className="text-2xl font-bold mb-6 text-[#f6ff7a]">Blog Content</h2>
+              {content.map((item, index) => (
+                <div key={index} className="border border-gray-600 rounded-xl p-6 mb-6 bg-gray-900 shadow-lg">
                   <h3 className="text-xl font-semibold mb-4 text-gray-200">
                     {item.type.charAt(0).toUpperCase() + item.type.slice(1)} {index + 1}
                   </h3>
-
                   {item.type === "heading" && (
                     <input
                       type="text"
                       value={typeof item.value === "string" ? item.value : ""}
-                      onChange={(e) =>
-                        handleContentChange(index, "value", e.target.value)
-                      }
+                      onChange={(e) => handleContentChange(index, "value", e.target.value)}
                       required
                       className={inputStyle}
                       placeholder="Enter heading"
                     />
                   )}
-
                   {item.type === "paragraph" && (
                     <QuillEditor
                       index={index}
                       quillInstancesRef={quillInstancesRef}
-                      initialValue={
-                        typeof item.value === "string" ? item.value : ""
-                      }
-                      modules={quillModules}
+                      initialValue={typeof item.value === "string" ? item.value : ""}
+                      modules={{
+                        toolbar: [
+                          [{ header: [1, 2, 3, false] }],
+                          ["bold", "italic", "underline"],
+                          [{ list: "ordered" }, { list: "bullet" }],
+                          ["link"],
+                          ["clean"],
+                        ],
+                      }}
                       onChange={(value) => handleContentChange(index, "value", value)}
                     />
                   )}
-
                   {item.type === "image" && (
                     <div
                       className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center"
@@ -836,13 +880,7 @@ const AdminDashboard: React.FC = () => {
                         type="file"
                         id={`image-${index}`}
                         accept="image/*"
-                        onChange={(e) =>
-                          handleContentChange(
-                            index,
-                            "value",
-                            e.target.files?.[0] || null
-                          )
-                        }
+                        onChange={(e) => handleContentChange(index, "value", e.target.files?.[0] || null)}
                         className="hidden"
                       />
                       <label
@@ -869,14 +907,11 @@ const AdminDashboard: React.FC = () => {
                       )}
                     </div>
                   )}
-
                   {item.type === "code" && (
                     <div>
                       <select
                         value={item.language || "javascript"}
-                        onChange={(e) =>
-                          handleContentChange(index, "language", e.target.value)
-                        }
+                        onChange={(e) => handleContentChange(index, "language", e.target.value)}
                         className={inputStyle}
                       >
                         <option value="javascript">JavaScript</option>
@@ -888,9 +923,7 @@ const AdminDashboard: React.FC = () => {
                       </select>
                       <textarea
                         value={typeof item.value === "string" ? item.value : ""}
-                        onChange={(e) =>
-                          handleContentChange(index, "value", e.target.value)
-                        }
+                        onChange={(e) => handleContentChange(index, "value", e.target.value)}
                         className={`${inputStyle} rounded-lg h-40`}
                         placeholder="Enter your code"
                       />
@@ -905,7 +938,6 @@ const AdminDashboard: React.FC = () => {
                       )}
                     </div>
                   )}
-
                   <button
                     type="button"
                     onClick={() => removeContentItem(index)}
@@ -915,8 +947,6 @@ const AdminDashboard: React.FC = () => {
                   </button>
                 </div>
               ))}
-
-              {/* Add New Content */}
               <div className="flex gap-4">
                 <select
                   value={newContentType}
@@ -931,10 +961,7 @@ const AdminDashboard: React.FC = () => {
                 </select>
                 <button
                   type="button"
-                  onClick={() =>
-                    newContentType &&
-                    addContentItem(newContentType as ContentItem["type"])
-                  }
+                  onClick={() => newContentType && addContentItem(newContentType as ContentItem["type"])}
                   disabled={!newContentType}
                   className="px-6 py-3 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 disabled:opacity-50"
                 >
@@ -942,20 +969,13 @@ const AdminDashboard: React.FC = () => {
                 </button>
               </div>
             </div>
-
             <div className="flex gap-4">
               <button
                 type="submit"
                 disabled={loading || Object.keys(errors).length > 0}
                 className="flex-1 py-4 bg-[#f6ff7a] text-black font-bold rounded-lg hover:bg-yellow-500 disabled:opacity-50"
               >
-                {loading
-                  ? editingBlog
-                    ? "Updating..."
-                    : "Creating..."
-                  : editingBlog
-                  ? "Update Blog"
-                  : "Create Blog"}
+                {loading ? (editingBlog ? "Updating..." : "Creating...") : editingBlog ? "Update Blog" : "Create Blog"}
               </button>
               {editingBlog && (
                 <button
@@ -971,29 +991,20 @@ const AdminDashboard: React.FC = () => {
         )}
 
         {activeTab === "blogs" && (
-          <div className="space-y-6 mt-6 ">
+          <div className="space-y-6 mt-6">
             <h2 className="text-2xl font-bold text-[#f6ff7a]">Your Blogs</h2>
             {blogs.length === 0 ? (
               <p className="text-gray-400">No blogs found.</p>
             ) : (
               <div className="grid gap-6">
                 {blogs.map((blog) => (
-                  <div
-                    key={blog._id}
-                    className="bg-[#3d3d3f] p-6 rounded-xl border border-gray-600 shadow-lg"
-                  >
+                  <div key={blog._id} className="bg-[#3d3d3f] p-6 rounded-xl border border-gray-600 shadow-lg">
                     <div className="flex items-center gap-4">
                       {blog.primaryImage && (
-                        <img
-                          src={blog.primaryImage}
-                          alt={blog.title}
-                          className="w-24 h-24 object-cover rounded-lg"
-                        />
+                        <img src={blog.primaryImage} alt={blog.title} className="w-24 h-24 object-cover rounded-lg" />
                       )}
                       <div className="flex-1">
-                        <h3 className="text-xl font-semibold text-gray-200">
-                          {blog.title}
-                        </h3>
+                        <h3 className="text-xl font-semibold text-gray-200">{blog.title}</h3>
                         <p className="text-gray-400">Category: {blog.category}</p>
                         <p className="text-gray-400">Author: {blog.author}</p>
                       </div>
@@ -1023,12 +1034,8 @@ const AdminDashboard: React.FC = () => {
           <div className="space-y-6 mt-6">
             <h2 className="text-2xl font-bold text-[#f6ff7a]">Team Members</h2>
             <form onSubmit={handleTeamSubmit} className="space-y-8">
-              {/* Team Image */}
               <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
-                <label
-                  htmlFor="team-image"
-                  className="block text-lg font-medium mb-2 text-gray-200"
-                >
+                <label htmlFor="team-image" className="block text-lg font-medium mb-2 text-gray-200">
                   Team Member Image (Drag & Drop or Click)
                 </label>
                 <input
@@ -1060,19 +1067,10 @@ const AdminDashboard: React.FC = () => {
                     </button>
                   </div>
                 )}
-                <div
-                  onDrop={handleTeamImageDrop}
-                  onDragOver={(e) => e.preventDefault()}
-                  className="h-20"
-                />
+                <div onDrop={handleTeamImageDrop} onDragOver={(e) => e.preventDefault()} className="h-20" />
               </div>
-
-              {/* Testimonial */}
               <div>
-                <label
-                  htmlFor="testimonial"
-                  className="block text-lg font-medium mb-2 text-gray-200"
-                >
+                <label htmlFor="testimonial" className="block text-lg font-medium mb-2 text-gray-200">
                   Testimonial (Max 5 lines, 500 characters)
                 </label>
                 <textarea
@@ -1085,17 +1083,10 @@ const AdminDashboard: React.FC = () => {
                   className={`${inputStyle} rounded-lg`}
                   placeholder="Enter team member testimonial"
                 />
-                {errors.testimonial && (
-                  <p className="text-red-400 text-sm mt-1">{errors.testimonial}</p>
-                )}
+                {errors.testimonial && <p className="text-red-400 text-sm mt-1">{errors.testimonial}</p>}
               </div>
-
-              {/* Name */}
               <div>
-                <label
-                  htmlFor="name"
-                  className="block text-lg font-medium mb-2 text-gray-200"
-                >
+                <label htmlFor="name" className="block text-lg font-medium mb-2 text-gray-200">
                   Name
                 </label>
                 <input
@@ -1107,17 +1098,10 @@ const AdminDashboard: React.FC = () => {
                   className={inputStyle}
                   placeholder="Enter team member name"
                 />
-                {errors.name && (
-                  <p className="text-red-400 text-sm mt-1">{errors.name}</p>
-                )}
+                {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
               </div>
-
-              {/* Role */}
               <div>
-                <label
-                  htmlFor="role"
-                  className="block text-lg font-medium mb-2 text-gray-200"
-                >
+                <label htmlFor="role" className="block text-lg font-medium mb-2 text-gray-200">
                   Role
                 </label>
                 <input
@@ -1129,11 +1113,8 @@ const AdminDashboard: React.FC = () => {
                   className={inputStyle}
                   placeholder="Enter team member role"
                 />
-                {errors.role && (
-                  <p className="text-red-400 text-sm mt-1">{errors.role}</p>
-                )}
+                {errors.role && <p className="text-red-400 text-sm mt-1">{errors.role}</p>}
               </div>
-
               <div className="flex gap-4">
                 <button
                   type="submit"
@@ -1159,8 +1140,6 @@ const AdminDashboard: React.FC = () => {
                 )}
               </div>
             </form>
-
-            {/* Team Members List */}
             <div className="mt-8">
               <h3 className="text-xl font-semibold text-gray-200 mb-4">Team Members</h3>
               {teamMembers.length === 0 ? (
@@ -1179,13 +1158,9 @@ const AdminDashboard: React.FC = () => {
                           className="w-24 h-24 rounded-full object-cover"
                         />
                         <div className="flex-1">
-                          <h4 className="text-xl font-semibold text-gray-200">
-                            {member.name}
-                          </h4>
+                          <h4 className="text-xl font-semibold text-gray-200">{member.name}</h4>
                           <p className="text-gray-400">{member.role}</p>
-                          <p className="text-gray-300 mt-2 line-clamp-5">
-                            {member.testimonial}
-                          </p>
+                          <p className="text-gray-300 mt-2 line-clamp-5">{member.testimonial}</p>
                         </div>
                         <div className="flex gap-2">
                           <button
@@ -1209,6 +1184,245 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
         )}
+
+        {activeTab === "jobs" && (
+          <div className="space-y-6 mt-6">
+            <h2 className="text-2xl font-bold text-[#f6ff7a]">Job Postings</h2>
+            <form onSubmit={handleJobSubmit} className="space-y-8">
+              <div>
+                <label htmlFor="jobTitle" className="block text-lg font-medium mb-2 text-gray-200">
+                  Job Title
+                </label>
+                <input
+                  type="text"
+                  id="jobTitle"
+                  value={jobTitle}
+                  onChange={(e) => setJobTitle(e.target.value)}
+                  required
+                  className={inputStyle}
+                  placeholder="Enter job title"
+                />
+                {errors.jobTitle && <p className="text-red-400 text-sm mt-1">{errors.jobTitle}</p>}
+              </div>
+              <div>
+                <label htmlFor="jobLocation" className="block text-lg font-medium mb-2 text-gray-200">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  id="jobLocation"
+                  value={jobLocation}
+                  onChange={(e) => setJobLocation(e.target.value)}
+                  required
+                  className={inputStyle}
+                  placeholder="Enter location (e.g., Argentina/Colombia)"
+                />
+                {errors.jobLocation && <p className="text-red-400 text-sm mt-1">{errors.jobLocation}</p>}
+              </div>
+              <div>
+                <label htmlFor="jobDescription" className="block text-lg font-medium mb-2 text-gray-200">
+                  Description
+                </label>
+                <div ref={quillRef} className="bg-gray-700 rounded-lg" />
+                {errors.jobDescription && <p className="text-red-400 text-sm mt-1">{errors.jobDescription}</p>}
+              </div>
+              <div>
+                <label htmlFor="employmentType" className="block text-lg font-medium mb-2 text-gray-200">
+                  Employment Type
+                </label>
+                <select
+                  id="employmentType"
+                  value={employmentType}
+                  onChange={(e) => setEmploymentType(e.target.value)}
+                  required
+                  className={inputStyle}
+                >
+                  <option value="Full-Time">Full-Time</option>
+                  <option value="Part-Time">Part-Time</option>
+                  <option value="Contract">Contract</option>
+                  <option value="Internship">Internship</option>
+                </select>
+              </div>
+              <div className="flex gap-4">
+                <button
+                  type="submit"
+                  disabled={loading || Object.keys(errors).length > 0}
+                  className="flex-1 py-4 bg-[#f6ff7a] text-black font-bold rounded-lg hover:bg-yellow-500 disabled:opacity-50"
+                >
+                  {loading ? (editingJob ? "Updating..." : "Creating...") : editingJob ? "Update Job" : "Create Job"}
+                </button>
+                {editingJob && (
+                  <button
+                    type="button"
+                    onClick={resetJobForm}
+                    className="flex-1 py-4 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-500"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </form>
+            <div className="mt-8">
+              <h3 className="text-xl font-semibold text-gray-200 mb-4">Posted Jobs</h3>
+              {jobs.length === 0 ? (
+                <p className="text-gray-400">No jobs found.</p>
+              ) : (
+                <div className="grid gap-6">
+                  {jobs.map((job) => (
+                    <div
+                      key={job._id}
+                      className="bg-gray-900 p-6 rounded-xl border border-gray-600 shadow-lg"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="flex-1">
+                          <h4 className="text-xl font-semibold text-gray-200">{job.title}</h4>
+                          <p className="text-gray-400">
+                            {job.location} · {job.employmentType}
+                          </p>
+                          <p className="text-gray-400">Posted: {new Date(job.postedDate).toLocaleDateString()}</p>
+                          <button
+                            onClick={() =>
+                              setViewingApplicationsForJob(
+                                viewingApplicationsForJob === job._id ? null : job._id
+                              )
+                            }
+                            className="mt-2 text-[#f6ff7a] hover:text-yellow-500"
+                          >
+                            {viewingApplicationsForJob === job._id ? "Hide Applications" : "View Applications"} (
+                            {applications.filter((app) => app.jobId === job._id).length})
+                          </button>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditJob(job)}
+                            className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleJobDelete(job._id)}
+                            className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                      {viewingApplicationsForJob === job._id && (
+                        <div className="mt-4 p-4 bg-[#3d3d3f] rounded-lg">
+                          <h5 className="text-lg font-semibold text-gray-200">
+                            Applications for {job.title}
+                          </h5>
+                          {applications.filter((app) => app.jobId === job._id).length === 0 ? (
+                            <p className="text-gray-400">No applications yet.</p>
+                          ) : (
+                            applications
+                              .filter((app) => app.jobId === job._id)
+                              .map((app) => (
+                                <div key={app._id} className="mt-2 p-2 border-b border-gray-600">
+                                  <p>
+                                    <strong>Name:</strong> {app.firstName} {app.lastName}
+                                  </p>
+                                  <p>
+                                    <strong>Email:</strong> {app.email}
+                                  </p>
+                                  <p>
+                                    <strong>Phone:</strong> {app.phone}
+                                  </p>
+                                  <p>
+                                    <strong>LinkedIn:</strong> {app.linkedIn || "N/A"}
+                                  </p>
+                                  <p>
+                                    <strong>Website:</strong> {app.website || "N/A"}
+                                  </p>
+                                  <p>
+                                    <strong>Country:</strong> {app.country}
+                                  </p>
+                                  {app.resume && (
+                                    <button
+                                      onClick={() => handleViewResume(app.resume)}
+                                      className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                                    >
+                                      View Resume
+                                    </button>
+                                  )}
+                                  {viewResumeUrl && (
+                                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                      <div className="bg-white p-4 rounded-lg w-3/4 h-3/4 relative">
+                                        <button
+                                          onClick={closeModal}
+                                          className="absolute top-2 right-2 text-black font-bold"
+                                        >
+                                          Close
+                                        </button>
+                                        {errorMessage ? (
+                                          <div className="text-red-500 text-center">
+                                            {errorMessage}
+                                            <br />
+                                            <a
+                                              href={viewResumeUrl}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="text-blue-500 underline mt-2 block"
+                                            >
+                                              Download Resume
+                                            </a>
+                                          </div>
+                                        ) : (
+                                          <iframe
+                                            src={viewResumeUrl}
+                                            className="w-full h-full border-0"
+                                            title="Resume Viewer"
+                                            onError={() =>
+                                              setErrorMessage(
+                                                "Failed to load resume in iframe. Please download instead."
+                                              )
+                                            }
+                                          />
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+                                  <p>
+                                    <strong>Knew Rootstrap:</strong> {app.knewRootstrap}
+                                  </p>
+                                  {app.heardFrom && (
+                                    <p>
+                                      <strong>Heard From:</strong> {app.heardFrom}
+                                    </p>
+                                  )}
+                                  {app.heardFromDetails && (
+                                    <p>
+                                      <strong>Details:</strong> {app.heardFromDetails}
+                                    </p>
+                                  )}
+                                  <p>
+                                    <strong>Submitted:</strong>{" "}
+                                    {new Date(app.submittedAt).toLocaleString()}
+                                  </p>
+                                  <a
+                                    href={`mailto:${app.email}?subject=Re: Application for ${job.title}&body=Dear ${app.firstName},\n\nThank you for applying for the ${job.title} position at Rootstrap. We have received your application and will review it shortly.\n\nBest regards,\n[Your Name]\nRootstrap`}
+                                    className="inline-block mt-2 px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
+                                  >
+                                    Reply
+                                  </a>
+                                </div>
+                              ))
+                          )}
+                          <button
+                            onClick={() => setViewingApplicationsForJob(null)}
+                            className="mt-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500"
+                          >
+                            Close
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1222,34 +1436,37 @@ interface QuillEditorProps {
   onChange: (value: string) => void;
 }
 
-const QuillEditor: React.FC<QuillEditorProps> = ({
-  index,
-  quillInstancesRef,
-  initialValue,
-  modules,
-  onChange,
-}) => {
+const QuillEditor: React.FC<QuillEditorProps> = ({ index, quillInstancesRef, initialValue, modules, onChange }) => {
   const { quill, quillRef } = useQuill({ theme: "snow", modules });
-
   React.useEffect(() => {
     if (quill) {
       quill.root.innerHTML = initialValue;
       quillInstancesRef.current[index] = quill;
-
-      const handleTextChange = () => {
-        const content = quill.root.innerHTML;
-        onChange(content);
-      };
+      const handleTextChange = () => onChange(quill.root.innerHTML);
       quill.on("text-change", handleTextChange);
-
       return () => {
         quill.off("text-change", handleTextChange);
         quillInstancesRef.current[index] = null;
       };
     }
   }, [quill, index, initialValue, onChange]);
-
   return <div ref={quillRef} className="bg-gray-700 rounded-lg" />;
+};
+
+const handleEditBlog = (blog: Blog) => {
+  console.log("Edit blog:", blog);
+};
+
+const handleBlogDelete = (blogId: string) => {
+  console.log("Delete blog:", blogId);
+};
+
+const handleEditTeamMember = (member: TeamMember) => {
+  console.log("Edit team member:", member);
+};
+
+const handleTeamDelete = (memberId: string) => {
+  console.log("Delete team member:", memberId);
 };
 
 export default AdminDashboard;

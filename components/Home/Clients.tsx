@@ -1,109 +1,86 @@
-import Image from 'next/image'
-import React from 'react'
-import img1 from "@/public/h1c11.jpg"
-import img2 from "@/public/h1c22.jpg"
-import img3 from "@/public/h1c33.jpg"
-import img4 from "@/public/h1c44.png"
-import img5 from "@/public/h1c55.jpg"
-import img6 from "@/public/h1c44.png"
+'use client';
+
+import Image from 'next/image';
+import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
+
+interface Review {
+  _id: string;
+  text: string;
+  name: string;
+  position: string;
+  userId: string;
+  image?: string;
+  createdAt: Date;
+}
 
 const Clients = () => {
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch('/api/reviews');
+        if (!response.ok) {
+          throw new Error('Failed to fetch reviews');
+        }
+        const data: Review[] = await response.json();
+        console.log('Fetched reviews data:', data);
+        setReviews(data);
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+        setError('Failed to load reviews. Please try again later.');
+      }
+    };
+    fetchReviews();
+  }, []);
+
   return (
-    <div id="clients" className='min-h-screen mt-20'>
-        <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[36px] text-[36px] text-center lg:text-left font-semibold leading-tight  mt-10'>
+    <div id="clients" className="min-h-screen mt-20">
+      <h1
+        style={{ fontFamily: 'Poppins, sans-serif' }}
+        className="lg:text-[36px] text-[36px] text-center lg:text-left font-semibold leading-tight mt-10"
+      >
         Clients Love Working With Rootstrap
-        </h1>
+      </h1>
 
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10 gap-3'>
-            <div className='bg-[#242425]  p-7 rounded-xl '>
-                <p className='text-[#bcbcc0]'>
-                “Overall, the quality is fantastic. The execution speed is brilliant, code quality is solid. We do not treat them as an outsourced team. We think of them as one big team.&rdquo;
-                </p>
-                <div className='flex items-center gap-4 mt-5'>
-                    <Image src={img1} alt="team" width={900} height={900} className='h-13 w-13 rounded-lg'/>
-                    <div>
-                        <h2 className='font-bold  text-[16px]'>Mandar Bapaye</h2>
-                        <p className='text-[#bcbcc0] text-[16px]'>CTO/CPO, Masterclass</p>
-                    </div>
-                </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10 gap-3">
+        {reviews.map((review) => (
+          <div
+            key={review._id}
+            className="bg-[#242425] p-7 rounded-xl flex flex-col justify-between min-h-[220px]"
+          >
+            {/* Review Text */}
+            <p className="text-[#bcbcc0] line-clamp-4">
+              “{review.text}&rdquo;
+            </p>
+
+            {/* Image and Name/Position */}
+            <div className="flex items-center gap-4 mt-5">
+              <Image
+                src={review.image || '/h1c44.png'} // Add fallback image
+                alt={`${review.name}'s profile`}
+                width={900} // Adjusted for better aspect ratio
+                height={900}
+                className="h-13 w-13 rounded-lg object-cover"
+              />
+              <div>
+                <h2 className="font-bold text-[16px]">{review.name}</h2>
+                <p className="text-[#bcbcc0] text-[16px]">{review.position}</p>
+              </div>
             </div>
+          </div>
+        ))}
+      </div>
 
-            <div className='bg-[#242425]  p-7 rounded-xl  '>
-                <p className='text-[#bcbcc0]'>
-                &ldquo;We work with 14 people from Rootstrap, they&apos;re our core developers. Pivotal in architecture decisions and design review. Everyone is incredibly good.&ldquo;
-                </p>
-                <div className='flex items-center gap-4 mt-5'>
-                    <Image src={img2} alt="team" width={900} height={900} className='h-13 w-13 rounded-lg'/>
-                    <div>
-                        <h2 className='font-bold  text-[16px]'>Jesse Ocon</h2>
-                        <p className='text-[#bcbcc0] text-[16px]'>VP of Engineering, Emeritus</p>
-                    </div>
-                </div>
-            </div>
-
-
-            <div className='bg-[#242425]  p-7 rounded-xl  '>
-                <p className='text-[#bcbcc0]'>
-                “Rootstrap engineers are dedicated, smart, and humble. No challenge working with them, and quality is exceptional. It feels like they&apos;re a part of the team.&ldquo;
-                </p>
-                <div className='flex items-center gap-4 mt-5'>
-                    <Image src={img3} alt="team" width={900} height={900} className='h-13 w-13 rounded-lg'/>
-                    <div>
-                        <h2 className='font-bold'>Samik Bhowal</h2>
-                        <p className='text-[#bcbcc0]'>VP of Engineering, Cleo Healthcare</p>
-                    </div>
-                </div>
-            </div>
-
-
-            <div className='bg-[#242425]  p-7 rounded-xl '>
-                <p className='text-[#bcbcc0]'>
-                &ldquo;Always on time or early. Team is communicative, flexible, thoughtful, and cognizant of our needs as a non-profit. Ultimately, the result is a product that our user-base has been thrilled to engage with.&ldquo;
-                </p>
-                <div className='flex items-center gap-4 mt-5'>
-                    <Image src={img4} alt="team" width={900} height={900} className='h-13 w-13 rounded-lg'/>
-                    <div>
-                        <h2 className='font-bold'>Project Manager</h2>
-                        <p className='text-[#bcbcc0]'>Global Non-Profit for Special Athletes</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className='bg-[#242425]  p-7 rounded-xl  '>
-                <p className='text-[#bcbcc0]'>
-                &ldquo;Developed MVP from scratch. Delivered intuitive and streamlined product, receiving positive user feedback and keeping on budget. The partnership element they bring to the table is impressive.&ldquo;
-                </p>
-                <div className='flex items-center gap-4 mt-5'>
-                    <Image src={img5} alt="team" width={900} height={900} className='h-13 w-13 rounded-lg'/>
-                    <div>
-                        <h2 className='font-bold'>Jess Chan</h2>
-                        <p className='text-[#bcbcc0]'>Founder & CEO, Backbone</p>
-                    </div>
-                </div>
-            </div>
-
-
-            <div className='bg-[#242425]  p-7 rounded-xl '>
-                <p className='text-[#bcbcc0]'>
-                “Everyone that has joined the team has been a high-caliber developer. They meet deadlines and stay on budget. Rootstrap&apos;s quality is strong compared to others. They have very high standards.”
-                </p>
-                <div className='flex items-center gap-4 mt-5'>
-                    <Image src={img6} alt="team" width={900} height={900} className='h-13 w-13 rounded-lg'/>
-                    <div>
-                        <h2 className='font-bold'>Director of Software</h2>
-                        <p className='text-[#bcbcc0]'>Logistics SaaS Firm</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div className='flex flex-col items-center justify-center gap-4 text-center mt-12'>
-        <button className='border-1 border-white text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors'>
+      <div className="flex flex-col items-center justify-center gap-4 text-center mt-12">
+        <button className="border-1 border-white text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors">
           Read All Reviews
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Clients
+export default Clients;
