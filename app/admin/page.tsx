@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
@@ -7,11 +8,11 @@ import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { Document, Page, pdfjs } from "react-pdf";
-import { FaBell } from "react-icons/fa";
-
-// Set up PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+import { GrAnnounce, GrTrash } from "react-icons/gr";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { motion, AnimatePresence } from "framer-motion";
+import Quill from "quill";
 
 interface ContentItem {
   type: "heading" | "paragraph" | "image" | "code";
@@ -63,6 +64,62 @@ interface Application {
   submittedAt: string;
 }
 
+interface QuillEditorProps {
+  index?: number;
+  quillInstancesRef?: React.MutableRefObject<(Quill | null)[]>;
+  initialValue: string;
+  onChange: (value: string) => void;
+}
+
+const QuillEditor: React.FC<QuillEditorProps> = ({ index, quillInstancesRef, initialValue, onChange }) => {
+  const { quill, quillRef } = useQuill({
+    theme: "snow",
+    modules: {
+      toolbar: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["link"],
+        ["clean"],
+      ],
+    },
+  });
+
+  useEffect(() => {
+    if (quill) {
+      console.log("Quill initialized, setting initial value:", initialValue);
+      quill.root.innerHTML = initialValue;
+      if (quillInstancesRef && index !== undefined) {
+        quillInstancesRef.current[index] = quill;
+      }
+      const handleTextChange = () => {
+        console.log("Text changed:", quill.root.innerHTML);
+        onChange(quill.root.innerHTML);
+      };
+      quill.on("text-change", handleTextChange);
+      return () => {
+        quill.off("text-change", handleTextChange);
+        if (quillInstancesRef && index !== undefined) {
+          quillInstancesRef.current[index] = null;
+        }
+      };
+    }
+  }, [quill, index, initialValue, onChange, quillInstancesRef]);
+
+  return (
+    <div
+      ref={quillRef}
+      className="bg-gray-700 rounded-lg"
+      style={{
+        direction: "ltr",
+        height: "300px",
+        backgroundColor: "#1e1e1e",
+        color: "#ffffff",
+      }}
+    />
+  );
+};
+
 const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"create" | "blogs" | "team" | "jobs">("create");
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -87,7 +144,7 @@ const AdminDashboard: React.FC = () => {
   const [jobLocation, setJobLocation] = useState<string>("");
   const [jobDescription, setJobDescription] = useState<string>("");
   const [employmentType, setEmploymentType] = useState<string>("Full-Time");
-  const [content, setContent] = useState<ContentItem[]>([]); // Added content state
+  const [content, setContent] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [newContentType, setNewContentType] = useState<string>("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -97,21 +154,36 @@ const AdminDashboard: React.FC = () => {
   const [showBroadcastForm, setShowBroadcastForm] = useState<boolean>(false);
   const [broadcastSubject, setBroadcastSubject] = useState<string>("");
   const [broadcastMessage, setBroadcastMessage] = useState<string>("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<{
+    id: string;
+    type: "blog" | "team" | "job" | "application";
+  } | null>(null);
   const router = useRouter();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const quillInstancesRef = useRef<(Quill | null)[]>([]);
 
-  const quillInstancesRef = useRef<(any | null)[]>([]);
-  const { quill, quillRef } = useQuill({
-    theme: "snow",
-    modules: {
-      toolbar: [
-        [{ header: [1, 2, 3, false] }],
-        ["bold", "italic", "underline"],
-        [{ list: "ordered" }, { list: "bullet" }],
-        ["link"],
-        ["clean"],
-      ],
-    },
-  });
+  const debounce = <T extends (...args: any[]) => void>(func: T, wait: number) => {
+    let timeout: NodeJS.Timeout;
+    return (...args: Parameters<T>) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func(...args), wait);
+    };
+  };
+
+  useEffect(() => {
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      scrollContainer.scrollTop += e.deltaY * 2;
+    };
+
+    const debouncedHandleWheel = debounce(handleWheel, 10);
+
+    scrollContainer.addEventListener("wheel", debouncedHandleWheel, { passive: false });
+    return () => scrollContainer.removeEventListener("wheel", debouncedHandleWheel);
+  }, [viewingApplicationsForJob]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -119,19 +191,21 @@ const AdminDashboard: React.FC = () => {
         try {
           const response = await fetch("/api/blogs/allblogs");
           if (!response.ok) throw new Error("Failed to fetch blogs");
-          const data = await response.json();
+          const data: Blog[] = await response.json();
           setBlogs(data);
-        } catch (error: any) {
-          alert(`Error fetching blogs: ${error.message}`);
+        } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : "Unknown error";
+          toast.error(`Error fetching blogs: ${message}`);
         }
       } else if (activeTab === "team") {
         try {
           const response = await fetch("/api/team");
           if (!response.ok) throw new Error("Failed to fetch team members");
-          const data = await response.json();
+          const data: TeamMember[] = await response.json();
           setTeamMembers(data);
-        } catch (error: any) {
-          alert(`Error fetching team members: ${error.message}`);
+        } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : "Unknown error";
+          toast.error(`Error fetching team members: ${message}`);
         }
       } else if (activeTab === "jobs") {
         try {
@@ -141,14 +215,15 @@ const AdminDashboard: React.FC = () => {
           ]);
           if (!jobsResponse.ok) throw new Error("Failed to fetch jobs");
           if (!appsResponse.ok) throw new Error("Failed to fetch applications");
-          const [jobsData, appsData] = await Promise.all([
+          const [jobsData, appsData]: [Job[], Application[]] = await Promise.all([
             jobsResponse.json(),
             appsResponse.json(),
           ]);
           setJobs(jobsData);
           setApplications(appsData);
-        } catch (error: any) {
-          alert(`Error fetching jobs or applications: ${error.message}`);
+        } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : "Unknown error";
+          toast.error(`Error fetching jobs or applications: ${message}`);
         }
       }
     };
@@ -174,20 +249,11 @@ const AdminDashboard: React.FC = () => {
     } else if (activeTab === "jobs") {
       if (jobTitle && jobTitle.length < 3) newErrors.jobTitle = "Job title must be at least 3 characters";
       if (jobLocation && jobLocation.length < 3) newErrors.jobLocation = "Location must be at least 3 characters";
-      if (jobDescription && quill && quill.getText().length < 10)
+      if (jobDescription && jobDescription.length < 10)
         newErrors.jobDescription = "Description must be at least 10 characters";
     }
     setErrors(newErrors);
-  }, [title, author, category, customCategory, name, role, testimonial, jobTitle, jobLocation, jobDescription, quill]);
-
-  useEffect(() => {
-    if (quill && activeTab === "jobs") {
-      quill.root.innerHTML = jobDescription;
-      const handleTextChange = () => setJobDescription(quill.root.innerHTML);
-      quill.on("text-change", handleTextChange);
-      return () => quill.off("text-change", handleTextChange);
-    }
-  }, [quill, jobDescription, activeTab]);
+  }, [title, author, category, customCategory, name, role, testimonial, jobTitle, jobLocation, jobDescription]);
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCategory(e.target.value);
@@ -250,11 +316,21 @@ const AdminDashboard: React.FC = () => {
     setNewContentType("");
   };
 
-  const handleContentChange = (index: number, field: "value" | "language", value: string | File | null) => {
+  const handleContentChange = (
+    index: number,
+    field: "value" | "language",
+    value: string | File | null
+  ) => {
     const updatedContent = [...content];
-    updatedContent[index][field] = value;
-    if (field === "value" && updatedContent[index].type === "image" && value instanceof File) {
-      updatedContent[index].imagePreview = URL.createObjectURL(value);
+    if (field === "value") {
+      updatedContent[index].value = value;
+      if (updatedContent[index].type === "image" && value instanceof File) {
+        updatedContent[index].imagePreview = URL.createObjectURL(value);
+      } else if (updatedContent[index].type === "image" && value === null) {
+        updatedContent[index].imagePreview = "";
+      }
+    } else if (field === "language" && typeof value === "string") {
+      updatedContent[index].language = value;
     }
     setContent(updatedContent);
   };
@@ -271,7 +347,7 @@ const AdminDashboard: React.FC = () => {
   const handleBlogSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (Object.keys(errors).length > 0) {
-      alert("Please fix form errors before submitting");
+      toast.error("Please fix form errors before submitting");
       return;
     }
     setLoading(true);
@@ -309,15 +385,16 @@ const AdminDashboard: React.FC = () => {
       const response = await fetch(url, { method, body: formData });
       if (!response.ok) throw new Error(`Failed to ${editingBlog ? "update" : "create"} blog: ${await response.text()}`);
 
-      alert(`Blog ${editingBlog ? "updated" : "created"} successfully!`);
+      toast.success(`Blog ${editingBlog ? "updated" : "created"} successfully!`);
       if (editingBlog) {
         setEditingBlog(null);
         setActiveTab("blogs");
       } else {
         router.push("/");
       }
-    } catch (error: any) {
-      alert(`Error: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Error: ${message}`);
     } finally {
       setLoading(false);
     }
@@ -326,7 +403,7 @@ const AdminDashboard: React.FC = () => {
   const handleTeamSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (Object.keys(errors).length > 0) {
-      alert("Please fix form errors before submitting");
+      toast.error("Please fix form errors before submitting");
       return;
     }
     setLoading(true);
@@ -347,11 +424,12 @@ const AdminDashboard: React.FC = () => {
       if (!response.ok)
         throw new Error(`Failed to ${editingTeamMember ? "update" : "create"} team member: ${await response.text()}`);
 
-      alert(`Team member ${editingTeamMember ? "updated" : "created"} successfully!`);
+      toast.success(`Team member ${editingTeamMember ? "updated" : "created"} successfully!`);
       resetTeamForm();
       setActiveTab("team");
-    } catch (error: any) {
-      alert(`Error: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Error: ${message}`);
     } finally {
       setLoading(false);
     }
@@ -360,7 +438,7 @@ const AdminDashboard: React.FC = () => {
   const handleJobSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (Object.keys(errors).length > 0) {
-      alert("Please fix form errors before submitting");
+      toast.error("Please fix form errors before submitting");
       return;
     }
     setLoading(true);
@@ -380,11 +458,12 @@ const AdminDashboard: React.FC = () => {
       const response = await fetch(url, { method, body: formData });
       if (!response.ok) throw new Error(`Failed to ${editingJob ? "update" : "create"} job: ${await response.text()}`);
 
-      alert(`Job ${editingJob ? "updated" : "created"} successfully!`);
+      toast.success(`Job ${editingJob ? "updated" : "created"} successfully!`);
       resetJobForm();
       setActiveTab("jobs");
-    } catch (error: any) {
-      alert(`Error: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Error: ${message}`);
     } finally {
       setLoading(false);
     }
@@ -393,7 +472,7 @@ const AdminDashboard: React.FC = () => {
   const handleBroadcastSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!broadcastSubject || !broadcastMessage) {
-      alert("Please provide both a subject and a message");
+      toast.error("Please provide both a subject and a message");
       return;
     }
     setLoading(true);
@@ -403,29 +482,64 @@ const AdminDashboard: React.FC = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subject: broadcastSubject, message: broadcastMessage }),
       });
-      const data = await response.json();
+      const data: { error?: string; message?: string } = await response.json();
       if (!response.ok) throw new Error(data.error || "Failed to send broadcast email");
-      alert(data.message);
+      toast.success(data.message);
       setShowBroadcastForm(false);
       setBroadcastSubject("");
       setBroadcastMessage("");
-    } catch (error: any) {
-      alert(`Error: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Error: ${message}`);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleBlogDelete = async (blogId: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/blogs/${blogId}`, { method: "DELETE" });
+      if (!response.ok) throw new Error(`Failed to delete blog: ${await response.text()}`);
+      setBlogs(blogs.filter((blog) => blog._id !== blogId));
+      toast.success("Blog deleted successfully!");
+      setShowDeleteConfirm(null);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Error: ${message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditBlog = (blog: Blog) => {
+    setEditingBlog(blog);
+    setTitle(blog.title);
+    setCategory(blog.category);
+    setCustomCategory(blog.category === "Other" ? blog.category : "");
+    setAuthor(blog.author);
+    setPrimaryImagePreview(blog.primaryImage || "");
+    setContent(
+      blog.content.map((item) => ({
+        ...item,
+        imagePreview: item.type === "image" && typeof item.value === "string" ? item.value : item.imagePreview,
+      }))
+    );
+    setActiveTab("create");
+    quillInstancesRef.current = blog.content.map(() => null);
+  };
+
   const handleJobDelete = async (jobId: string) => {
-    if (!confirm("Are you sure you want to delete this job?")) return;
     setLoading(true);
     try {
       const response = await fetch(`/api/jobs/${jobId}`, { method: "DELETE" });
       if (!response.ok) throw new Error(`Failed to delete job: ${await response.text()}`);
       setJobs(jobs.filter((job) => job._id !== jobId));
-      alert("Job deleted successfully!");
-    } catch (error: any) {
-      alert(`Error: ${error.message}`);
+      toast.success("Job deleted successfully!");
+      setShowDeleteConfirm(null);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Error: ${message}`);
     } finally {
       setLoading(false);
     }
@@ -440,6 +554,65 @@ const AdminDashboard: React.FC = () => {
     setActiveTab("jobs");
   };
 
+  const handleTeamDelete = async (memberId: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/team/${memberId}`, { method: "DELETE" });
+      if (!response.ok) throw new Error(`Failed to delete team member: ${await response.text()}`);
+      setTeamMembers(teamMembers.filter((member) => member._id !== memberId));
+      toast.success("Team member deleted successfully!");
+      setShowDeleteConfirm(null);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Error: ${message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApplicationDelete = async (
+    applicationId: string,
+    setApplications: React.Dispatch<React.SetStateAction<Application[]>>,
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    setShowDeleteConfirm: React.Dispatch<
+      React.SetStateAction<{ id: string; type: "blog" | "team" | "job" | "application" } | null>
+    >
+  ) => {
+    console.log("Attempting to delete application with ID:", applicationId);
+    if (!applicationId || !/^[0-9a-fA-F]{24}$/.test(applicationId)) {
+      console.error("Invalid applicationId format:", applicationId);
+      toast.error("Invalid application ID. Please try again.");
+      setShowDeleteConfirm(null);
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/applications/${applicationId}`, { method: "DELETE" });
+      if (!response.ok) {
+        const errorData: { error?: string } = await response.json();
+        throw new Error(errorData.error || "Failed to delete application");
+      }
+      setApplications((prev) => prev.filter((app) => app._id !== applicationId));
+      toast.success("Application deleted successfully!");
+      setShowDeleteConfirm(null);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      console.error("Deletion error:", error);
+      toast.error(`Error: ${message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditTeamMember = (member: TeamMember) => {
+    setEditingTeamMember(member);
+    setTeamImagePreview(member.image);
+    setTestimonial(member.testimonial);
+    setName(member.name);
+    setRole(member.role);
+    setActiveTab("team");
+  };
+
   const resetBlogForm = () => {
     setEditingBlog(null);
     setTitle("");
@@ -448,7 +621,7 @@ const AdminDashboard: React.FC = () => {
     setAuthor("");
     setPrimaryImage(null);
     setPrimaryImagePreview("");
-    setContent([]); // Reset content
+    setContent([]);
     setErrors({});
     quillInstancesRef.current = [];
   };
@@ -481,13 +654,13 @@ const AdminDashboard: React.FC = () => {
 
     const baseUrl = resumeUrl.split("?")[0];
     const inlineUrl = `${baseUrl}/fl_attachment:false,fl_inline,f_pdf`;
-    console.log("Attempting to view resume with URL:", inlineUrl);
     setViewResumeUrl(inlineUrl);
   };
 
   const closeModal = () => {
     setViewResumeUrl(null);
     setErrorMessage(null);
+    setViewingApplicationsForJob(null);
   };
 
   const inputStyle =
@@ -495,6 +668,7 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div style={{ fontFamily: "Poppins, sans-serif" }} className="min-h-screen bg-[#191a1b] text-white pt-[7em]">
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} closeOnClick theme="dark" />
       <style jsx>{`
         .container {
           --color-pure: #f6ff7a;
@@ -624,20 +798,61 @@ const AdminDashboard: React.FC = () => {
         .rd-4 + .label:hover ~ .slidebar {
           transform: translateX(300%) scaleX(1);
         }
+        .custom-scroll-content {
+          overflow-y: auto;
+          max-height: calc(85vh - 80px);
+          height: 100%;
+          scroll-behavior: smooth;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: thin;
+          scrollbar-color: rgba(246, 255, 122, 0.5) transparent;
+          will-change: scroll-position;
+        }
+        .custom-scroll-content::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scroll-content::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scroll-content::-webkit-scrollbar-thumb {
+          background: rgba(246, 255, 122, 0.5);
+          border-radius: 3px;
+        }
+        .custom-scroll-content::-webkit-scrollbar-thumb:hover {
+          background: rgba(246, 255, 122, 0.7);
+        }
+        .application-item {
+          transition: background-color 0.2s ease;
+        }
+        .ql-container {
+          background-color: #1e1e1e !important;
+          color: #ffffff !important;
+          border-radius: 0.5rem;
+        }
+        .ql-editor {
+          min-height: 260px;
+          color: #ffffff !important;
+        }
+        .ql-toolbar {
+          background-color: #2d2d2f !important;
+          border-top-left-radius: 0.5rem;
+          border-top-right-radius: 0.5rem;
+        }
+        .ql-container.ql-snow {
+          border-bottom-left-radius: 0.5rem;
+          border-bottom-right-radius: 0.5rem;
+        }
       `}</style>
       <div className="max-w-4xl mx-auto bg-[#191a1b] rounded-xl shadow-2xl p-8 relative">
-        {/* Bell Icon */}
         <button
           onClick={() => setShowBroadcastForm(true)}
-          className="absolute top-4 right-4 text-[#f6ff7a] hover:text-yellow-500"
+          className="absolute top-4 right-4 animate-bounce text-[#f6ff7a] hover:text-yellow-500 cursor-pointer"
           title="Send Broadcast Message"
         >
-          <FaBell size={24} />
+          <GrAnnounce size={26} />
         </button>
-
-        {/* Broadcast Popup Form */}
         {showBroadcastForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[50]">
             <div className="bg-[#3d3d3f] p-6 rounded-lg w-96">
               <h2 className="text-xl font-semibold text-[#f6ff7a] mb-4">Send Update to Subscribers</h2>
               <form onSubmit={handleBroadcastSubmit} className="space-y-4">
@@ -689,7 +904,55 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
         )}
-
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000]">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="bg-[#3d3d3f] p-6 rounded-lg w-96 shadow-xl"
+            >
+              <h2 className="text-xl font-semibold text-[#f6ff7a] mb-4">Confirm Deletion</h2>
+              <p className="text-gray-200 mb-6">
+                Are you sure you want to delete this {showDeleteConfirm.type}? This action cannot be undone.
+              </p>
+              <div className="flex gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    if (showDeleteConfirm.type === "blog") {
+                      handleBlogDelete(showDeleteConfirm.id);
+                    } else if (showDeleteConfirm.type === "team") {
+                      handleTeamDelete(showDeleteConfirm.id);
+                    } else if (showDeleteConfirm.type === "job") {
+                      handleJobDelete(showDeleteConfirm.id);
+                    } else if (showDeleteConfirm.type === "application") {
+                      handleApplicationDelete(
+                        showDeleteConfirm.id,
+                        setApplications,
+                        setLoading,
+                        setShowDeleteConfirm
+                      );
+                    }
+                  }}
+                  disabled={loading}
+                  className="flex-1 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-500 disabled:opacity-50"
+                >
+                  {loading ? "Deleting..." : "Delete"}
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowDeleteConfirm(null)}
+                  className="flex-1 py-2 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-500"
+                >
+                  Cancel
+                </motion.button>
+              </div>
+            </motion.div>
+          </div>
+        )}
         <div className="container">
           <div className="wrap">
             <input
@@ -743,7 +1006,6 @@ const AdminDashboard: React.FC = () => {
             <div className="slidebar"></div>
           </div>
         </div>
-
         {activeTab === "create" && (
           <form onSubmit={handleBlogSubmit} className="space-y-8 mt-6">
             <div>
@@ -752,10 +1014,18 @@ const AdminDashboard: React.FC = () => {
               </label>
               <select id="category" value={category} onChange={handleCategoryChange} required className={inputStyle}>
                 <option value="">Select a category</option>
-                <option value="Technology">Technology</option>
-                <option value="Lifestyle">Lifestyle</option>
-                <option value="Education">Education</option>
-                <option value="Travel">Travel</option>
+                <option value="AI / Machine Learning">AI / Machine Learning</option>
+                <option value="Agile">Agile</option>
+                <option value="Blockchain">Blockchain</option>
+                <option value="Data Services">Data Services</option>
+                <option value="DevOps">DevOps</option>
+                <option value="Development">Development</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Product Design">Product Design</option>
+                <option value="QA / Testing">QA / Testing</option>
+                <option value="Security">Security</option>
+                <option value="Soft Skills">Soft Skills</option>
+                <option value="Software Architecture">Software Architecture</option>
                 <option value="Other">Other</option>
               </select>
               {category === "Other" && (
@@ -820,10 +1090,12 @@ const AdminDashboard: React.FC = () => {
               </label>
               {primaryImagePreview && (
                 <div className="mt-4">
-                  <img
+                  <Image
                     src={primaryImagePreview}
                     alt="Primary Preview"
-                    className="max-w-xs mx-auto rounded-lg shadow-md"
+                    width={300}
+                    height={200}
+                    className="max-w-xs mx-auto rounded-lg shadow-md object-cover"
                   />
                   <button
                     type="button"
@@ -858,15 +1130,6 @@ const AdminDashboard: React.FC = () => {
                       index={index}
                       quillInstancesRef={quillInstancesRef}
                       initialValue={typeof item.value === "string" ? item.value : ""}
-                      modules={{
-                        toolbar: [
-                          [{ header: [1, 2, 3, false] }],
-                          ["bold", "italic", "underline"],
-                          [{ list: "ordered" }, { list: "bullet" }],
-                          ["link"],
-                          ["clean"],
-                        ],
-                      }}
                       onChange={(value) => handleContentChange(index, "value", value)}
                     />
                   )}
@@ -891,10 +1154,12 @@ const AdminDashboard: React.FC = () => {
                       </label>
                       {item.imagePreview && (
                         <div className="mt-4">
-                          <img
+                          <Image
                             src={item.imagePreview}
                             alt="Preview"
-                            className="max-w-xs mx-auto rounded-lg shadow-md"
+                            width={300}
+                            height={200}
+                            className="max-w-xs mx-auto rounded-lg shadow-md object-cover"
                           />
                           <button
                             type="button"
@@ -989,7 +1254,6 @@ const AdminDashboard: React.FC = () => {
             </div>
           </form>
         )}
-
         {activeTab === "blogs" && (
           <div className="space-y-6 mt-6">
             <h2 className="text-2xl font-bold text-[#f6ff7a]">Your Blogs</h2>
@@ -1001,7 +1265,13 @@ const AdminDashboard: React.FC = () => {
                   <div key={blog._id} className="bg-[#3d3d3f] p-6 rounded-xl border border-gray-600 shadow-lg">
                     <div className="flex items-center gap-4">
                       {blog.primaryImage && (
-                        <img src={blog.primaryImage} alt={blog.title} className="w-24 h-24 object-cover rounded-lg" />
+                        <Image
+                          src={blog.primaryImage}
+                          alt={blog.title}
+                          width={96}
+                          height={96}
+                          className="w-24 h-24 object-cover rounded-lg"
+                        />
                       )}
                       <div className="flex-1">
                         <h3 className="text-xl font-semibold text-gray-200">{blog.title}</h3>
@@ -1009,18 +1279,22 @@ const AdminDashboard: React.FC = () => {
                         <p className="text-gray-400">Author: {blog.author}</p>
                       </div>
                       <div className="flex gap-2">
-                        <button
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
                           onClick={() => handleEditBlog(blog)}
                           className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
                         >
                           Edit
-                        </button>
-                        <button
-                          onClick={() => handleBlogDelete(blog._id)}
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => setShowDeleteConfirm({ id: blog._id, type: "blog" })}
                           className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
                         >
                           Delete
-                        </button>
+                        </motion.button>
                       </div>
                     </div>
                   </div>
@@ -1029,7 +1303,6 @@ const AdminDashboard: React.FC = () => {
             )}
           </div>
         )}
-
         {activeTab === "team" && (
           <div className="space-y-6 mt-6">
             <h2 className="text-2xl font-bold text-[#f6ff7a]">Team Members</h2>
@@ -1053,9 +1326,11 @@ const AdminDashboard: React.FC = () => {
                 </label>
                 {teamImagePreview && (
                   <div className="mt-4">
-                    <img
+                    <Image
                       src={teamImagePreview}
                       alt="Team Member Preview"
+                      width={128}
+                      height={128}
                       className="w-32 h-32 mx-auto rounded-full object-cover"
                     />
                     <button
@@ -1152,9 +1427,11 @@ const AdminDashboard: React.FC = () => {
                       className="bg-gray-900 p-6 rounded-xl border border-gray-600 shadow-lg"
                     >
                       <div className="flex items-center gap-4">
-                        <img
+                        <Image
                           src={member.image}
                           alt={member.name}
+                          width={96}
+                          height={96}
                           className="w-24 h-24 rounded-full object-cover"
                         />
                         <div className="flex-1">
@@ -1163,18 +1440,22 @@ const AdminDashboard: React.FC = () => {
                           <p className="text-gray-300 mt-2 line-clamp-5">{member.testimonial}</p>
                         </div>
                         <div className="flex gap-2">
-                          <button
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={() => handleEditTeamMember(member)}
                             className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
                           >
                             Edit
-                          </button>
-                          <button
-                            onClick={() => handleTeamDelete(member._id)}
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => setShowDeleteConfirm({ id: member._id, type: "team" })}
                             className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
                           >
                             Delete
-                          </button>
+                          </motion.button>
                         </div>
                       </div>
                     </div>
@@ -1184,7 +1465,6 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
         )}
-
         {activeTab === "jobs" && (
           <div className="space-y-6 mt-6">
             <h2 className="text-2xl font-bold text-[#f6ff7a]">Job Postings</h2>
@@ -1220,12 +1500,21 @@ const AdminDashboard: React.FC = () => {
                 {errors.jobLocation && <p className="text-red-400 text-sm mt-1">{errors.jobLocation}</p>}
               </div>
               <div>
-                <label htmlFor="jobDescription" className="block text-lg font-medium mb-2 text-gray-200">
-                  Description
-                </label>
-                <div ref={quillRef} className="bg-gray-700 rounded-lg" />
-                {errors.jobDescription && <p className="text-red-400 text-sm mt-1">{errors.jobDescription}</p>}
-              </div>
+  <label htmlFor="jobDescription" className="block text-lg font-medium mb-2 text-gray-200">
+    Description
+  </label>
+
+  {/* Add wrapper for styling */}
+  <div className="quill-wrapper">
+    <QuillEditor initialValue={jobDescription} onChange={setJobDescription} />
+  </div>
+
+  {errors.jobDescription && (
+    <p className="text-red-400 text-sm mt-1">{errors.jobDescription}</p>
+  )}
+</div>
+
+
               <div>
                 <label htmlFor="employmentType" className="block text-lg font-medium mb-2 text-gray-200">
                   Employment Type
@@ -1280,140 +1569,213 @@ const AdminDashboard: React.FC = () => {
                             {job.location} · {job.employmentType}
                           </p>
                           <p className="text-gray-400">Posted: {new Date(job.postedDate).toLocaleDateString()}</p>
-                          <button
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={() =>
                               setViewingApplicationsForJob(
                                 viewingApplicationsForJob === job._id ? null : job._id
                               )
                             }
-                            className="mt-2 text-[#f6ff7a] hover:text-yellow-500"
+                            className="mt-2 text-[#f6ff7a] hover:text-yellow-500 font-semibold"
                           >
                             {viewingApplicationsForJob === job._id ? "Hide Applications" : "View Applications"} (
                             {applications.filter((app) => app.jobId === job._id).length})
-                          </button>
+                          </motion.button>
                         </div>
                         <div className="flex gap-2">
-                          <button
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={() => handleEditJob(job)}
                             className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
                           >
                             Edit
-                          </button>
-                          <button
-                            onClick={() => handleJobDelete(job._id)}
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => setShowDeleteConfirm({ id: job._id, type: "job" })}
                             className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
                           >
                             Delete
-                          </button>
+                          </motion.button>
                         </div>
                       </div>
-                      {viewingApplicationsForJob === job._id && (
-                        <div className="mt-4 p-4 bg-[#3d3d3f] rounded-lg">
-                          <h5 className="text-lg font-semibold text-gray-200">
-                            Applications for {job.title}
-                          </h5>
-                          {applications.filter((app) => app.jobId === job._id).length === 0 ? (
-                            <p className="text-gray-400">No applications yet.</p>
-                          ) : (
-                            applications
-                              .filter((app) => app.jobId === job._id)
-                              .map((app) => (
-                                <div key={app._id} className="mt-2 p-2 border-b border-gray-600">
-                                  <p>
-                                    <strong>Name:</strong> {app.firstName} {app.lastName}
-                                  </p>
-                                  <p>
-                                    <strong>Email:</strong> {app.email}
-                                  </p>
-                                  <p>
-                                    <strong>Phone:</strong> {app.phone}
-                                  </p>
-                                  <p>
-                                    <strong>LinkedIn:</strong> {app.linkedIn || "N/A"}
-                                  </p>
-                                  <p>
-                                    <strong>Website:</strong> {app.website || "N/A"}
-                                  </p>
-                                  <p>
-                                    <strong>Country:</strong> {app.country}
-                                  </p>
-                                  {app.resume && (
-                                    <button
-                                      onClick={() => handleViewResume(app.resume)}
-                                      className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                                    >
-                                      View Resume
-                                    </button>
-                                  )}
-                                  {viewResumeUrl && (
-                                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                                      <div className="bg-white p-4 rounded-lg w-3/4 h-3/4 relative">
-                                        <button
-                                          onClick={closeModal}
-                                          className="absolute top-2 right-2 text-black font-bold"
-                                        >
-                                          Close
-                                        </button>
-                                        {errorMessage ? (
-                                          <div className="text-red-500 text-center">
-                                            {errorMessage}
-                                            <br />
-                                            <a
-                                              href={viewResumeUrl}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                              className="text-blue-500 underline mt-2 block"
-                                            >
-                                              Download Resume
-                                            </a>
-                                          </div>
-                                        ) : (
-                                          <iframe
-                                            src={viewResumeUrl}
-                                            className="w-full h-full border-0"
-                                            title="Resume Viewer"
-                                            onError={() =>
-                                              setErrorMessage(
-                                                "Failed to load resume in iframe. Please download instead."
-                                              )
-                                            }
-                                          />
-                                        )}
-                                      </div>
-                                    </div>
-                                  )}
-                                  <p>
-                                    <strong>Knew Rootstrap:</strong> {app.knewRootstrap}
-                                  </p>
-                                  {app.heardFrom && (
-                                    <p>
-                                      <strong>Heard From:</strong> {app.heardFrom}
-                                    </p>
-                                  )}
-                                  {app.heardFromDetails && (
-                                    <p>
-                                      <strong>Details:</strong> {app.heardFromDetails}
-                                    </p>
-                                  )}
-                                  <p>
-                                    <strong>Submitted:</strong>{" "}
-                                    {new Date(app.submittedAt).toLocaleString()}
-                                  </p>
-                                  <a
-                                    href={`mailto:${app.email}?subject=Re: Application for ${job.title}&body=Dear ${app.firstName},\n\nThank you for applying for the ${job.title} position at Rootstrap. We have received your application and will review it shortly.\n\nBest regards,\n[Your Name]\nRootstrap`}
-                                    className="inline-block mt-2 px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
-                                  >
-                                    Reply
-                                  </a>
-                                </div>
-                              ))
-                          )}
-                          <button
-                            onClick={() => setViewingApplicationsForJob(null)}
-                            className="mt-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500"
+                      <AnimatePresence>
+                        {viewingApplicationsForJob === job._id && (
+                          <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[50]"
                           >
-                            Close
-                          </button>
+                            <motion.div
+                              initial={{ y: -100, opacity: 0 }}
+                              animate={{ y: 0, opacity: 1 }}
+                              exit={{ y: -100, opacity: 0 }}
+                              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                              className="bg-[#2d2d2f] p-8 rounded-2xl w-11/12 max-w-3xl h-[85vh] flex flex-col shadow-2xl border border-gray-700"
+                            >
+                              <div className="flex justify-between items-center mb-6 flex-shrink-0">
+                                <h5 className="text-2xl font-bold text-[#f6ff7a]">
+                                  Applications for {job.title}
+                                </h5>
+                                <motion.button
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.9 }}
+                                  onClick={() => setViewingApplicationsForJob(null)}
+                                  className="text-gray-400 hover:text-gray-200"
+                                >
+                                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M6 18L18 6M6 6l12 12"
+                                    />
+                                  </svg>
+                                </motion.button>
+                              </div>
+                              <div ref={scrollRef} className="custom-scroll-content flex-1">
+                                {applications.filter((app) => app.jobId === job._id).length === 0 ? (
+                                  <p className="text-gray-400 text-center py-8">No applications yet.</p>
+                                ) : (
+                                  <div className="space-y-4">
+                                    {applications
+                                      .filter((app) => {
+                                        const isValid = app.jobId === job._id && app._id && /^[0-9a-fA-F]{24}$/.test(app._id);
+                                        if (!isValid) {
+                                          console.error("Skipping invalid application:", app);
+                                        }
+                                        return isValid;
+                                      })
+                                      .map((app) => (
+                                        <div
+                                          key={app._id}
+                                          className="application-item bg-[#3d3d3f] p-6 rounded-xl relative hover:bg-[#454547]"
+                                        >
+                                          <motion.button
+                                            whileHover={{ scale: 1.2 }}
+                                            whileTap={{ scale: 0.9 }}
+                                            onClick={() => {
+                                              console.log("Delete clicked for application:", app._id);
+                                              setShowDeleteConfirm({ id: app._id, type: "application" });
+                                            }}
+                                            className="absolute top-4 right-4 text-red-400 hover:text-red-500"
+                                            disabled={loading}
+                                          >
+                                            <GrTrash size={20} />
+                                          </motion.button>
+                                          <div className="flex flex-col gap-2">
+                                            <p className="text-gray-200">
+                                              <strong>Name:</strong> {app.firstName} {app.lastName}
+                                            </p>
+                                            <p className="text-gray-200">
+                                              <strong>Email:</strong> {app.email}
+                                            </p>
+                                            <p className="text-gray-200">
+                                              <strong>Phone:</strong> {app.phone}
+                                            </p>
+                                            <p className="text-gray-200">
+                                              <strong>Country:</strong> {app.country}
+                                            </p>
+                                            {app.linkedIn && (
+                                              <p className="text-gray-200">
+                                                <strong>LinkedIn:</strong>{" "}
+                                                <a
+                                                  href={app.linkedIn}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="text-[#f6ff7a] hover:underline"
+                                                >
+                                                  Profile
+                                                </a>
+                                              </p>
+                                            )}
+                                            {app.website && (
+                                              <p className="text-gray-200">
+                                                <strong>Website:</strong>{" "}
+                                                <a
+                                                  href={app.website}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="text-[#f6ff7a] hover:underline"
+                                                >
+                                                  Visit
+                                                </a>
+                                              </p>
+                                            )}
+                                            <p className="text-gray-200">
+                                              <strong>Submitted:</strong>{" "}
+                                              {new Date(app.submittedAt).toLocaleDateString()}
+                                            </p>
+                                            <motion.button
+                                              whileHover={{ scale: 1.05 }}
+                                              whileTap={{ scale: 0.95 }}
+                                              onClick={() => handleViewResume(app.resume)}
+                                              className="mt-2 px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 w-fit"
+                                            >
+                                              View Resume
+                                            </motion.button>
+                                          </div>
+                                        </div>
+                                      ))}
+                                  </div>
+                                )}
+                              </div>
+                            </motion.div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                      {viewResumeUrl && (
+                        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[50]">
+                          <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.8, opacity: 0 }}
+                            className="bg-white p-4 rounded-xl w-3/4 h-3/4 relative shadow-xl"
+                          >
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={closeModal}
+                              className="absolute top-4 right-4 text-black font-bold"
+                            >
+                              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 24">
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M6 18L18 6M6 6l12 12"
+                                />
+                              </svg>
+                            </motion.button>
+                            {errorMessage ? (
+                              <div className="text-red-500 text-center">
+                                {errorMessage}
+                                <br />
+                                <a
+                                  href={viewResumeUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-500 underline mt-2 block"
+                                >
+                                  Download Resume
+                                </a>
+                              </div>
+                            ) : (
+                              <iframe
+                                src={viewResumeUrl}
+                                className="w-full h-full border-0 rounded-lg"
+                                title="Resume Viewer"
+                                onError={() =>
+                                  setErrorMessage("Failed to load resume in iframe. Please download instead.")
+                                }
+                              />
+                            )}
+                          </motion.div>
                         </div>
                       )}
                     </div>
@@ -1426,47 +1788,6 @@ const AdminDashboard: React.FC = () => {
       </div>
     </div>
   );
-};
-
-interface QuillEditorProps {
-  index: number;
-  quillInstancesRef: React.MutableRefObject<(any | null)[]>;
-  initialValue: string;
-  modules: any;
-  onChange: (value: string) => void;
-}
-
-const QuillEditor: React.FC<QuillEditorProps> = ({ index, quillInstancesRef, initialValue, modules, onChange }) => {
-  const { quill, quillRef } = useQuill({ theme: "snow", modules });
-  React.useEffect(() => {
-    if (quill) {
-      quill.root.innerHTML = initialValue;
-      quillInstancesRef.current[index] = quill;
-      const handleTextChange = () => onChange(quill.root.innerHTML);
-      quill.on("text-change", handleTextChange);
-      return () => {
-        quill.off("text-change", handleTextChange);
-        quillInstancesRef.current[index] = null;
-      };
-    }
-  }, [quill, index, initialValue, onChange]);
-  return <div ref={quillRef} className="bg-gray-700 rounded-lg" />;
-};
-
-const handleEditBlog = (blog: Blog) => {
-  console.log("Edit blog:", blog);
-};
-
-const handleBlogDelete = (blogId: string) => {
-  console.log("Delete blog:", blogId);
-};
-
-const handleEditTeamMember = (member: TeamMember) => {
-  console.log("Edit team member:", member);
-};
-
-const handleTeamDelete = (memberId: string) => {
-  console.log("Delete team member:", memberId);
 };
 
 export default AdminDashboard;

@@ -95,8 +95,6 @@ const projects = [
     padding: 'md:pt-[1em] lg:pt-[4em]',
   },
 
-
-
   {
     image: '/exi.jpg',
     title: 'Exi',

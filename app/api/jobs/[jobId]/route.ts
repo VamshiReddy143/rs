@@ -1,11 +1,15 @@
-import { NextResponse } from "next/server";
-import  connectToDatabase  from "@/lib/connectDb";
+
+import { NextRequest, NextResponse } from "next/server";
+import connectToDatabase from "@/lib/connectDb";
 import { Job } from "@/models/Jobs";
 
-export async function GET(req: Request, { params }: { params: { jobId: string } }) {
+
+export async function GET(req: NextRequest, context: any) {
+  const { jobId } = context.params;
+
   try {
     await connectToDatabase();
-    const job = await Job.findById(params.jobId);
+    const job = await Job.findById(jobId);
     if (!job) return NextResponse.json({ error: "Job not found" }, { status: 404 });
     return NextResponse.json(job);
   } catch (error: any) {
@@ -13,7 +17,10 @@ export async function GET(req: Request, { params }: { params: { jobId: string } 
   }
 }
 
-export async function PUT(req: Request, { params }: { params: { jobId: string } }) {
+// @ts-ignore: Temporary workaround for Next.js type generation issue
+export async function PUT(req: NextRequest, context: any) {
+  const { jobId } = context.params;
+
   try {
     await connectToDatabase();
     const formData = await req.formData();
@@ -23,7 +30,7 @@ export async function PUT(req: Request, { params }: { params: { jobId: string } 
     const employmentType = formData.get("employmentType") as string;
 
     const job = await Job.findByIdAndUpdate(
-      params.jobId,
+      jobId,
       { title, location, description, employmentType },
       { new: true }
     );
@@ -35,10 +42,13 @@ export async function PUT(req: Request, { params }: { params: { jobId: string } 
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { jobId: string } }) {
+// @ts-ignore: Temporary workaround for Next.js type generation issue
+export async function DELETE(req: NextRequest, context: any) {
+  const { jobId } = context.params;
+
   try {
     await connectToDatabase();
-    const job = await Job.findByIdAndDelete(params.jobId);
+    const job = await Job.findByIdAndDelete(jobId);
     if (!job) return NextResponse.json({ error: "Job not found" }, { status: 404 });
     return NextResponse.json({ message: "Job deleted" });
   } catch (error: any) {

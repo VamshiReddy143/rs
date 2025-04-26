@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import Team from "@/models/Team";
@@ -11,11 +12,13 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+
+export async function PUT(request: NextRequest, context: any) {
+  const { id: teamId } = context.params;
+
   try {
     await connectToDatabase();
 
-    const teamId = params.id;
     if (!mongoose.Types.ObjectId.isValid(teamId)) {
       return NextResponse.json({ message: "Invalid team member ID" }, { status: 400 });
     }
@@ -73,14 +76,13 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// @ts-ignore: Temporary workaround for Next.js type generation issue
+export async function DELETE(request: NextRequest, context: any) {
+  const { id: teamId } = context.params;
+
   try {
     await connectToDatabase();
 
-    const teamId = params.id;
     if (!mongoose.Types.ObjectId.isValid(teamId)) {
       return NextResponse.json({ message: "Invalid team member ID" }, { status: 400 });
     }

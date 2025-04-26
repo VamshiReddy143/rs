@@ -596,3 +596,18 @@ h3.apply-now:hover {
   }
 }
 
+/* globals.css */
+
+/* Apply global Quill styles inside your wrapper */
+/* globals.css or your global stylesheet */
+
+.ql-container {
+  direction: ltr !important;
+}
+
+.ql-editor {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+

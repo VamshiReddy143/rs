@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import Blog from "@/models/Blog";
@@ -17,11 +18,13 @@ interface ContentItem {
   language?: string;
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+
+export async function PUT(request: NextRequest, context: any) {
+  const { id: blogId } = context.params;
+
   try {
     await connectToDatabase();
 
-    const blogId = params.id;
     if (!mongoose.Types.ObjectId.isValid(blogId)) {
       return NextResponse.json({ message: "Invalid blog ID" }, { status: 400 });
     }
@@ -147,14 +150,13 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// @ts-ignore: Temporary workaround for Next.js type generation issue
+export async function DELETE(req: NextRequest, context: any) {
+  const { id: blogId } = context.params;
+
   try {
     await connectToDatabase();
 
-    const blogId = params.id;
     if (!mongoose.Types.ObjectId.isValid(blogId)) {
       return NextResponse.json({ message: "Invalid blog ID" }, { status: 400 });
     }

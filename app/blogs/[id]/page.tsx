@@ -1,3 +1,4 @@
+
 import { notFound } from "next/navigation";
 import Blog from "@/models/Blog";
 import connectToDatabase from "@/lib/connectDb";
@@ -6,6 +7,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { ScrollProgress } from "@/components/magicui/scroll-progress";
 import { User } from "lucide-react";
+import Image from "next/image";
 
 interface ContentItem {
   type: "heading" | "paragraph" | "image" | "code";
@@ -23,11 +25,8 @@ interface BlogDocument {
   createdAt: string;
 }
 
-interface BlogPageProps {
-  params: { id: string };
-}
-
-export default async function BlogPage({ params }: BlogPageProps) {
+// @ts-ignore: Temporary workaround for Next.js type generation issue
+export default async function BlogPage({ params }: { params: any }) {
   const { id } = params;
 
   // Validate the ID
@@ -50,7 +49,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
         <ScrollProgress className="top-[78px]" />
         {/* Blog Header */}
         <div className="max-w-7xl mx-auto pt-[5em]">
-        
           <div className="flex gap-4 lg:text-[16px] lg:leading-[32px] font-normal text-gray-400 mb-4">
             <span className="">{blog.category}</span>
             <span>-</span>
@@ -63,27 +61,34 @@ export default async function BlogPage({ params }: BlogPageProps) {
             </span>
           </div>
           <div>
-            <h1 className="lg:text-[36px] lg:leading-[43px] font-semibold">{blog.title}</h1>
+            <h1 className="lg:text-[36px] lg:leading-[43px] font-semibold">
+              {blog.title}
+            </h1>
           </div>
           <div className="flex gap-2 lg:text-[16px] lg:leading-[32px] text-gray-400 font-normal mb-8 mt-4">
-            {/* <span>•</span> */}
             <User />
             <span>{blog.author}</span>
           </div>
           {/* Primary Image */}
           {blog.primaryImage && (
-            <img
-              src={blog.primaryImage}
-              alt={blog.title}
-              className="w-full h-auto rounded-lg mb-8"k
-            />
+            <div className="relative w-full h-96 rounded-lg overflow-hidden mb-8">
+              <Image
+                src={blog.primaryImage}
+                alt={blog.title}
+                layout="fill"
+                objectFit="cover"
+                className="rounded-lg"
+              />
+            </div>
           )}
 
           {/* Content Sections */}
           {blog.content?.map((item, index) => (
             <div key={index} className="mb-8">
               {item.type === "heading" && (
-                <h2 className="lg:text-[18px] lg:leading-[27px] font-semibold mb-4">{item.value}</h2>
+                <h2 className="lg:text-[18px] lg:leading-[27px] font-semibold mb-4">
+                  {item.value}
+                </h2>
               )}
               {item.type === "paragraph" && (
                 <div
@@ -92,11 +97,15 @@ export default async function BlogPage({ params }: BlogPageProps) {
                 />
               )}
               {item.type === "image" && (
-                <img
-                  src={item.value}
-                  alt={`Content image ${index}`}
-                  className="w-full h-auto rounded-lg mt-4"
-                />
+                <div className="relative w-full h-64 rounded-lg overflow-hidden mt-4">
+                  <Image
+                    src={item.value}
+                    alt={`Content image ${index}`}
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-lg"
+                  />
+                </div>
               )}
               {item.type === "code" && (
                 <SyntaxHighlighter

@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -11,7 +12,7 @@ interface Review {
   position: string;
   userId: string;
   image?: string;
-  createdAt: Date;
+  createdAt: string; // Changed to string to match MongoDB's lean() output
 }
 
 const Clients = () => {
@@ -26,7 +27,7 @@ const Clients = () => {
           throw new Error('Failed to fetch reviews');
         }
         const data: Review[] = await response.json();
-        console.log('Fetched reviews data:', data);
+        console.log('Fetched reviews data:', data.map(r => ({ _id: r._id, createdAt: r.createdAt })));
         setReviews(data);
       } catch (error) {
         console.error('Error fetching reviews:', error);
@@ -53,7 +54,7 @@ const Clients = () => {
           >
             {/* Review Text */}
             <p className="text-[#bcbcc0] line-clamp-4">
-              “{review.text}&rdquo;
+              “{review.text}”
             </p>
 
             {/* Image and Name/Position */}
@@ -74,11 +75,13 @@ const Clients = () => {
         ))}
       </div>
 
+      <Link href={"/reviews"}>
       <div className="flex flex-col items-center justify-center gap-4 text-center mt-12">
         <button className="border-1 border-white text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/10 hover:text-white/70 transition-colors">
           Read All Reviews
         </button>
       </div>
+      </Link>
     </div>
   );
 };
