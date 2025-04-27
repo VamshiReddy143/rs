@@ -161,7 +161,7 @@ const Cards: React.FC<CardsProps> = ({ searchTerm, selectedCategory }) => {
                 className="h-[250px] w-full object-cover"
               />
               {/* Content Container */}
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 ">
                 <div className="p-7 flex flex-col gap-4 flex-grow">
                   <p className="text-[#bcbcc0] text-[16px]">{card.category}</p>
                   <h2

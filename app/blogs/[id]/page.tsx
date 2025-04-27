@@ -61,7 +61,7 @@ export default async function BlogPage({ params }: { params: any }) {
             </span>
           </div>
           <div>
-            <h1 className="lg:text-[36px] lg:leading-[43px] font-semibold">
+            <h1 className="lg:text-[36px] text-[36px] leading-[43px] lg:leading-[43px] font-semibold">
               {blog.title}
             </h1>
           </div>
@@ -71,28 +71,28 @@ export default async function BlogPage({ params }: { params: any }) {
           </div>
           {/* Primary Image */}
           {blog.primaryImage && (
-            <div className="relative w-full h-96 rounded-lg overflow-hidden mb-8">
+            <div className="relative w-full h-[600px]  rounded-lg overflow-hidden  mb-8">
               <Image
                 src={blog.primaryImage}
                 alt={blog.title}
                 layout="fill"
                 objectFit="cover"
-                className="rounded-lg"
+                className="rounded-lg "
               />
             </div>
           )}
 
           {/* Content Sections */}
           {blog.content?.map((item, index) => (
-            <div key={index} className="mb-8">
+            <div key={index} className="mb-8 pt-[3em] lg:max-w-[50em] mx-auto">
               {item.type === "heading" && (
-                <h2 className="lg:text-[18px] lg:leading-[27px] font-semibold mb-4">
+                <h2 className="lg:text-[18px] text-[25px] leading-[27px]  font-medium lg:leading-[27px] font-semibold mb-4">
                   {item.value}
                 </h2>
               )}
               {item.type === "paragraph" && (
                 <div
-                  className="text-lg prose prose-invert max-w-none"
+                  className="text-[18px] leading-[27px] text-[18px] leading-[27px] font-normal prose prose-invert max-w-none"
                   dangerouslySetInnerHTML={{ __html: item.value }}
                 />
               )}

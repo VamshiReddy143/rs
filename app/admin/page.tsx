@@ -783,33 +783,48 @@ function AdminDashboard() {
       if (!title || !category || !author) throw new Error("Title, category, and author are required");
       const effectiveCategory = category === "Other" ? customCategory : category;
       if (!effectiveCategory) throw new Error("Please specify a category");
-
+  
       const formData = new FormData();
       formData.append("title", title);
       formData.append("category", effectiveCategory);
       formData.append("author", author);
       if (primaryImage) formData.append("primaryImage", primaryImage);
-
-      const processedContent = content.map((item, index) => ({
-        type: item.type,
-        value: typeof item.value === "string" ? item.value : `image-${index}`,
-        language: item.language,
-      }));
-
+  
+      // Process content array, converting Lexical JSON to HTML where applicable
+      const processedContent = content.map((item, index) => {
+        if (item.type === "image") {
+          // Image: Keep as placeholder
+          return {
+            type: item.type,
+            value: `image-${index}`,
+            language: item.language,
+          };
+        } else {
+          // Non-image (e.g., text): Convert Lexical JSON to HTML
+          const htmlValue = typeof item.value === "string" ? lexicalToHtml(item.value) : item.value;
+          return {
+            type: item.type,
+            value: htmlValue,
+            language: item.language,
+          };
+        }
+      });
+  
       formData.append("content", JSON.stringify(processedContent));
       content.forEach((item, index) => {
         if (item.type === "image" && item.value instanceof File) {
           formData.append(`image-${index}`, item.value);
         }
       });
-
+  
       const url = editingBlog ? `/api/blogs/${editingBlog._id}` : "/api/blogs/create";
       const method = editingBlog ? "PUT" : "POST";
-
+  
       const response = await fetch(url, { method, body: formData });
       if (!response.ok) throw new Error(`Failed to ${editingBlog ? "update" : "create"} blog: ${await response.text()}`);
-
+  
       toast.success(`Blog ${editingBlog ? "updated" : "created"} successfully!`);
+      resetBlogForm(); // Reset form fields after successful submission
       if (editingBlog) {
         setEditingBlog(null);
         setActiveTab("blogs");
