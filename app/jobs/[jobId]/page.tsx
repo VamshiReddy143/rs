@@ -1,9 +1,12 @@
+
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import emailjs from "@emailjs/browser";
 import Link from "next/link";
+import DOMPurify from "dompurify";
+import { IoLocationOutline } from "react-icons/io5";
 
 interface Job {
   _id: string;
@@ -135,19 +138,25 @@ const JobApplication: React.FC = () => {
     }
   };
 
-  const inputStyle = "p-2 w-full border border-gray-400 rounded focus:outline-none focus:border-gray-600 transition-all duration-300 placeholder-gray-500";
+  const inputStyle = "p-2 w-full border focus:border-b-3 focus:outline-none focus:border-b-[#FFC83F] border-gray-400 rounded   transition-all duration-300 placeholder-gray-500";
 
   return (
-    <div style={{ fontFamily: "Poppins, sans-serif" }} className="min-h-screen bg-white p-5 lg:pt-[7em] text-black ">
+    <div style={{ fontFamily: "Poppins, sans-serif" }} className="min-h-screen bg-white p-5 lg:pt-[7em] text-black">
       <div className="max-w-4xl mx-auto">
         {job ? (
           <>
             <div className="mb-6">
-              <Link href="/jobs" className="text-sm text-black mb-2 underline inline-block">{"<"}Back to Jobs</Link>
-            <div className="flex justify-between items-center">
+              <Link href="/jobs" className="text-[16px] font-normal pb-[3em] leading-[24px] text-black mb-2 underline inline-block">{"<"}Back to Jobs</Link>
+              <div className="flex justify-between items-center">
                 <div>
-                <h1 className="lg:text-[32px] lg:leading-[40px] font-normal mb-2">{job.title}</h1>
-                <p className="lg:text-[16px] lg:leading-[24px] font-normal mb-2 ">{job.location} · {job.employmentType}</p>
+                 
+                  <h1 className="lg:text-[32px] lg:leading-[40px] font-normal mb-2">{job.title}</h1>
+             <div className="flex items-start gap-2">
+             <div>
+                  <IoLocationOutline size={25}/>
+                  </div>
+                  <p className="lg:text-[16px] lg:leading-[24px] font-normal mb-2">{job.location} · {job.employmentType}</p>
+             </div>
                 </div>
                 <button
                   type="button"
@@ -156,17 +165,18 @@ const JobApplication: React.FC = () => {
                 >
                   Apply
                 </button>
-            </div>
-              {/* <p className="text-gray-600 text-sm mb-4">Posted: {new Date(job.postedDate).toLocaleDateString()}</p> */}
-              <div className="prose prose-sm text-gray-700 pt-[2em]" dangerouslySetInnerHTML={{ __html: job.description }} />
+              </div>
+              <div
+                className="prose prose-sm text-gray-700 pt-[2em]"
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.description) }}
+              />
               <div className="mt-6 flex justify-between items-center">
                 {/* <Link href="/jobs" className="text-sm text-blue-500">Back to Jobs</Link> */}
-              
               </div>
             </div>
             <h2 className="lg:text-[24px] lg:leading-[32px] font-normal mb-2">Apply for this job</h2>
             <p className="lg:text-[14px] lg:leading-[20px] font-normal mb-6"><span className="text-red-500">*</span> indicates a required field</p>
-            <form id="application-form" onSubmit={handleSubmit} className="space-y-4 ">
+            <form id="application-form" onSubmit={handleSubmit} className="space-y-4">
               <div className="w-[70%]">
                 <label className="block text-sm font-medium mb-1">
                   First Name <span className="text-red-500">*</span>
@@ -177,10 +187,11 @@ const JobApplication: React.FC = () => {
                   onChange={(e) => setFirstName(e.target.value)}
                   required
                   className={inputStyle}
-                  placeholder="First Name"
+                
+                  
                 />
               </div>
-              <div  className="w-[70%]">
+              <div className="w-[70%]">
                 <label className="block text-sm font-medium mb-1">
                   Last Name <span className="text-red-500">*</span>
                 </label>
@@ -190,10 +201,10 @@ const JobApplication: React.FC = () => {
                   onChange={(e) => setLastName(e.target.value)}
                   required
                   className={inputStyle}
-                  placeholder="Last Name"
+                  
                 />
               </div>
-              <div  className="w-[70%]">
+              <div className="w-[70%]">
                 <label className="block text-sm font-medium mb-1">
                   Email <span className="text-red-500">*</span>
                 </label>
@@ -203,10 +214,10 @@ const JobApplication: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className={inputStyle}
-                  placeholder="Email"
+                  
                 />
               </div>
-              <div  className="w-[70%]">
+              <div className="w-[70%]">
                 <label className="block text-sm font-medium mb-1">
                   Phone <span className="text-red-500">*</span>
                 </label>
@@ -216,7 +227,7 @@ const JobApplication: React.FC = () => {
                   onChange={(e) => setPhone(e.target.value)}
                   required
                   className={inputStyle}
-                  placeholder="Phone"
+                
                 />
               </div>
               <div>
@@ -250,6 +261,13 @@ const JobApplication: React.FC = () => {
                   >
                     Google Drive
                   </button>
+                  <button
+                    type="button"
+                    onClick={handleGoogleDriveUpload}
+                    className="flex-1 p-2 border border-gray-400 rounded text-center hover:bg-gray-100"
+                  >
+                    Entermanually
+                  </button>
                 </div>
                 {resumeFile && (
                   <p className="text-sm text-gray-500">
@@ -260,7 +278,7 @@ const JobApplication: React.FC = () => {
                   Accepted file types: pdf, doc, docx, txt
                 </p>
               </div>
-              <div  className="w-[70%]">
+              <div className="w-[70%]">
                 <label className="block text-sm font-medium mb-1">
                   LinkedIn Profile
                 </label>
@@ -269,10 +287,10 @@ const JobApplication: React.FC = () => {
                   value={linkedIn}
                   onChange={(e) => setLinkedIn(e.target.value)}
                   className={inputStyle}
-                  placeholder="LinkedIn Profile"
+                 
                 />
               </div>
-              <div  className="w-[70%]">
+              <div className="w-[70%]">
                 <label className="block text-sm font-medium mb-1">
                   Website
                 </label>
@@ -281,10 +299,10 @@ const JobApplication: React.FC = () => {
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
                   className={inputStyle}
-                  placeholder="Website"
+                 
                 />
               </div>
-              <div  className="w-[70%]">
+              <div className="w-[70%]">
                 <label className="block text-sm font-medium mb-1">
                   Country of Residence <span className="text-red-500">*</span>
                 </label>
@@ -302,7 +320,7 @@ const JobApplication: React.FC = () => {
                   <option value="Other">Other</option>
                 </select>
               </div>
-              <div  className="w-[70%]">
+              <div className="w-[70%]">
                 <label className="block text-sm font-medium mb-1">
                   Before applying, did you know about Rootstrap?{" "}
                   <span className="text-red-500">*</span>
@@ -320,8 +338,8 @@ const JobApplication: React.FC = () => {
               </div>
               {knewRootstrap === "Yes" && (
                 <>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
+                  <div className="w-[70%]">
+                    <label className="block text-sm font-medium mb-1 ">
                       If yes, where did you hear about us?{" "}
                       <span className="text-red-500">*</span>
                     </label>
@@ -376,7 +394,7 @@ const JobApplication: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="py-2 px-4  text-black font-semibold bg-[#FFC83F] text-black rounded hover:bg-[#FFDC1A] disabled:opacity-50"
+                  className="py-2 px-4 text-black font-semibold bg-[#FFC83F] rounded hover:bg-[#FFDC1A] disabled:opacity-50"
                 >
                   {loading ? "Submitting..." : "Submit application"}
                 </button>

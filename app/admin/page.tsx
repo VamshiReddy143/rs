@@ -6,19 +6,39 @@ import Image from "next/image";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { HeadingNode, $createHeadingNode, $isHeadingNode } from "@lexical/rich-text";
-import { ListNode, ListItemNode, $createListNode, $createListItemNode, $isListNode } from "@lexical/list";
+import {
+  ListNode,
+  ListItemNode,
+  $isListNode,
+  INSERT_UNORDERED_LIST_COMMAND,
+  INSERT_ORDERED_LIST_COMMAND,
+  REMOVE_LIST_COMMAND,
+} from "@lexical/list";
+import { $getRoot } from "lexical";
 import { LinkNode, $createLinkNode } from "@lexical/link";
 import { CodeNode, $createCodeNode } from "@lexical/code";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getSelection, $isRangeSelection, $createParagraphNode, $isTextNode, FORMAT_TEXT_COMMAND, UNDO_COMMAND, REDO_COMMAND, $isElementNode } from "lexical"; // Added $isElementNode
+import {
+  $getSelection,
+  $isRangeSelection,
+  $createParagraphNode,
+  $isTextNode,
+  FORMAT_TEXT_COMMAND,
+  UNDO_COMMAND,
+  REDO_COMMAND,
+  $isElementNode,
+} from "lexical";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { GrAnnounce, GrTrash } from "react-icons/gr";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { lexicalToHtml } from "@/utils/lexicalToHtml";
+import { $wrapNodes } from "@lexical/selection";
 
 const LexicalErrorBoundary = ({ children }: { children: React.ReactNode }) => {
   try {
@@ -83,14 +103,17 @@ function ToolbarPlugin() {
   // Update active blocks and marks
   useEffect(() => {
     const updateActiveStates = () => {
-      editor.read(() => {
+      editor.getEditorState().read(() => {
         const selection = $getSelection();
         const newActiveBlocks = new Set<string>();
         const newActiveMarks = new Set<string>();
 
         if ($isRangeSelection(selection)) {
           const anchorNode = selection.anchor.getNode();
-          let element = anchorNode.getParent() || anchorNode;
+          const element =
+            anchorNode.getKey() === "root"
+              ? anchorNode
+              : anchorNode.getTopLevelElementOrThrow();
 
           // Detect block types
           if ($isHeadingNode(element)) {
@@ -98,7 +121,7 @@ function ToolbarPlugin() {
           } else if (element.getType() === "paragraph") {
             newActiveBlocks.add("paragraph");
           } else if ($isListNode(element)) {
-            newActiveBlocks.add(element.getListType() === "bullet" ? "bullet" : "number");
+            newActiveBlocks.add(element.getListType());
           } else if (element.getType() === "code") {
             newActiveBlocks.add("code");
           }
@@ -115,9 +138,11 @@ function ToolbarPlugin() {
       });
     };
 
-    updateActiveStates();
-    const dispose = editor.registerUpdateListener(() => updateActiveStates());
-    return () => dispose();
+    return editor.registerUpdateListener(({ editorState }) => {
+      editorState.read(() => {
+        updateActiveStates();
+      });
+    });
   }, [editor]);
 
   // Keyboard shortcuts
@@ -156,107 +181,100 @@ function ToolbarPlugin() {
 
   const setBlockType = (type: "h1" | "h2" | "h3" | "paragraph" | "code") => (e: React.MouseEvent) => {
     e.preventDefault();
-    editor.update(() => {
-      const selection = $getSelection();
-      if ($isRangeSelection(selection)) {
-        const anchorNode = selection.anchor.getNode();
-        const parent = anchorNode.getParent() || anchorNode;
-        let newNode;
-        if (type === "paragraph") {
-          newNode = $createParagraphNode();
-        } else if (type === "code") {
-          newNode = $createCodeNode();
-        } else {
-          newNode = $createHeadingNode(type);
-        }
-        if ($isElementNode(parent)) {
-          newNode.append(...parent.getChildren()); // Safe: parent is ElementNode
-          parent.replace(newNode);
-        } else {
-          // Handle TextNode case: wrap parent in newNode
-          newNode.append(parent);
-          const grandparent = parent.getParent();
-          if (grandparent && $isElementNode(grandparent)) {
-            grandparent.replace(newNode);
+    try {
+      editor.update(() => {
+        const selection = $getSelection();
+        if ($isRangeSelection(selection)) {
+          let newNode;
+          if (type === "paragraph") {
+            newNode = $createParagraphNode();
+          } else if (type === "code") {
+            newNode = $createCodeNode();
           } else {
-            // Fallback: insert newNode at selection
-            selection.insertNodes([newNode]);
+            newNode = $createHeadingNode(type);
           }
+          $wrapNodes(selection, () => newNode);
         }
-      }
-    });
-    editor.focus();
+      });
+      editor.focus();
+    } catch (error) {
+      console.error(`Error setting block type ${type}:`, error);
+      toast.error("Failed to apply formatting", { theme: "dark" });
+    }
   };
+
+
+  
   const toggleList = (listType: "bullet" | "number") => (e: React.MouseEvent) => {
     e.preventDefault();
-    editor.update(() => {
-      const selection = $getSelection();
-      if ($isRangeSelection(selection)) {
+    try {
+      editor.update(() => {
+        const selection = $getSelection();
+        if (!$isRangeSelection(selection)) {
+          // Handle empty selection by creating a new list
+          const paragraph = $createParagraphNode();
+          const listNode = new ListNode(listType === "bullet" ? "bullet" : "number");
+          const listItem = new ListItemNode(); // Use new ListItemNode() instead of $createListItemNode
+          listItem.append(paragraph);
+          listNode.append(listItem);
+          const root = $getRoot(); // Use $getRoot() instead of editor.getRoot()
+          root.append(listNode);
+          listItem.select();
+          return;
+        }
+  
         const anchorNode = selection.anchor.getNode();
-        const parent = anchorNode.getParent() || anchorNode;
-        const isList = $isListNode(parent) && parent.getListType() === listType;
+        const element = anchorNode.getTopLevelElementOrThrow();
+        const isList = $isListNode(element) && element.getListType() === listType;
+  
         if (isList) {
-          // Convert list back to paragraph
-          const newNode = $createParagraphNode();
-          if ($isElementNode(parent)) {
-            // Only ElementNodes (like ListNode) have children
-            newNode.append(...parent.getChildren()); // No flatMap, just append children
-            parent.replace(newNode);
-          }
+          // Convert list to paragraphs
+          editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
         } else {
           // Convert to list
-          const listNode = $createListNode(listType);
-          const listItem = $createListItemNode();
-          if ($isElementNode(parent)) {
-            // Parent is an ElementNode (e.g., ParagraphNode)
-            listItem.append(...parent.getChildren());
-            listNode.append(listItem);
-            parent.replace(listNode);
-          } else {
-            // Parent is a TextNode or other non-ElementNode
-            listItem.append(parent);
-            listNode.append(listItem);
-            const grandparent = parent.getParent();
-            if (grandparent && $isElementNode(grandparent)) {
-              grandparent.replace(listNode);
-            } else {
-              selection.insertNodes([listNode]);
-            }
-          }
+          const command = listType === "bullet" ? INSERT_UNORDERED_LIST_COMMAND : INSERT_ORDERED_LIST_COMMAND;
+          editor.dispatchCommand(command, undefined);
         }
-      }
-    });
-    editor.focus();
+      });
+      editor.focus();
+    } catch (error) {
+      console.error(`Error toggling ${listType} list:`, error);
+      toast.error("Failed to toggle list", { theme: "dark" });
+    }
   };
 
   const toggleMark = (mark: "bold" | "italic" | "underline" | "code") => (e: React.MouseEvent) => {
     e.preventDefault();
-    editor.dispatchCommand(FORMAT_TEXT_COMMAND, mark);
-    editor.focus();
+    try {
+      editor.dispatchCommand(FORMAT_TEXT_COMMAND, mark);
+      editor.focus();
+    } catch (error) {
+      console.error(`Error toggling ${mark}:`, error);
+      toast.error("Failed to apply formatting", { theme: "dark" });
+    }
   };
 
   const handleLinkSubmit = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (linkUrl) {
+    if (!linkUrl) {
+      toast.error("Please enter a valid URL", { theme: "dark" });
+      return;
+    }
+    try {
       editor.update(() => {
         const selection = $getSelection();
         if ($isRangeSelection(selection)) {
-          const nodes = selection.extract();
           const linkNode = $createLinkNode(linkUrl);
-          nodes.forEach((node) => {
-            if ($isTextNode(node)) {
-              linkNode.append(node);
-            }
-          });
-          selection.insertNodes([linkNode]);
+          $wrapNodes(selection, () => linkNode);
         }
       });
       setLinkUrl("");
       setShowLinkInput(false);
       toast.success("Link added successfully!", { theme: "dark" });
       editor.focus();
-    } else {
-      toast.error("Please enter a valid URL", { theme: "dark" });
+    } catch (error) {
+      console.error("Error adding link:", error);
+      toast.error("Failed to add link", { theme: "dark" });
     }
   };
 
@@ -367,22 +385,22 @@ function ToolbarPlugin() {
           setShowLinkInput(true);
           editor.focus();
         }}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] bg-gray-600 text-white hover:bg-[#f6ff7a] hover:text-black`}
+        className="px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] bg-gray-600 text-white hover:bg-[#f6ff7a] hover:text-black"
         aria-label="Link"
       >
         Link
       </button>
       <button
-  onClick={(e) => {
-    e.preventDefault();
-    editor.dispatchCommand(UNDO_COMMAND, undefined);
-    editor.focus();
-  }}
-  className="px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] bg-gray-600 text-white hover:bg-[#f6ff7a] hover:text-black"
-  aria-label="Undo"
->
-  Undo
-</button>
+        onClick={(e) => {
+          e.preventDefault();
+          editor.dispatchCommand(UNDO_COMMAND, undefined);
+          editor.focus();
+        }}
+        className="px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] bg-gray-600 text-white hover:bg-[#f6ff7a] hover:text-black"
+        aria-label="Undo"
+      >
+        Undo
+      </button>
       <button
         onClick={(e) => {
           e.preventDefault();
@@ -457,8 +475,10 @@ function LexicalEditor({ index, initialValue, onChange }: LexicalEditorProps) {
               Start typing...
             </div>
           }
-          ErrorBoundary={LexicalErrorBoundary} // Add ErrorBoundary prop
+          ErrorBoundary={LexicalErrorBoundary}
         />
+        <HistoryPlugin />
+        <ListPlugin />
         <DebugPlugin />
         <OnChangePlugin onChange={onChange} />
       </LexicalComposer>
@@ -539,6 +559,7 @@ interface ContentItem {
 interface Errors {
   [key: string]: string;
 }
+
 function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<"create" | "blogs" | "team" | "jobs">("create");
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -860,20 +881,26 @@ function AdminDashboard() {
     }
     setLoading(true);
     try {
-      if (!jobTitle || !jobLocation || !jobDescription)
+      if (!jobTitle || !jobLocation || !jobDescription) {
         throw new Error("Title, location, and description are required");
+      }
+
+      // Convert Lexical JSON to HTML
+      const descriptionHtml = lexicalToHtml(jobDescription);
 
       const formData = new FormData();
       formData.append("title", jobTitle);
       formData.append("location", jobLocation);
-      formData.append("description", jobDescription); // Send Lexical JSON
+      formData.append("description", descriptionHtml); // Send HTML instead of JSON
       formData.append("employmentType", employmentType);
 
       const url = editingJob ? `/api/jobs/${editingJob._id}` : "/api/jobs";
       const method = editingJob ? "PUT" : "POST";
 
       const response = await fetch(url, { method, body: formData });
-      if (!response.ok) throw new Error(`Failed to ${editingJob ? "update" : "create"} job: ${await response.text()}`);
+      if (!response.ok) {
+        throw new Error(`Failed to ${editingJob ? "update" : "create"} job: ${await response.text()}`);
+      }
 
       toast.success(`Job ${editingJob ? "updated" : "created"} successfully!`);
       resetJobForm();
@@ -1016,17 +1043,17 @@ function AdminDashboard() {
       const updatedMembers = prev.filter((m) => m._id !== member._id); // Remove the member from its current position
       return [member, ...updatedMembers]; // Add it to the top
     });
-  
+
     // Populate the form fields for editing
     setEditingTeamMember(member);
     setTeamImagePreview(member.image);
     setTestimonial(member.testimonial);
     setName(member.name);
     setRole(member.role);
-  
+
     // Switch to the "team" tab
     setActiveTab("team");
-  
+
     // Scroll to the top of the screen
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: "smooth" });
