@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useSession, signIn, signOut } from 'next-auth/react';
@@ -7,6 +6,7 @@ import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
+import { FaTrash } from 'react-icons/fa';
 
 interface Review {
   _id: string;
@@ -73,24 +73,64 @@ const Reviews = () => {
         body: formData,
       });
 
-      if (!response.ok) throw new Error('Failed to submit review');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit review');
+      }
+
+      // Add the new review to the state
+      setReviews((prev) => {
+        const updatedReviews = [data.review, ...prev];
+        // Sort by createdAt descending (newest first)
+        return updatedReviews.sort((a, b) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
 
       setSuccess('Review submitted successfully!');
       toast.success('Review submitted!', { style: { background: '#2d2d2f', color: '#f6ff7a' } });
       setReviewText('');
       setPosition('');
       setError('');
-      setPage(1);
-      setReviews([]);
-    } catch (err) {
-      setError('Failed to submit review.');
-      toast.error('Failed to submit review.', { style: { background: '#2d2d2f', color: '#fff' } });
+    } catch (err: any) {
+      setError(err.message || 'Failed to submit review.');
+      toast.error(err.message || 'Failed to submit review.', { style: { background: '#2d2d2f', color: '#fff' } });
+      setSuccess('');
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!session?.user?.id) {
+      toast.error('You must be signed in to delete your review.', { style: { background: '#2d2d2f', color: '#fff' } });
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/reviews', {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to delete review');
+      }
+
+      // Remove the deleted review from the state
+      setReviews((prev) => prev.filter((review) => review.userId !== session.user.id));
+
+      setSuccess('Review deleted successfully!');
+      toast.success('Review deleted!', { style: { background: '#2d2d2f', color: '#f6ff7a' } });
+      setError('');
+    } catch (err: any) {
+      setError(err.message || 'Failed to delete review.');
+      toast.error(err.message || 'Failed to delete review.', { style: { background: '#2d2d2f', color: '#fff' } });
       setSuccess('');
     }
   };
 
   return (
-    <div className="min-h-screen p-4 sm:p-8 lg:pt-[8em] bg-[#191a1b] text-white font-poppins ">
+    <div className="min-h-screen p-4 sm:p-8 lg:pt-[8em] bg-[#191a1b] text-white font-poppins">
       <Toaster position="top-right" />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -98,8 +138,6 @@ const Reviews = () => {
         transition={{ duration: 0.5, ease: 'easeOut' }}
         className="max-w-5xl mx-auto"
       >
-      
-
         {/* Profile Section */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -257,37 +295,55 @@ const Reviews = () => {
           ) : reviews.length === 0 ? (
             <p className="text-center text-[#bcbcc0] text-sm">No testimonials yet. Be the first!</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <AnimatePresence>
-                {reviews.map((review, index) => (
-                  <motion.div
-                    key={review._id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                    whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-                     className="bg-[#242425] p-7 rounded-xl flex flex-col justify-between min-h-[220px]"
-                  >
-                    <p className="text-[#bcbcc0] text-sm italic line-clamp-7  mb-4">“{review.text}”</p>
-                    <div className="flex items-center gap-3">
-                      <Image
-                        src={review.image || '/h1c44.png'}
-                        alt={`${review.name}'s profile`}
-                        width={40}
-                        height={40}
-                        className="rounded-full border border-[#f6ff7a]/50"
-                      />
-                      <div>
-                        <h3 className="text-sm font-medium text-white">{review.name}</h3>
-                        <p className="text-[#bcbcc0] text-xs">{review.position}</p>
-                        <p className="text-[#bcbcc0] text-xs">
-                          {new Date(review.createdAt).toLocaleDateString()}
-                        </p>
+                {reviews.map((review, index) => {
+                  const isUserReview = session?.user?.id === review.userId;
+                  return (
+                    <motion.div
+                      key={review._id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                      whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                      className={`relative p-7 rounded-xl flex flex-col justify-between min-h-[220px] ${
+                        isUserReview
+                          ? 'bg-[#2d2d2f] border-2 border-[#f6ff7a]/50 shadow-lg'
+                          : 'bg-[#242425]'
+                      }`}
+                    >
+                      {isUserReview && (
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={handleDelete}
+                          className="absolute top-4 right-4 text-red-400 hover:text-red-500"
+                          title="Delete your review"
+                        >
+                          <FaTrash size={16} />
+                        </motion.button>
+                      )}
+                      <p className="text-[#bcbcc0] text-sm italic line-clamp-7 mb-4">“{review.text}”</p>
+                      <div className="flex items-center gap-3">
+                        <Image
+                          src={review.image || '/h1c44.png'}
+                          alt={`${review.name}'s profile`}
+                          width={40}
+                          height={40}
+                          className="rounded-full border border-[#f6ff7a]/50"
+                        />
+                        <div>
+                          <h3 className="text-sm font-medium text-white">{review.name}</h3>
+                          <p className="text-[#bcbcc0] text-xs">{review.position}</p>
+                          <p className="text-[#bcbcc0] text-xs">
+                            {new Date(review.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  );
+                })}
               </AnimatePresence>
             </div>
           )}
@@ -310,13 +366,13 @@ const Reviews = () => {
           transition={{ duration: 0.4, delay: 0.6 }}
           className="mt-8 text-center"
         >
-          <Link href="/clients">
+          <Link href="/">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="px-6 py-2 border border-[#f6ff7a] text-[#f6ff7a] font-medium rounded-lg hover:bg-[#f6ff7a] hover:text-black transition-colors"
             >
-              Back to Clients Page
+              Back to Home
             </motion.button>
           </Link>
         </motion.div>

@@ -59,6 +59,19 @@ const Rapid = () => {
     return (
         <div className="flex mt-10 lg:mt-[6em] lg:flex-row md:flex-col-reverse flex-col-reverse justify-between items-start">
             <div className="lg:flex items-center justify-center gap-[4em]">
+
+            <div
+                    ref={leftSectionRef}
+                    className="lg:w-[50%] relative mt-7 lg:mt-0 flex justify-center items-center"
+                >
+                    <Image
+                        src="/rapid.jpg"
+                        alt="team"
+                        width={900}
+                        height={900}
+                        className="lg:h-[500px] lg:w-[750px] w-[80%] h-[100%] object-cover"
+                    />
+                </div>
                 <div
                     ref={rightSectionRef}
                     className="flex flex-col items-start gap-6 lg:w-[47%]"
@@ -86,18 +99,7 @@ const Rapid = () => {
                     </Link>
                 </div>
 
-                <div
-                    ref={leftSectionRef}
-                    className="lg:w-[50%] relative mt-7 lg:mt-0 flex justify-center items-center"
-                >
-                    <Image
-                        src="/rapid.jpg"
-                        alt="team"
-                        width={900}
-                        height={900}
-                        className="lg:h-[500px] lg:w-[750px] w-[80%] h-[100%] object-cover"
-                    />
-                </div>
+              
             </div>
         </div>
     );

@@ -13,6 +13,10 @@ cloudinary.config({
 });
 
 
+
+
+
+
 export async function PUT(request: NextRequest, context: any) {
   const { id: teamId } = context.params;
 

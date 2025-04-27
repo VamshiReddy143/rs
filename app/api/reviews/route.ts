@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/authOptions";
@@ -65,42 +64,91 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const session = await getServerSession(typedAuthOptions);
 
-  if (!session) {
+  if (!session || !session.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const formData = await req.formData();
-  const text = formData.get("text") as string;
-  const name = formData.get("name") as string;
-  const position = formData.get("position") as string;
-
-  if (!text || !name || !position) {
-    return NextResponse.json({ error: "All fields are required" }, { status: 400 });
-  }
-
-  console.log("Session user data:", session.user);
-
   try {
     await connectToDatabase();
+
+    // Check if user has already submitted a review
+    const existingReview = await Review.findOne({ userId: session.user.id }).lean();
+    if (existingReview) {
+      return NextResponse.json(
+        { error: "You have already submitted a review" },
+        { status: 409 }
+      );
+    }
+
+    const formData = await req.formData();
+    const text = formData.get("text") as string;
+    const name = formData.get("name") as string;
+    const position = formData.get("position") as string;
+
+    if (!text || !name || !position) {
+      return NextResponse.json({ error: "All fields are required" }, { status: 400 });
+    }
+
+    console.log("Session user data:", session.user);
+
     const newReview = new Review({
       text,
       name,
       position,
-      userId: session.user?.id,
-      image: session.user?.image,
+      userId: session.user.id,
+      image: session.user.image,
+      createdAt: new Date(),
     });
     await newReview.save();
-    console.log("Saved review with image:", {
-      text,
-      name,
-      position,
-      userId: session.user?.id,
-      image: session.user?.image,
+
+    // Convert to plain object and ensure createdAt is a string
+    const reviewResponse = {
+      _id: newReview._id.toString(),
+      text: newReview.text,
+      name: newReview.name,
+      position: newReview.position,
+      userId: newReview.userId,
+      image: newReview.image,
+      createdAt: newReview.createdAt.toISOString(),
+    };
+
+    console.log("Saved review with image:", reviewResponse);
+
+    return NextResponse.json({
+      message: "Review submitted successfully",
+      review: reviewResponse,
     });
-    return NextResponse.json({ message: "Review submitted successfully" });
   } catch (error: unknown) {
     console.error("Error submitting review:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: `Failed to submit review: ${message}` }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  const session = await getServerSession(typedAuthOptions);
+
+  if (!session || !session.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    await connectToDatabase();
+
+    // Find and delete the review by userId
+    const review = await Review.findOneAndDelete({ userId: session.user.id });
+    if (!review) {
+      return NextResponse.json(
+        { error: "No review found for this user" },
+        { status: 404 }
+      );
+    }
+
+    console.log("Deleted review:", { userId: session.user.id, reviewId: review._id });
+    return NextResponse.json({ message: "Review deleted successfully" });
+  } catch (error: unknown) {
+    console.error("Error deleting review:", error);
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ error: `Failed to delete review: ${message}` }, { status: 500 });
   }
 }

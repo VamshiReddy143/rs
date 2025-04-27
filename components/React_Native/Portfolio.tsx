@@ -36,7 +36,7 @@ const Portfolio = () => {
                             <h2 className='font-bold text-white text-[1.2em]'>Universal Innovations</h2>
                         </div>
                         <div className="absolute bottom-0 left-0 w-full h-[4em] bg-gradient-to-t from-black via-black/50 to-transparent z-10" />
-                        <div className="relative overflow-hidden h-[0em] group-hover:h-[12em] transition-all duration-500 z-[2]">
+                        <div className="relative overflow-hidden h-[0em] group-hover:h-[10em] transition-all duration-500 z-[2]">
                             <p className="text-[#bcbcc0] text-[16px]  font-semibold leading-[1.3em]">
 
                                 Modern, user-friendly healthcare app for patients and practitioners with enhanced appointment scheduling, medical history access, and medication ordering.
@@ -75,7 +75,7 @@ const Portfolio = () => {
                             <Image src={"/egglogo.svg"} alt="tools" width={900} height={900} className='h-17 w-17' />
                         </div>
                         <div className="absolute bottom-0 left-0 w-full h-[4em] bg-gradient-to-t from-black via-black/50 to-transparent z-10" />
-                        <div className="relative overflow-hidden h-[0em] group-hover:h-[12em] transition-all duration-500 z-[2]">
+                        <div className="relative overflow-hidden h-[0em] group-hover:h-[10em] transition-all duration-500 z-[2]">
                             <p className="text-[#bcbcc0] text-[16px]  font-semibold leading-[1.3em]">
                                 Elevated mobile app with subscription management, appointment handling, and unique loyalty program increased sales and customer engagement
                             </p>

@@ -7,7 +7,7 @@ import Link from 'next/link'
 
 const Contact = () => {
   return (
-    <div  id="contact" className='min-h-screen lg:mt-2 mt-[6em] '>
+    <div  id="contact" className=' lg:mt-2 mt-[6em] lg:pb-[7em] '>
         <div className='flex flex-col items-center justify-center gap-5'>
             <h1  style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[36px] md:text-[2.5em] text-[36px] text-center font-semibold'>Get Started in as Little as Two Weeks</h1>
             <p className='lg:text-[16px] md:text-[18px] text-[16px] text-center text-[#bcbcc0]'>We provide a free and guaranteed estimate for cost and timeline with every engagement.</p>

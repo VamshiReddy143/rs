@@ -36,7 +36,7 @@ const Portfolio = () => {
                             <h2 className='font-bold text-white text-[1.2em]'>Universal Innovations</h2>
                         </div>
                         <div className="absolute bottom-0 left-0 w-full h-[4em] bg-gradient-to-t from-black via-black/50 to-transparent z-10" />
-                        <div className="relative overflow-hidden h-[0em] group-hover:h-[12em] transition-all duration-500 z-[2]">
+                        <div className="relative overflow-hidden h-[0em] group-hover:h-[11.2em] transition-all duration-500 z-[2]">
                             <p className="text-[#bcbcc0] text-[16px]  font-normal leading-[1.3em]">
                                 We augmented their React development team in order to modernize the payment infrastructure as well as enhance conversion, performance, and user experience of their amazing platform.
                             </p>

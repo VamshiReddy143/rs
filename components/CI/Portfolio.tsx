@@ -41,7 +41,7 @@ const Portfolio = () => {
                                 Secured containerized environment with ECR and ECS. Automated CI/CD with CodePipeline. RDS and ElasticCache ensured fast and reliable access to the data.
                             </p>
                             <div className='flex justify-center items-center mt-5'>
-                                <button className='text-[16px] font-semiboldbg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
+                                <button className='text-[16px] font-semibold bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
                                     Learn More
                                 </button>
                             </div>
@@ -113,7 +113,7 @@ const Portfolio = () => {
                             <h2 className='font-bold text-white text-[1.2em]'>Bildsy</h2>
                         </div>
                         <div className="absolute bottom-0 left-0 w-full h-[3em] bg-gradient-to-t from-black via-black/70 to-transparent z-10" />
-                        <div className="relative overflow-hidden h-[0em] group-hover:h-[10em] transition-all duration-500 z-[2]">
+                        <div className="relative overflow-hidden h-[0em] group-hover:h-[9em] transition-all duration-500 z-[2]">
                             <p className="text-[#bcbcc0] text-[16px]  font-normal leading-[1.2em]">
                                 Migrated RGB&apos;s infrastructure to AWS, reducing risk of failure and preparing for high user demand during tax season.
                             </p>

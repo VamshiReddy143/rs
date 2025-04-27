@@ -74,7 +74,7 @@ const Portfolio = () => {
                             <Image src={"/egglogo.svg"} alt="tools" width={900} height={900} className='h-17 w-17' />
                         </div>
                         <div className="absolute bottom-0 left-0 w-full h-[3em] bg-gradient-to-t from-black via-black/70 to-transparent z-10" />
-                        <div className="relative overflow-hidden h-[0em] group-hover:h-[9em] transition-all duration-500 z-[2]">
+                        <div className="relative overflow-hidden h-[0em] group-hover:h-[7.5em] transition-all duration-500 z-[2]">
                             <p className="text-[#bcbcc0] font-light leading-[1.2em]">
                                 AI-driven, gamified learning platform and mobile app for parents and their kids.
                             </p>

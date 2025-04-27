@@ -1,33 +1,501 @@
-
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { useQuill } from "react-quilljs";
-import "quill/dist/quill.snow.css";
+import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { HeadingNode, $createHeadingNode, $isHeadingNode } from "@lexical/rich-text";
+import { ListNode, ListItemNode, $createListNode, $createListItemNode, $isListNode } from "@lexical/list";
+import { LinkNode, $createLinkNode } from "@lexical/link";
+import { CodeNode, $createCodeNode } from "@lexical/code";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $getSelection, $isRangeSelection, $createParagraphNode, $isTextNode, FORMAT_TEXT_COMMAND, UNDO_COMMAND, REDO_COMMAND, $isElementNode } from "lexical"; // Added $isElementNode
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { GrAnnounce, GrTrash } from "react-icons/gr";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion, AnimatePresence } from "framer-motion";
-import Quill from "quill";
 
-interface ContentItem {
-  type: "heading" | "paragraph" | "image" | "code";
-  value: string | File | null;
-  imagePreview?: string;
-  language?: string;
+
+const LexicalErrorBoundary = ({ children }: { children: React.ReactNode }) => {
+  try {
+    return <>{children}</>;
+  } catch (error) {
+    console.error("Lexical Error:", error);
+    return <div>Something went wrong in the editor.</div>;
+  }
+};
+
+// Lexical theme configuration
+const theme = {
+  heading: {
+    h1: "font-bold text-[32px] leading-[40px] my-4 text-white",
+    h2: "font-semibold text-[24px] leading-[32px] my-3 text-white",
+    h3: "font-semibold text-[20px] leading-[28px] my-2 text-white",
+  },
+  paragraph: "text-[16px] leading-[24px] my-2 text-white",
+  list: {
+    ul: "list-disc list-outside ml-6 my-2 text-white",
+    ol: "list-decimal list-outside ml-6 my-2 text-white",
+    listitem: "text-[16px] leading-[24px] text-white",
+  },
+  link: "text-[#f6ff7a] underline",
+  text: {
+    bold: "font-bold",
+    italic: "italic",
+    underline: "underline",
+    code: "font-mono bg-[#2d2d2f] px-1 rounded text-[#f6ff7a]",
+  },
+  code: "font-mono bg-[#2d2d2f] p-4 rounded block text-[#f6ff7a] text-[14px] overflow-x-auto",
+};
+
+// Debug Plugin to display HTML output
+function DebugPlugin() {
+  const [editor] = useLexicalComposerContext();
+  const [html, setHtml] = useState<string>("");
+
+  useEffect(() => {
+    const updateHtml = () => {
+      editor.read(() => {
+        const root = editor.getRootElement();
+        setHtml(root?.innerHTML || "No content");
+      });
+    };
+    updateHtml();
+    const unregister = editor.registerUpdateListener(() => updateHtml());
+    return () => unregister();
+  }, [editor]);
+
+  return null;
 }
 
+// Toolbar Plugin with formatting controls
+function ToolbarPlugin() {
+  const [editor] = useLexicalComposerContext();
+  const [showLinkInput, setShowLinkInput] = useState<boolean>(false);
+  const [linkUrl, setLinkUrl] = useState<string>("");
+  const [activeBlocks, setActiveBlocks] = useState<Set<string>>(new Set());
+  const [activeMarks, setActiveMarks] = useState<Set<string>>(new Set());
+
+  // Update active blocks and marks
+  useEffect(() => {
+    const updateActiveStates = () => {
+      editor.read(() => {
+        const selection = $getSelection();
+        const newActiveBlocks = new Set<string>();
+        const newActiveMarks = new Set<string>();
+
+        if ($isRangeSelection(selection)) {
+          const anchorNode = selection.anchor.getNode();
+          let element = anchorNode.getParent() || anchorNode;
+
+          // Detect block types
+          if ($isHeadingNode(element)) {
+            newActiveBlocks.add(element.getTag());
+          } else if (element.getType() === "paragraph") {
+            newActiveBlocks.add("paragraph");
+          } else if ($isListNode(element)) {
+            newActiveBlocks.add(element.getListType() === "bullet" ? "bullet" : "number");
+          } else if (element.getType() === "code") {
+            newActiveBlocks.add("code");
+          }
+
+          // Detect marks
+          if (selection.hasFormat("bold")) newActiveMarks.add("bold");
+          if (selection.hasFormat("italic")) newActiveMarks.add("italic");
+          if (selection.hasFormat("underline")) newActiveMarks.add("underline");
+          if (selection.hasFormat("code")) newActiveMarks.add("code");
+        }
+
+        setActiveBlocks(newActiveBlocks);
+        setActiveMarks(newActiveMarks);
+      });
+    };
+
+    updateActiveStates();
+    const dispose = editor.registerUpdateListener(() => updateActiveStates());
+    return () => dispose();
+  }, [editor]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key) {
+          case "b":
+            event.preventDefault();
+            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
+            break;
+          case "i":
+            event.preventDefault();
+            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
+            break;
+          case "u":
+            event.preventDefault();
+            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
+            break;
+          case "z":
+            event.preventDefault();
+            editor.dispatchCommand(UNDO_COMMAND, undefined);
+            break;
+          case "y":
+          case "Z":
+            event.preventDefault();
+            editor.dispatchCommand(REDO_COMMAND, undefined);
+            break;
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeydown);
+    return () => document.removeEventListener("keydown", handleKeydown);
+  }, [editor]);
+
+  const setBlockType = (type: "h1" | "h2" | "h3" | "paragraph" | "code") => (e: React.MouseEvent) => {
+    e.preventDefault();
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        const anchorNode = selection.anchor.getNode();
+        const parent = anchorNode.getParent() || anchorNode;
+        let newNode;
+        if (type === "paragraph") {
+          newNode = $createParagraphNode();
+        } else if (type === "code") {
+          newNode = $createCodeNode();
+        } else {
+          newNode = $createHeadingNode(type);
+        }
+        if ($isElementNode(parent)) {
+          newNode.append(...parent.getChildren()); // Safe: parent is ElementNode
+          parent.replace(newNode);
+        } else {
+          // Handle TextNode case: wrap parent in newNode
+          newNode.append(parent);
+          const grandparent = parent.getParent();
+          if (grandparent && $isElementNode(grandparent)) {
+            grandparent.replace(newNode);
+          } else {
+            // Fallback: insert newNode at selection
+            selection.insertNodes([newNode]);
+          }
+        }
+      }
+    });
+    editor.focus();
+  };
+  const toggleList = (listType: "bullet" | "number") => (e: React.MouseEvent) => {
+    e.preventDefault();
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        const anchorNode = selection.anchor.getNode();
+        const parent = anchorNode.getParent() || anchorNode;
+        const isList = $isListNode(parent) && parent.getListType() === listType;
+        if (isList) {
+          // Convert list back to paragraph
+          const newNode = $createParagraphNode();
+          if ($isElementNode(parent)) {
+            // Only ElementNodes (like ListNode) have children
+            newNode.append(...parent.getChildren()); // No flatMap, just append children
+            parent.replace(newNode);
+          }
+        } else {
+          // Convert to list
+          const listNode = $createListNode(listType);
+          const listItem = $createListItemNode();
+          if ($isElementNode(parent)) {
+            // Parent is an ElementNode (e.g., ParagraphNode)
+            listItem.append(...parent.getChildren());
+            listNode.append(listItem);
+            parent.replace(listNode);
+          } else {
+            // Parent is a TextNode or other non-ElementNode
+            listItem.append(parent);
+            listNode.append(listItem);
+            const grandparent = parent.getParent();
+            if (grandparent && $isElementNode(grandparent)) {
+              grandparent.replace(listNode);
+            } else {
+              selection.insertNodes([listNode]);
+            }
+          }
+        }
+      }
+    });
+    editor.focus();
+  };
+
+  const toggleMark = (mark: "bold" | "italic" | "underline" | "code") => (e: React.MouseEvent) => {
+    e.preventDefault();
+    editor.dispatchCommand(FORMAT_TEXT_COMMAND, mark);
+    editor.focus();
+  };
+
+  const handleLinkSubmit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (linkUrl) {
+      editor.update(() => {
+        const selection = $getSelection();
+        if ($isRangeSelection(selection)) {
+          const nodes = selection.extract();
+          const linkNode = $createLinkNode(linkUrl);
+          nodes.forEach((node) => {
+            if ($isTextNode(node)) {
+              linkNode.append(node);
+            }
+          });
+          selection.insertNodes([linkNode]);
+        }
+      });
+      setLinkUrl("");
+      setShowLinkInput(false);
+      toast.success("Link added successfully!", { theme: "dark" });
+      editor.focus();
+    } else {
+      toast.error("Please enter a valid URL", { theme: "dark" });
+    }
+  };
+
+  return (
+    <div className="flex gap-2 mb-4 flex-wrap bg-[#2d2d2f] p-2 rounded-t-lg">
+      <button
+        onClick={setBlockType("h1")}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${
+          activeBlocks.has("h1") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+        } hover:bg-[#f6ff7a] hover:text-black`}
+        aria-label="Heading 1"
+      >
+        H1
+      </button>
+      <button
+        onClick={setBlockType("h2")}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${
+          activeBlocks.has("h2") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+        } hover:bg-[#f6ff7a] hover:text-black`}
+        aria-label="Heading 2"
+      >
+        H2
+      </button>
+      <button
+        onClick={setBlockType("h3")}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${
+          activeBlocks.has("h3") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+        } hover:bg-[#f6ff7a] hover:text-black`}
+        aria-label="Heading 3"
+      >
+        H3
+      </button>
+      <button
+        onClick={setBlockType("paragraph")}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[100px] ${
+          activeBlocks.has("paragraph") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+        } hover:bg-[#f6ff7a] hover:text-black`}
+        aria-label="Paragraph"
+      >
+        Paragraph
+      </button>
+      <button
+        onClick={toggleList("bullet")}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[100px] ${
+          activeBlocks.has("bullet") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+        } hover:bg-[#f6ff7a] hover:text-black`}
+        aria-label="Bullet List"
+      >
+        Bullet List
+      </button>
+      <button
+        onClick={toggleList("number")}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[100px] ${
+          activeBlocks.has("number") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+        } hover:bg-[#f6ff7a] hover:text-black`}
+        aria-label="Ordered List"
+      >
+        Ordered List
+      </button>
+      <button
+        onClick={setBlockType("code")}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[100px] ${
+          activeBlocks.has("code") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+        } hover:bg-[#f6ff7a] hover:text-black`}
+        aria-label="Code Block"
+      >
+        Code Block
+      </button>
+      <button
+        onClick={toggleMark("bold")}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${
+          activeMarks.has("bold") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+        } hover:bg-[#f6ff7a] hover:text-black`}
+        aria-label="Bold"
+      >
+        Bold
+      </button>
+      <button
+        onClick={toggleMark("italic")}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${
+          activeMarks.has("italic") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+        } hover:bg-[#f6ff7a] hover:text-black`}
+        aria-label="Italic"
+      >
+        Italic
+      </button>
+      <button
+        onClick={toggleMark("underline")}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${
+          activeMarks.has("underline") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+        } hover:bg-[#f6ff7a] hover:text-black`}
+        aria-label="Underline"
+      >
+        Underline
+      </button>
+      <button
+        onClick={toggleMark("code")}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${
+          activeMarks.has("code") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+        } hover:bg-[#f6ff7a] hover:text-black`}
+        aria-label="Inline Code"
+      >
+        Code
+      </button>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          setShowLinkInput(true);
+          editor.focus();
+        }}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] bg-gray-600 text-white hover:bg-[#f6ff7a] hover:text-black`}
+        aria-label="Link"
+      >
+        Link
+      </button>
+      <button
+  onClick={(e) => {
+    e.preventDefault();
+    editor.dispatchCommand(UNDO_COMMAND, undefined);
+    editor.focus();
+  }}
+  className="px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] bg-gray-600 text-white hover:bg-[#f6ff7a] hover:text-black"
+  aria-label="Undo"
+>
+  Undo
+</button>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          editor.dispatchCommand(REDO_COMMAND, undefined);
+          editor.focus();
+        }}
+        className="px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] bg-gray-600 text-white hover:bg-[#f6ff7a] hover:text-black"
+        aria-label="Redo"
+      >
+        Redo
+      </button>
+      {showLinkInput && (
+        <div className="flex gap-2 mt-2 w-full">
+          <input
+            type="text"
+            value={linkUrl}
+            onChange={(e) => setLinkUrl(e.target.value)}
+            placeholder="Enter URL"
+            className="flex-1 px-4 py-2 bg-[#3d3d3f] text-white rounded text-[16px]"
+            aria-label="Link URL"
+          />
+          <button
+            onClick={handleLinkSubmit}
+            className="px-4 py-2 bg-[#f6ff7a] text-black rounded hover:bg-yellow-500 font-semibold text-[16px]"
+            aria-label="Add Link"
+          >
+            Add
+          </button>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              setShowLinkInput(false);
+              editor.focus();
+            }}
+            className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500 font-semibold text-[16px]"
+            aria-label="Cancel Link"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Lexical Editor Component
+interface LexicalEditorProps {
+  index: number;
+  initialValue: string;
+  onChange: (value: string) => void;
+}
+
+function LexicalEditor({ index, initialValue, onChange }: LexicalEditorProps) {
+  const initialConfig = {
+    namespace: `Editor-${index}`,
+    theme,
+    nodes: [HeadingNode, ListNode, ListItemNode, LinkNode, CodeNode],
+    onError: (error: Error) => console.error("Lexical Error:", error),
+    editorState: initialValue ? initialValue : undefined,
+  };
+
+  return (
+    <div className="bg-gray-700 rounded-lg border border-gray-600">
+      <LexicalComposer initialConfig={initialConfig}>
+        <ToolbarPlugin />
+        <RichTextPlugin
+          contentEditable={
+            <ContentEditable className="lexical-editor min-h-[260px] p-4 focus:outline-none" />
+          }
+          placeholder={
+            <div className="absolute top-4 left-4 text-gray-400 pointer-events-none">
+              Start typing...
+            </div>
+          }
+          ErrorBoundary={LexicalErrorBoundary} // Add ErrorBoundary prop
+        />
+        <DebugPlugin />
+        <OnChangePlugin onChange={onChange} />
+      </LexicalComposer>
+    </div>
+  );
+}
+
+// OnChange Plugin to capture editor state
+function OnChangePlugin({ onChange }: { onChange: (value: string) => void }) {
+  const [editor] = useLexicalComposerContext();
+
+  useEffect(() => {
+    const unregister = editor.registerUpdateListener(({ editorState }) => {
+      editorState.read(() => {
+        const json = editorState.toJSON();
+        onChange(JSON.stringify(json));
+      });
+    });
+    return () => unregister();
+  }, [editor, onChange]);
+
+  return null;
+}
+
+// Interfaces for data models
 interface Blog {
   _id: string;
   title: string;
   category: string;
   author: string;
   primaryImage?: string;
-  content: ContentItem[];
+  content: Array<{
+    type: string;
+    value: string;
+    language?: string;
+    imagePreview?: string;
+  }>;
 }
 
 interface TeamMember {
@@ -54,73 +522,24 @@ interface Application {
   lastName: string;
   email: string;
   phone: string;
-  resume: string;
+  country: string;
   linkedIn?: string;
   website?: string;
-  country: string;
-  knewRootstrap: string;
-  heardFrom?: string;
-  heardFromDetails?: string;
+  resume: string;
   submittedAt: string;
 }
 
-interface QuillEditorProps {
-  index?: number;
-  quillInstancesRef?: React.MutableRefObject<(Quill | null)[]>;
-  initialValue: string;
-  onChange: (value: string) => void;
+interface ContentItem {
+  type: string;
+  value: string | File | null;
+  language?: string;
+  imagePreview?: string;
 }
 
-const QuillEditor: React.FC<QuillEditorProps> = ({ index, quillInstancesRef, initialValue, onChange }) => {
-  const { quill, quillRef } = useQuill({
-    theme: "snow",
-    modules: {
-      toolbar: [
-        [{ header: [1, 2, 3, false] }],
-        ["bold", "italic", "underline"],
-        [{ list: "ordered" }, { list: "bullet" }],
-        ["link"],
-        ["clean"],
-      ],
-    },
-  });
-
-  useEffect(() => {
-    if (quill) {
-      console.log("Quill initialized, setting initial value:", initialValue);
-      quill.root.innerHTML = initialValue;
-      if (quillInstancesRef && index !== undefined) {
-        quillInstancesRef.current[index] = quill;
-      }
-      const handleTextChange = () => {
-        console.log("Text changed:", quill.root.innerHTML);
-        onChange(quill.root.innerHTML);
-      };
-      quill.on("text-change", handleTextChange);
-      return () => {
-        quill.off("text-change", handleTextChange);
-        if (quillInstancesRef && index !== undefined) {
-          quillInstancesRef.current[index] = null;
-        }
-      };
-    }
-  }, [quill, index, initialValue, onChange, quillInstancesRef]);
-
-  return (
-    <div
-      ref={quillRef}
-      className="bg-gray-700 rounded-lg"
-      style={{
-        direction: "ltr",
-        height: "300px",
-        backgroundColor: "#1e1e1e",
-        color: "#ffffff",
-      }}
-    />
-  );
-};
-
-const AdminDashboard: React.FC = () => {
+interface Errors {
+  [key: string]: string;
+}
+function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<"create" | "blogs" | "team" | "jobs">("create");
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
@@ -129,38 +548,34 @@ const AdminDashboard: React.FC = () => {
   const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
   const [editingTeamMember, setEditingTeamMember] = useState<TeamMember | null>(null);
   const [editingJob, setEditingJob] = useState<Job | null>(null);
-  const [title, setTitle] = useState<string>("");
-  const [category, setCategory] = useState<string>("");
-  const [customCategory, setCustomCategory] = useState<string>("");
-  const [author, setAuthor] = useState<string>("");
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
+  const [customCategory, setCustomCategory] = useState("");
+  const [author, setAuthor] = useState("");
   const [primaryImage, setPrimaryImage] = useState<File | null>(null);
-  const [primaryImagePreview, setPrimaryImagePreview] = useState<string>("");
+  const [primaryImagePreview, setPrimaryImagePreview] = useState("");
   const [teamImage, setTeamImage] = useState<File | null>(null);
-  const [teamImagePreview, setTeamImagePreview] = useState<string>("");
-  const [testimonial, setTestimonial] = useState<string>("");
-  const [name, setName] = useState<string>("");
-  const [role, setRole] = useState<string>("");
-  const [jobTitle, setJobTitle] = useState<string>("");
-  const [jobLocation, setJobLocation] = useState<string>("");
-  const [jobDescription, setJobDescription] = useState<string>("");
-  const [employmentType, setEmploymentType] = useState<string>("Full-Time");
+  const [teamImagePreview, setTeamImagePreview] = useState("");
+  const [testimonial, setTestimonial] = useState("");
+  const [name, setName] = useState("");
+  const [role, setRole] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const [jobLocation, setJobLocation] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
+  const [employmentType, setEmploymentType] = useState("Full-Time");
   const [content, setContent] = useState<ContentItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [newContentType, setNewContentType] = useState<string>("");
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [loading, setLoading] = useState(false);
+  const [newContentType, setNewContentType] = useState("");
+  const [errors, setErrors] = useState<Errors>({});
   const [viewingApplicationsForJob, setViewingApplicationsForJob] = useState<string | null>(null);
   const [viewResumeUrl, setViewResumeUrl] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [showBroadcastForm, setShowBroadcastForm] = useState<boolean>(false);
-  const [broadcastSubject, setBroadcastSubject] = useState<string>("");
-  const [broadcastMessage, setBroadcastMessage] = useState<string>("");
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<{
-    id: string;
-    type: "blog" | "team" | "job" | "application";
-  } | null>(null);
+  const [showBroadcastForm, setShowBroadcastForm] = useState(false);
+  const [broadcastSubject, setBroadcastSubject] = useState("");
+  const [broadcastMessage, setBroadcastMessage] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<{ id: string; type: string } | null>(null);
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const quillInstancesRef = useRef<(Quill | null)[]>([]);
 
   const debounce = <T extends (...args: any[]) => void>(func: T, wait: number) => {
     let timeout: NodeJS.Timeout;
@@ -193,7 +608,7 @@ const AdminDashboard: React.FC = () => {
           if (!response.ok) throw new Error("Failed to fetch blogs");
           const data: Blog[] = await response.json();
           setBlogs(data);
-        } catch (error: unknown) {
+        } catch (error) {
           const message = error instanceof Error ? error.message : "Unknown error";
           toast.error(`Error fetching blogs: ${message}`);
         }
@@ -203,7 +618,7 @@ const AdminDashboard: React.FC = () => {
           if (!response.ok) throw new Error("Failed to fetch team members");
           const data: TeamMember[] = await response.json();
           setTeamMembers(data);
-        } catch (error: unknown) {
+        } catch (error) {
           const message = error instanceof Error ? error.message : "Unknown error";
           toast.error(`Error fetching team members: ${message}`);
         }
@@ -215,13 +630,13 @@ const AdminDashboard: React.FC = () => {
           ]);
           if (!jobsResponse.ok) throw new Error("Failed to fetch jobs");
           if (!appsResponse.ok) throw new Error("Failed to fetch applications");
-          const [jobsData, appsData]: [Job[], Application[]] = await Promise.all([
-            jobsResponse.json(),
-            appsResponse.json(),
+          const [jobsData, appsData] = await Promise.all([
+            jobsResponse.json() as Promise<Job[]>,
+            appsResponse.json() as Promise<Application[]>,
           ]);
           setJobs(jobsData);
           setApplications(appsData);
-        } catch (error: unknown) {
+        } catch (error) {
           const message = error instanceof Error ? error.message : "Unknown error";
           toast.error(`Error fetching jobs or applications: ${message}`);
         }
@@ -231,7 +646,7 @@ const AdminDashboard: React.FC = () => {
   }, [activeTab]);
 
   useEffect(() => {
-    const newErrors: { [key: string]: string } = {};
+    const newErrors: Errors = {};
     if (activeTab === "create") {
       if (title && title.length < 3) newErrors.title = "Title must be at least 3 characters";
       if (author && author.length < 2) newErrors.author = "Author name must be at least 2 characters";
@@ -249,11 +664,11 @@ const AdminDashboard: React.FC = () => {
     } else if (activeTab === "jobs") {
       if (jobTitle && jobTitle.length < 3) newErrors.jobTitle = "Job title must be at least 3 characters";
       if (jobLocation && jobLocation.length < 3) newErrors.jobLocation = "Location must be at least 3 characters";
-      if (jobDescription && jobDescription.length < 10)
-        newErrors.jobDescription = "Description must be at least 10 characters";
+      if (jobDescription && JSON.parse(jobDescription).root.children.length === 0)
+        newErrors.jobDescription = "Description cannot be empty";
     }
     setErrors(newErrors);
-  }, [title, author, category, customCategory, name, role, testimonial, jobTitle, jobLocation, jobDescription]);
+  }, [title, author, category, customCategory, name, role, testimonial, jobTitle, jobLocation, jobDescription, activeTab]);
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCategory(e.target.value);
@@ -307,20 +722,15 @@ const AdminDashboard: React.FC = () => {
     []
   );
 
-  const addContentItem = (type: ContentItem["type"]) => {
+  const addContentItem = (type: string) => {
     let newItem: ContentItem = { type, value: "" };
     if (type === "image") newItem = { type, value: null, imagePreview: "" };
     else if (type === "code") newItem = { type, value: "", language: "javascript" };
     setContent([...content, newItem]);
-    quillInstancesRef.current = [...quillInstancesRef.current, null];
     setNewContentType("");
   };
 
-  const handleContentChange = (
-    index: number,
-    field: "value" | "language",
-    value: string | File | null
-  ) => {
+  const handleContentChange = (index: number, field: string, value: string | File | null) => {
     const updatedContent = [...content];
     if (field === "value") {
       updatedContent[index].value = value;
@@ -339,12 +749,9 @@ const AdminDashboard: React.FC = () => {
     const updatedContent = [...content];
     updatedContent.splice(index, 1);
     setContent(updatedContent);
-    const updatedQuills = [...quillInstancesRef.current];
-    updatedQuills.splice(index, 1);
-    quillInstancesRef.current = updatedQuills;
   };
 
-  const handleBlogSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleBlogSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (Object.keys(errors).length > 0) {
       toast.error("Please fix form errors before submitting");
@@ -362,15 +769,11 @@ const AdminDashboard: React.FC = () => {
       formData.append("author", author);
       if (primaryImage) formData.append("primaryImage", primaryImage);
 
-      const processedContent = content.map((item, index) => {
-        const quill = quillInstancesRef.current[index];
-        const value = item.type === "paragraph" && quill ? quill.root.innerHTML : item.value;
-        return {
-          type: item.type,
-          value: typeof value === "string" ? value : `image-${index}`,
-          language: item.language,
-        };
-      });
+      const processedContent = content.map((item, index) => ({
+        type: item.type,
+        value: typeof item.value === "string" ? item.value : `image-${index}`,
+        language: item.language,
+      }));
 
       formData.append("content", JSON.stringify(processedContent));
       content.forEach((item, index) => {
@@ -392,7 +795,7 @@ const AdminDashboard: React.FC = () => {
       } else {
         router.push("/");
       }
-    } catch (error: unknown) {
+    } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
       toast.error(`Error: ${message}`);
     } finally {
@@ -400,7 +803,7 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  const handleTeamSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleTeamSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (Object.keys(errors).length > 0) {
       toast.error("Please fix form errors before submitting");
@@ -424,10 +827,24 @@ const AdminDashboard: React.FC = () => {
       if (!response.ok)
         throw new Error(`Failed to ${editingTeamMember ? "update" : "create"} team member: ${await response.text()}`);
 
+      const data: { teamMember: TeamMember } = await response.json();
+      if (!editingTeamMember) {
+        setTeamMembers((prev) => [
+          {
+            _id: data.teamMember?._id,
+            image: data.teamMember?.image,
+            testimonial,
+            name,
+            role,
+          },
+          ...prev,
+        ]);
+      }
+
       toast.success(`Team member ${editingTeamMember ? "updated" : "created"} successfully!`);
       resetTeamForm();
       setActiveTab("team");
-    } catch (error: unknown) {
+    } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
       toast.error(`Error: ${message}`);
     } finally {
@@ -435,7 +852,7 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  const handleJobSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleJobSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (Object.keys(errors).length > 0) {
       toast.error("Please fix form errors before submitting");
@@ -449,7 +866,7 @@ const AdminDashboard: React.FC = () => {
       const formData = new FormData();
       formData.append("title", jobTitle);
       formData.append("location", jobLocation);
-      formData.append("description", jobDescription);
+      formData.append("description", jobDescription); // Send Lexical JSON
       formData.append("employmentType", employmentType);
 
       const url = editingJob ? `/api/jobs/${editingJob._id}` : "/api/jobs";
@@ -461,7 +878,7 @@ const AdminDashboard: React.FC = () => {
       toast.success(`Job ${editingJob ? "updated" : "created"} successfully!`);
       resetJobForm();
       setActiveTab("jobs");
-    } catch (error: unknown) {
+    } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
       toast.error(`Error: ${message}`);
     } finally {
@@ -469,7 +886,7 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  const handleBroadcastSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleBroadcastSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!broadcastSubject || !broadcastMessage) {
       toast.error("Please provide both a subject and a message");
@@ -482,13 +899,13 @@ const AdminDashboard: React.FC = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subject: broadcastSubject, message: broadcastMessage }),
       });
-      const data: { error?: string; message?: string } = await response.json();
+      const data: { message: string; error?: string } = await response.json();
       if (!response.ok) throw new Error(data.error || "Failed to send broadcast email");
       toast.success(data.message);
       setShowBroadcastForm(false);
       setBroadcastSubject("");
       setBroadcastMessage("");
-    } catch (error: unknown) {
+    } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
       toast.error(`Error: ${message}`);
     } finally {
@@ -504,7 +921,7 @@ const AdminDashboard: React.FC = () => {
       setBlogs(blogs.filter((blog) => blog._id !== blogId));
       toast.success("Blog deleted successfully!");
       setShowDeleteConfirm(null);
-    } catch (error: unknown) {
+    } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
       toast.error(`Error: ${message}`);
     } finally {
@@ -520,13 +937,12 @@ const AdminDashboard: React.FC = () => {
     setAuthor(blog.author);
     setPrimaryImagePreview(blog.primaryImage || "");
     setContent(
-      blog.content.map((item) => ({
+      blog.content?.map((item) => ({
         ...item,
         imagePreview: item.type === "image" && typeof item.value === "string" ? item.value : item.imagePreview,
       }))
     );
     setActiveTab("create");
-    quillInstancesRef.current = blog.content.map(() => null);
   };
 
   const handleJobDelete = async (jobId: string) => {
@@ -537,7 +953,7 @@ const AdminDashboard: React.FC = () => {
       setJobs(jobs.filter((job) => job._id !== jobId));
       toast.success("Job deleted successfully!");
       setShowDeleteConfirm(null);
-    } catch (error: unknown) {
+    } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
       toast.error(`Error: ${message}`);
     } finally {
@@ -562,7 +978,7 @@ const AdminDashboard: React.FC = () => {
       setTeamMembers(teamMembers.filter((member) => member._id !== memberId));
       toast.success("Team member deleted successfully!");
       setShowDeleteConfirm(null);
-    } catch (error: unknown) {
+    } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
       toast.error(`Error: ${message}`);
     } finally {
@@ -570,17 +986,8 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  const handleApplicationDelete = async (
-    applicationId: string,
-    setApplications: React.Dispatch<React.SetStateAction<Application[]>>,
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-    setShowDeleteConfirm: React.Dispatch<
-      React.SetStateAction<{ id: string; type: "blog" | "team" | "job" | "application" } | null>
-    >
-  ) => {
-    console.log("Attempting to delete application with ID:", applicationId);
+  const handleApplicationDelete = async (applicationId: string) => {
     if (!applicationId || !/^[0-9a-fA-F]{24}$/.test(applicationId)) {
-      console.error("Invalid applicationId format:", applicationId);
       toast.error("Invalid application ID. Please try again.");
       setShowDeleteConfirm(null);
       return;
@@ -589,15 +996,14 @@ const AdminDashboard: React.FC = () => {
     try {
       const response = await fetch(`/api/applications/${applicationId}`, { method: "DELETE" });
       if (!response.ok) {
-        const errorData: { error?: string } = await response.json();
+        const errorData = await response.json();
         throw new Error(errorData.error || "Failed to delete application");
       }
       setApplications((prev) => prev.filter((app) => app._id !== applicationId));
       toast.success("Application deleted successfully!");
       setShowDeleteConfirm(null);
-    } catch (error: unknown) {
+    } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
-      console.error("Deletion error:", error);
       toast.error(`Error: ${message}`);
     } finally {
       setLoading(false);
@@ -605,12 +1011,26 @@ const AdminDashboard: React.FC = () => {
   };
 
   const handleEditTeamMember = (member: TeamMember) => {
+    // Move the selected member to the top of the list
+    setTeamMembers((prev) => {
+      const updatedMembers = prev.filter((m) => m._id !== member._id); // Remove the member from its current position
+      return [member, ...updatedMembers]; // Add it to the top
+    });
+  
+    // Populate the form fields for editing
     setEditingTeamMember(member);
     setTeamImagePreview(member.image);
     setTestimonial(member.testimonial);
     setName(member.name);
     setRole(member.role);
+  
+    // Switch to the "team" tab
     setActiveTab("team");
+  
+    // Scroll to the top of the screen
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 100); // Small delay to ensure the DOM updates before scrolling
   };
 
   const resetBlogForm = () => {
@@ -623,7 +1043,6 @@ const AdminDashboard: React.FC = () => {
     setPrimaryImagePreview("");
     setContent([]);
     setErrors({});
-    quillInstancesRef.current = [];
   };
 
   const resetTeamForm = () => {
@@ -824,23 +1243,68 @@ const AdminDashboard: React.FC = () => {
         .application-item {
           transition: background-color 0.2s ease;
         }
-        .ql-container {
-          background-color: #1e1e1e !important;
+        .lexical-editor {
+          background: #1e1e1e;
+          color: #ffffff;
+          padding: 16px;
+          border: 1px solid #444;
+          border-radius: 4px;
+        }
+        .lexical-editor h1 {
+          font-size: 32px !important;
+          line-height: 40px !important;
+          font-weight: 700 !important;
+          margin: 16px 0 8px !important;
           color: #ffffff !important;
-          border-radius: 0.5rem;
         }
-        .ql-editor {
-          min-height: 260px;
+        .lexical-editor h2 {
+          font-size: 24px !important;
+          line-height: 32px !important;
+          font-weight: 600 !important;
+          margin: 12px 0 6px !important;
           color: #ffffff !important;
         }
-        .ql-toolbar {
-          background-color: #2d2d2f !important;
-          border-top-left-radius: 0.5rem;
-          border-top-right-radius: 0.5rem;
+        .lexical-editor h3 {
+          font-size: 20px !important;
+          line-height: 28px !important;
+          font-weight: 600 !important;
+          margin: 10px 0 5px !important;
+          color: #ffffff !important;
         }
-        .ql-container.ql-snow {
-          border-bottom-left-radius: 0.5rem;
-          border-bottom-right-radius: 0.5rem;
+        .lexical-editor p {
+          font-size: 16px !important;
+          line-height: 24px !important;
+          margin: 8px 0 !important;
+          color: #ffffff !important;
+        }
+        .lexical-editor ul {
+          list-style: disc !important;
+          margin-left: 24px !important;
+          margin: 8px 0 !important;
+          color: #ffffff !important;
+        }
+        .lexical-editor ol {
+          list-style: decimal !important;
+          margin-left: 24px !important;
+          margin: 8px 0 !important;
+          color: #ffffff !important;
+        }
+        .lexical-editor li {
+          font-size: 16px !important;
+          line-height: 24px !important;
+          color: #ffffff !important;
+        }
+        .lexical-editor a {
+          color: #f6ff7a !important;
+          text-decoration: underline !important;
+        }
+        .lexical-editor pre {
+          font-family: monospace !important;
+          background: #2d2d2f !important;
+          padding: 16px !important;
+          border-radius: 4px !important;
+          color: #f6ff7a !important;
+          overflow-x: auto !important;
         }
       `}</style>
       <div className="max-w-4xl mx-auto bg-[#191a1b] rounded-xl shadow-2xl p-8 relative">
@@ -928,12 +1392,7 @@ const AdminDashboard: React.FC = () => {
                     } else if (showDeleteConfirm.type === "job") {
                       handleJobDelete(showDeleteConfirm.id);
                     } else if (showDeleteConfirm.type === "application") {
-                      handleApplicationDelete(
-                        showDeleteConfirm.id,
-                        setApplications,
-                        setLoading,
-                        setShowDeleteConfirm
-                      );
+                      handleApplicationDelete(showDeleteConfirm.id);
                     }
                   }}
                   disabled={loading}
@@ -1110,7 +1569,7 @@ const AdminDashboard: React.FC = () => {
             </div>
             <div>
               <h2 className="text-2xl font-bold mb-6 text-[#f6ff7a]">Blog Content</h2>
-              {content.map((item, index) => (
+              {content?.map((item, index) => (
                 <div key={index} className="border border-gray-600 rounded-xl p-6 mb-6 bg-gray-900 shadow-lg">
                   <h3 className="text-xl font-semibold mb-4 text-gray-200">
                     {item.type.charAt(0).toUpperCase() + item.type.slice(1)} {index + 1}
@@ -1126,9 +1585,8 @@ const AdminDashboard: React.FC = () => {
                     />
                   )}
                   {item.type === "paragraph" && (
-                    <QuillEditor
+                    <LexicalEditor
                       index={index}
-                      quillInstancesRef={quillInstancesRef}
                       initialValue={typeof item.value === "string" ? item.value : ""}
                       onChange={(value) => handleContentChange(index, "value", value)}
                     />
@@ -1226,7 +1684,7 @@ const AdminDashboard: React.FC = () => {
                 </select>
                 <button
                   type="button"
-                  onClick={() => newContentType && addContentItem(newContentType as ContentItem["type"])}
+                  onClick={() => newContentType && addContentItem(newContentType)}
                   disabled={!newContentType}
                   className="px-6 py-3 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 disabled:opacity-50"
                 >
@@ -1411,383 +1869,306 @@ const AdminDashboard: React.FC = () => {
                     className="flex-1 py-4 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-500"
                   >
                     Cancel
-                  </button>
-                )}
-              </div>
-            </form>
-            <div className="mt-8">
-              <h3 className="text-xl font-semibold text-gray-200 mb-4">Team Members</h3>
-              {teamMembers.length === 0 ? (
-                <p className="text-gray-400">No team members found.</p>
-              ) : (
-                <div className="grid gap-6">
-                  {teamMembers.map((member) => (
-                    <div
-                      key={member._id}
-                      className="bg-gray-900 p-6 rounded-xl border border-gray-600 shadow-lg"
-                    >
-                      <div className="flex items-center gap-4">
-                        <Image
-                          src={member.image}
-                          alt={member.name}
-                          width={96}
-                          height={96}
-                          className="w-24 h-24 rounded-full object-cover"
-                        />
-                        <div className="flex-1">
-                          <h4 className="text-xl font-semibold text-gray-200">{member.name}</h4>
-                          <p className="text-gray-400">{member.role}</p>
-                          <p className="text-gray-300 mt-2 line-clamp-5">{member.testimonial}</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => handleEditTeamMember(member)}
-                            className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
-                          >
-                            Edit
-                          </motion.button>
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => setShowDeleteConfirm({ id: member._id, type: "team" })}
-                            className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
-                          >
-                            Delete
-                          </motion.button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    </button>
               )}
             </div>
-          </div>
-        )}
-        {activeTab === "jobs" && (
-          <div className="space-y-6 mt-6">
-            <h2 className="text-2xl font-bold text-[#f6ff7a]">Job Postings</h2>
-            <form onSubmit={handleJobSubmit} className="space-y-8">
-              <div>
-                <label htmlFor="jobTitle" className="block text-lg font-medium mb-2 text-gray-200">
-                  Job Title
-                </label>
-                <input
-                  type="text"
-                  id="jobTitle"
-                  value={jobTitle}
-                  onChange={(e) => setJobTitle(e.target.value)}
-                  required
-                  className={inputStyle}
-                  placeholder="Enter job title"
-                />
-                {errors.jobTitle && <p className="text-red-400 text-sm mt-1">{errors.jobTitle}</p>}
-              </div>
-              <div>
-                <label htmlFor="jobLocation" className="block text-lg font-medium mb-2 text-gray-200">
-                  Location
-                </label>
-                <input
-                  type="text"
-                  id="jobLocation"
-                  value={jobLocation}
-                  onChange={(e) => setJobLocation(e.target.value)}
-                  required
-                  className={inputStyle}
-                  placeholder="Enter location (e.g., Argentina/Colombia)"
-                />
-                {errors.jobLocation && <p className="text-red-400 text-sm mt-1">{errors.jobLocation}</p>}
-              </div>
-              <div>
-  <label htmlFor="jobDescription" className="block text-lg font-medium mb-2 text-gray-200">
-    Description
-  </label>
-
-  {/* Add wrapper for styling */}
-  <div className="quill-wrapper">
-    <QuillEditor initialValue={jobDescription} onChange={setJobDescription} />
-  </div>
-
-  {errors.jobDescription && (
-    <p className="text-red-400 text-sm mt-1">{errors.jobDescription}</p>
-  )}
-</div>
-
-
-              <div>
-                <label htmlFor="employmentType" className="block text-lg font-medium mb-2 text-gray-200">
-                  Employment Type
-                </label>
-                <select
-                  id="employmentType"
-                  value={employmentType}
-                  onChange={(e) => setEmploymentType(e.target.value)}
-                  required
-                  className={inputStyle}
-                >
-                  <option value="Full-Time">Full-Time</option>
-                  <option value="Part-Time">Part-Time</option>
-                  <option value="Contract">Contract</option>
-                  <option value="Internship">Internship</option>
-                </select>
-              </div>
-              <div className="flex gap-4">
+          </form>
+          <h2 className="text-2xl font-bold mt-8 text-[#f6ff7a]">Current Team Members</h2>
+          {teamMembers.length === 0 ? (
+            <p className="text-gray-400">No team members found.</p>
+          ) : (
+            <div className="grid gap-6">
+              {teamMembers.map((member,index) => (
+                <div key={index} className="bg-[#3d3d3f] p-6 rounded-xl border border-gray-600 shadow-lg">
+                  <div className="flex items-center gap-4">
+                    <Image
+                      src={member.image || "/h1c44.png"}
+                      alt={member.name}
+                      width={96}
+                      height={96}
+                      className="w-24 h-24 rounded-full object-cover"
+                    />
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold text-gray-200">{member.name}</h3>
+                      <p className="text-gray-400">Role: {member.role}</p>
+                      <p className="text-gray-400">Testimonial: {member.testimonial}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleEditTeamMember(member)}
+                        className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
+                      >
+                        Edit
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setShowDeleteConfirm({ id: member._id, type: "team" })}
+                        className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
+                      >
+                        Delete
+                      </motion.button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      {activeTab === "jobs" && (
+        <div className="space-y-6 mt-6">
+          <h2 className="text-2xl font-bold text-[#f6ff7a]">
+            {editingJob ? "Edit Job Posting" : "Create New Job Posting"}
+          </h2>
+          <form onSubmit={handleJobSubmit} className="space-y-8">
+            <div>
+              <label htmlFor="job-title" className="block text-lg font-medium mb-2 text-gray-200">
+                Job Title
+              </label>
+              <input
+                type="text"
+                id="job-title"
+                value={jobTitle}
+                onChange={(e) => setJobTitle(e.target.value)}
+                required
+                className={inputStyle}
+                placeholder="Enter job title"
+              />
+              {errors.jobTitle && <p className="text-red-400 text-sm mt-1">{errors.jobTitle}</p>}
+            </div>
+            <div>
+              <label htmlFor="job-location" className="block text-lg font-medium mb-2 text-gray-200">
+                Location
+              </label>
+              <input
+                type="text"
+                id="job-location"
+                value={jobLocation}
+                onChange={(e) => setJobLocation(e.target.value)}
+                required
+                className={inputStyle}
+                placeholder="Enter job location"
+              />
+              {errors.jobLocation && <p className="text-red-400 text-sm mt-1">{errors.jobLocation}</p>}
+            </div>
+            <div>
+              <label htmlFor="job-description" className="block text-lg font-medium mb-2 text-gray-200">
+                Job Description
+              </label>
+              <LexicalEditor
+                index={0}
+                initialValue={jobDescription}
+                onChange={(value) => setJobDescription(value)}
+              />
+              {errors.jobDescription && <p className="text-red-400 text-sm mt-1">{errors.jobDescription}</p>}
+            </div>
+            <div>
+              <label htmlFor="employment-type" className="block text-lg font-medium mb-2 text-gray-200">
+                Employment Type
+              </label>
+              <select
+                id="employment-type"
+                value={employmentType}
+                onChange={(e) => setEmploymentType(e.target.value)}
+                required
+                className={inputStyle}
+              >
+                <option value="Full-Time">Full-Time</option>
+                <option value="Part-Time">Part-Time</option>
+                <option value="Contract">Contract</option>
+                <option value="Internship">Internship</option>
+              </select>
+            </div>
+            <div className="flex gap-4">
+              <button
+                type="submit"
+                disabled={loading || Object.keys(errors).length > 0}
+                className="flex-1 py-4 bg-[#f6ff7a] text-black font-bold rounded-lg hover:bg-yellow-500 disabled:opacity-50"
+              >
+                {loading ? (editingJob ? "Updating..." : "Creating...") : editingJob ? "Update Job" : "Create Job"}
+              </button>
+              {editingJob && (
                 <button
-                  type="submit"
-                  disabled={loading || Object.keys(errors).length > 0}
-                  className="flex-1 py-4 bg-[#f6ff7a] text-black font-bold rounded-lg hover:bg-yellow-500 disabled:opacity-50"
+                  type="button"
+                  onClick={resetJobForm}
+                  className="flex-1 py-4 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-500"
                 >
-                  {loading ? (editingJob ? "Updating..." : "Creating...") : editingJob ? "Update Job" : "Create Job"}
+                  Cancel
                 </button>
-                {editingJob && (
-                  <button
-                    type="button"
-                    onClick={resetJobForm}
-                    className="flex-1 py-4 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-500"
-                  >
-                    Cancel
-                  </button>
-                )}
-              </div>
-            </form>
-            <div className="mt-8">
-              <h3 className="text-xl font-semibold text-gray-200 mb-4">Posted Jobs</h3>
-              {jobs.length === 0 ? (
-                <p className="text-gray-400">No jobs found.</p>
-              ) : (
-                <div className="grid gap-6">
-                  {jobs.map((job) => (
-                    <div
-                      key={job._id}
-                      className="bg-gray-900 p-6 rounded-xl border border-gray-600 shadow-lg"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="flex-1">
-                          <h4 className="text-xl font-semibold text-gray-200">{job.title}</h4>
-                          <p className="text-gray-400">
-                            {job.location} · {job.employmentType}
-                          </p>
-                          <p className="text-gray-400">Posted: {new Date(job.postedDate).toLocaleDateString()}</p>
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() =>
-                              setViewingApplicationsForJob(
-                                viewingApplicationsForJob === job._id ? null : job._id
-                              )
-                            }
-                            className="mt-2 text-[#f6ff7a] hover:text-yellow-500 font-semibold"
-                          >
-                            {viewingApplicationsForJob === job._id ? "Hide Applications" : "View Applications"} (
-                            {applications.filter((app) => app.jobId === job._id).length})
-                          </motion.button>
-                        </div>
-                        <div className="flex gap-2">
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => handleEditJob(job)}
-                            className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
-                          >
-                            Edit
-                          </motion.button>
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => setShowDeleteConfirm({ id: job._id, type: "job" })}
-                            className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
-                          >
-                            Delete
-                          </motion.button>
-                        </div>
-                      </div>
-                      <AnimatePresence>
-                        {viewingApplicationsForJob === job._id && (
-                          <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[50]"
-                          >
-                            <motion.div
-                              initial={{ y: -100, opacity: 0 }}
-                              animate={{ y: 0, opacity: 1 }}
-                              exit={{ y: -100, opacity: 0 }}
-                              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                              className="bg-[#2d2d2f] p-8 rounded-2xl w-11/12 max-w-3xl h-[85vh] flex flex-col shadow-2xl border border-gray-700"
-                            >
-                              <div className="flex justify-between items-center mb-6 flex-shrink-0">
-                                <h5 className="text-2xl font-bold text-[#f6ff7a]">
-                                  Applications for {job.title}
-                                </h5>
-                                <motion.button
-                                  whileHover={{ scale: 1.1 }}
-                                  whileTap={{ scale: 0.9 }}
-                                  onClick={() => setViewingApplicationsForJob(null)}
-                                  className="text-gray-400 hover:text-gray-200"
-                                >
-                                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="M6 18L18 6M6 6l12 12"
-                                    />
-                                  </svg>
-                                </motion.button>
-                              </div>
-                              <div ref={scrollRef} className="custom-scroll-content flex-1">
-                                {applications.filter((app) => app.jobId === job._id).length === 0 ? (
-                                  <p className="text-gray-400 text-center py-8">No applications yet.</p>
-                                ) : (
-                                  <div className="space-y-4">
-                                    {applications
-                                      .filter((app) => {
-                                        const isValid = app.jobId === job._id && app._id && /^[0-9a-fA-F]{24}$/.test(app._id);
-                                        if (!isValid) {
-                                          console.error("Skipping invalid application:", app);
-                                        }
-                                        return isValid;
-                                      })
-                                      .map((app) => (
-                                        <div
-                                          key={app._id}
-                                          className="application-item bg-[#3d3d3f] p-6 rounded-xl relative hover:bg-[#454547]"
-                                        >
-                                          <motion.button
-                                            whileHover={{ scale: 1.2 }}
-                                            whileTap={{ scale: 0.9 }}
-                                            onClick={() => {
-                                              console.log("Delete clicked for application:", app._id);
-                                              setShowDeleteConfirm({ id: app._id, type: "application" });
-                                            }}
-                                            className="absolute top-4 right-4 text-red-400 hover:text-red-500"
-                                            disabled={loading}
-                                          >
-                                            <GrTrash size={20} />
-                                          </motion.button>
-                                          <div className="flex flex-col gap-2">
-                                            <p className="text-gray-200">
-                                              <strong>Name:</strong> {app.firstName} {app.lastName}
-                                            </p>
-                                            <p className="text-gray-200">
-                                              <strong>Email:</strong> {app.email}
-                                            </p>
-                                            <p className="text-gray-200">
-                                              <strong>Phone:</strong> {app.phone}
-                                            </p>
-                                            <p className="text-gray-200">
-                                              <strong>Country:</strong> {app.country}
-                                            </p>
-                                            {app.linkedIn && (
-                                              <p className="text-gray-200">
-                                                <strong>LinkedIn:</strong>{" "}
-                                                <a
-                                                  href={app.linkedIn}
-                                                  target="_blank"
-                                                  rel="noopener noreferrer"
-                                                  className="text-[#f6ff7a] hover:underline"
-                                                >
-                                                  Profile
-                                                </a>
-                                              </p>
-                                            )}
-                                            {app.website && (
-                                              <p className="text-gray-200">
-                                                <strong>Website:</strong>{" "}
-                                                <a
-                                                  href={app.website}
-                                                  target="_blank"
-                                                  rel="noopener noreferrer"
-                                                  className="text-[#f6ff7a] hover:underline"
-                                                >
-                                                  Visit
-                                                </a>
-                                              </p>
-                                            )}
-                                            <p className="text-gray-200">
-                                              <strong>Submitted:</strong>{" "}
-                                              {new Date(app.submittedAt).toLocaleDateString()}
-                                            </p>
-                                            <motion.button
-                                              whileHover={{ scale: 1.05 }}
-                                              whileTap={{ scale: 0.95 }}
-                                              onClick={() => handleViewResume(app.resume)}
-                                              className="mt-2 px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 w-fit"
-                                            >
-                                              View Resume
-                                            </motion.button>
-                                          </div>
-                                        </div>
-                                      ))}
-                                  </div>
-                                )}
-                              </div>
-                            </motion.div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                      {viewResumeUrl && (
-                        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[50]">
-                          <motion.div
-                            initial={{ scale: 0.8, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.8, opacity: 0 }}
-                            className="bg-white p-4 rounded-xl w-3/4 h-3/4 relative shadow-xl"
-                          >
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              onClick={closeModal}
-                              className="absolute top-4 right-4 text-black font-bold"
-                            >
-                              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 24">
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M6 18L18 6M6 6l12 12"
-                                />
-                              </svg>
-                            </motion.button>
-                            {errorMessage ? (
-                              <div className="text-red-500 text-center">
-                                {errorMessage}
-                                <br />
-                                <a
-                                  href={viewResumeUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-blue-500 underline mt-2 block"
-                                >
-                                  Download Resume
-                                </a>
-                              </div>
-                            ) : (
-                              <iframe
-                                src={viewResumeUrl}
-                                className="w-full h-full border-0 rounded-lg"
-                                title="Resume Viewer"
-                                onError={() =>
-                                  setErrorMessage("Failed to load resume in iframe. Please download instead.")
-                                }
-                              />
-                            )}
-                          </motion.div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
               )}
             </div>
-          </div>
-        )}
-      </div>
+          </form>
+          <h2 className="text-2xl font-bold mt-8 text-[#f6ff7a]">Current Job Postings</h2>
+          {jobs.length === 0 ? (
+            <p className="text-gray-400">No jobs found.</p>
+          ) : (
+            <div className="grid gap-6">
+              {jobs.map((job) => (
+                <div key={job._id} className="bg-[#3d3d3f] p-6 rounded-xl border border-gray-600 shadow-lg">
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold text-gray-200">{job.title}</h3>
+                      <p className="text-gray-400">Location: {job.location}</p>
+                      <p className="text-gray-400">Type: {job.employmentType}</p>
+                      <p className="text-gray-400">
+                        Posted: {new Date(job.postedDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleEditJob(job)}
+                        className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
+                      >
+                        Edit
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setShowDeleteConfirm({ id: job._id, type: "job" })}
+                        className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
+                      >
+                        Delete
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setViewingApplicationsForJob(job._id)}
+                        className="px-4 py-2 bg-transparent text-white border-1 font-semibold rounded-lg hover:bg-gray-600 hover:border-gray-600"
+                      >
+                        View Applications
+                      </motion.button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {viewingApplicationsForJob && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center pt-10 justify-center z-[50]">
+              <div
+                ref={scrollRef}
+                className="bg-[#3d3d3f] p-6 rounded-lg w-[90%] max-w-4xl custom-scroll-content"
+              >
+                <h2 className="text-xl font-semibold text-[#f6ff7a] mb-4">
+                  Applications for {jobs.find((job) => job._id === viewingApplicationsForJob)?.title}
+                </h2>
+                <button
+  onClick={closeModal}
+  className="absolute top-4 right-4 sm:top-5 pt-[5em] sm:right-5 md:top-6 md:right-6 lg:top-10 lg:right-90 text-white text-base font-semibold py-2 px-4 rounded-lg hover:text-gray-400 z-50"
+>
+  Close
+</button>
+                {applications.filter((app) => app.jobId === viewingApplicationsForJob).length === 0 ? (
+                  <p className="text-gray-400">No applications found for this job.</p>
+                ) : (
+                  <div className="space-y-4">
+                    {applications
+                      .filter((app) => app.jobId === viewingApplicationsForJob)
+                      .map((application) => (
+                        <div
+                          key={application._id}
+                          className="application-item bg-[#2d2d2f] p-4 rounded-lg border border-gray-600 hover:bg-[#353537] transition-all duration-200"
+                        >
+                          <p className="text-gray-200">
+                            <strong>Name:</strong> {application.firstName} {application.lastName}
+                          </p>
+                          <p className="text-gray-400">
+                            <strong>Email:</strong> {application.email}
+                          </p>
+                          <p className="text-gray-400">
+                            <strong>Phone:</strong> {application.phone}
+                          </p>
+                          <p className="text-gray-400">
+                            <strong>Country:</strong> {application.country}
+                          </p>
+                          {application.linkedIn && (
+                            <p className="text-gray-400">
+                              <strong>LinkedIn:</strong>{" "}
+                              <a
+                                href={application.linkedIn}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[#f6ff7a] hover:underline"
+                              >
+                                Profile
+                              </a>
+                            </p>
+                          )}
+                          {application.website && (
+                            <p className="text-gray-400">
+                              <strong>Website:</strong>{" "}
+                              <a
+                                href={application.website}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[#f6ff7a] hover:underline"
+                              >
+                                Link
+                              </a>
+                            </p>
+                          )}
+                          <p className="text-gray-400">
+                            <strong>Submitted:</strong>{" "}
+                            {new Date(application.submittedAt).toLocaleDateString()}
+                          </p>
+                          <div className="flex gap-2 mt-2">
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => handleViewResume(application.resume)}
+                              className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
+                            >
+                              View Resume
+                            </motion.button>
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() =>
+                                setShowDeleteConfirm({ id: application._id, type: "application" })
+                              }
+                              className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
+                            >
+                              Delete
+                            </motion.button>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          {viewResumeUrl && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
+              <div className="bg-[#3d3d3f] p-6 rounded-lg w-[90%] max-w-4xl relative">
+                <button
+                  onClick={closeModal}
+                  className="absolute top-4 right-4 text-gray-200 hover:text-gray-400"
+                >
+                  Close
+                </button>
+                {errorMessage ? (
+                  <p className="text-red-400">{errorMessage}</p>
+                ) : (
+                  <iframe
+                    src={viewResumeUrl}
+                    title="Resume"
+                    className="w-full h-[80vh] rounded-lg"
+                  />
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
-  );
-};
+  </div>
+);
+}
 
 export default AdminDashboard;

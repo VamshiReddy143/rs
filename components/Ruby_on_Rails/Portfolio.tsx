@@ -36,7 +36,7 @@ const Portfolio = () => {
                             <h2 className='font-bold text-white text-[1.2em]'>Universal Innovations</h2>
                         </div>
                         <div className="absolute bottom-0 left-0 w-full h-[4em] bg-gradient-to-t from-black via-black/50 to-transparent z-10" />
-                        <div className="relative overflow-hidden h-[0em] group-hover:h-[10em] transition-all duration-500 z-[2]">
+                        <div className="relative overflow-hidden h-[0em] group-hover:h-[9em] transition-all duration-500 z-[2]">
                             <p className="text-[#bcbcc0] text-[16px]  font-semibold leading-[1.3em]">
 
                                 Migrated database to comply with GDPR, supported key backend initiatives, and improved the overall development process.
@@ -75,7 +75,7 @@ const Portfolio = () => {
                             <Image src={"/egglogo.svg"} alt="tools" width={900} height={900} className='h-17 w-17' />
                         </div>
                         <div className="absolute bottom-0 left-0 w-full h-[4em] bg-gradient-to-t from-black via-black/50 to-transparent z-10" />
-                        <div className="relative overflow-hidden h-[0em] group-hover:h-[12em] transition-all duration-500 z-[2]">
+                        <div className="relative overflow-hidden h-[0em] group-hover:h-[11em] transition-all duration-500 z-[2]">
                             <p className="text-[#bcbcc0] text-[16px]  font-semibold leading-[1.3em]">
 
                                 Scaled MasterClass to millions of users and billions of views in less than a few years through multiple data-intensive user engagement initiatives and modernizing its payment infrastructure.
@@ -114,7 +114,7 @@ const Portfolio = () => {
                             <h2 className='font-bold text-white text-[1.2em]'>Bildsy</h2>
                         </div>
                         <div className="absolute bottom-0 left-0 w-full h-[4em] bg-gradient-to-t from-black via-black/50 to-transparent z-10" />
-                        <div className="relative overflow-hidden h-[0em] group-hover:h-[12em] transition-all duration-500 z-[2]">
+                        <div className="relative overflow-hidden h-[0em] group-hover:h-[10em] transition-all duration-500 z-[2]">
                             <p className="text-[#bcbcc0] text-[16px]  font-semibold leading-[1.3em]">
                                 Stablized, modernized, and continuously optimized a mission-critical Ruby on Rails application that had suffered crashes and performance issues.
                             </p>

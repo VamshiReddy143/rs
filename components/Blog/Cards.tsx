@@ -158,7 +158,7 @@ const Cards: React.FC<CardsProps> = ({ searchTerm, selectedCategory }) => {
                 width={900}
                 height={900}
                 alt={card.title}
-                className="h-[55%] w-full object-cover"
+                className="h-[250px] w-full object-cover"
               />
               {/* Content Container */}
               <div className="flex flex-col gap-4">

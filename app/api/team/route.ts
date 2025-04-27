@@ -14,7 +14,7 @@ cloudinary.config({
 export async function GET() {
   try {
     await connectToDatabase();
-    const teamMembers = await Team.find({}).lean();
+    const teamMembers = await Team.find({}).lean().sort({ createdAt: -1 });
     return NextResponse.json(teamMembers, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching team members:", error);
@@ -46,14 +46,25 @@ export async function POST(request: NextRequest) {
       const stream = cloudinary.uploader.upload_stream(
         { folder: "team_images", resource_type: "image" },
         (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
+          if (error) {
+            console.error("Cloudinary upload error:", error);
+            reject(error);
+          } else {
+            resolve(result);
+          }
         }
       );
       Readable.from(buffer).pipe(stream);
     });
-    const imageUrl = (uploadResult as any).secure_url;
 
+    if (!uploadResult || !(uploadResult as any).secure_url) {
+      throw new Error("Failed to upload image to Cloudinary");
+    }
+
+    const imageUrl = (uploadResult as any).secure_url;
+    console.log("Uploaded image URL:", imageUrl);
+
+    // Create new team member
     const newTeamMember = new Team({
       image: imageUrl,
       testimonial,
@@ -62,7 +73,10 @@ export async function POST(request: NextRequest) {
     });
 
     const savedTeamMember = await newTeamMember.save();
-    return NextResponse.json(savedTeamMember, { status: 201 });
+    console.log("Saved team member:", savedTeamMember);
+
+    // Return wrapped response
+    return NextResponse.json({ teamMember: savedTeamMember }, { status: 201 });
   } catch (error: any) {
     console.error("Error creating team member:", error);
     return NextResponse.json({ message: `Error: ${error.message}` }, { status: 500 });
