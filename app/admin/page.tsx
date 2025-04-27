@@ -793,7 +793,7 @@ function AdminDashboard() {
         setEditingBlog(null);
         setActiveTab("blogs");
       } else {
-        router.push("/");
+        router.push("#");
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
