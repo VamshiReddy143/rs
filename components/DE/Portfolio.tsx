@@ -44,7 +44,7 @@ const Portfolio = () => {
                                 Delivered real-time health & wellness data between doctors and caregivers in order to customize exercises and change behavior.
                             </p>
                             <div className='flex justify-center items-center mt-5'>
-                                <button className='text-[16px] font-semibold bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
+                                <button className='text-[16px] font-semibold bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418]'>
                                     Learn More
                                 </button>
                             </div>
@@ -82,7 +82,7 @@ const Portfolio = () => {
                                 Implemented ETL services to migrate and normalize widely distributed data into a secure, well-structured database.
                             </p>
                             <div className='flex justify-center items-center mt-5'>
-                                <button className='text-[16px] font-semibold bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
+                                <button className='text-[16px] font-semibold bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418]'>
                                     Learn More
                                 </button>
                             </div>
@@ -121,7 +121,7 @@ const Portfolio = () => {
                                 Connected data silos within healthcare organizations, generating data network effects that decrease costs and unlock predictive analytics.
                             </p>
                             <div className='flex justify-center items-center mt-5'>
-                                <button className='text-[16px] font-semibold bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
+                                <button className='text-[16px] font-semibold bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418]'>
                                     Learn More
                                 </button>
                             </div>

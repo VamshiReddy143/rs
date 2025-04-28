@@ -1,19 +1,27 @@
-import mongoose, { Schema, Document } from "mongoose";
+// models/User.ts
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
-interface IUser extends Document {
-  googleId: string;
-  name: string;
-  email: string;
-  image?: string;
-  createdAt: Date;
-}
-
-const UserSchema: Schema = new Schema({
-  googleId: { type: String, required: true, unique: true },
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+const UserSchema = new mongoose.Schema({
+  googleId: { type: String, sparse: true },
+  email: { type: String, required: true, unique: true, lowercase: true },
+  name: { type: String },
   image: { type: String },
+  password: { type: String }, // For email/password auth
   createdAt: { type: Date, default: Date.now },
 });
 
-export default mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
+// Hash password before saving
+UserSchema.pre("save", async function (next) {
+  if (this.isModified("password") && this.password) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+  next();
+});
+
+// Compare password method
+UserSchema.methods.comparePassword = async function (candidatePassword: string) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
+
+export default mongoose.models.User || mongoose.model("User", UserSchema);

@@ -71,7 +71,7 @@ const Footer = () => {
                   onChange={(e) => setEmail1(e.target.value)}
                 />
                 <button
-                  className="bg-[#f6ff7a] w-full md:w-fit text-black px-6 py-3 rounded-xl mt-2 lg:mt-0 cursor-pointer hover:bg-[#f6ff7a]/80"
+                  className="bg-[#f6ff7a] w-full md:w-fit text-black px-6 py-3 rounded-xl mt-2 lg:mt-0 cursor-pointer transition-colors duration-300 hover:bg-[#AAB418]"
                   onClick={() => handleSubscribe(email1, 1)}
                 >
                   Subscribe

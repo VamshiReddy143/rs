@@ -131,7 +131,7 @@ const Navbar = () => {
             </Link>
           </ul>
           <Link href="/Contact" onClick={closeAll}>
-            <button className="text-[16px] lg:text-[15px] bg-[#f6ff7a] text-black px-2  lg:px-4 lg:py-2 rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80 transition-colors">
+            <button className="text-[16px] lg:text-[15px] bg-[#f6ff7a] text-black px-2  lg:px-4 lg:py-2 rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418]">
               Get in Touch ➔
             </button>
           </Link>
@@ -140,7 +140,7 @@ const Navbar = () => {
         <div className="flex items-center gap-2 lg:hidden">
           <div>
             <Link href="/Contact" onClick={closeAll}>
-              <button className="text-[16px] lg:text-[15px] bg-[#f6ff7a] text-black px-2 py-1 lg:px-4 lg:py-2 rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80 transition-colors">
+              <button className="text-[16px] lg:text-[15px] bg-[#f6ff7a] text-black px-2 py-1 lg:px-4 lg:py-2 rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418]">
                 Get in Touch ➔
               </button>
             </Link>
@@ -214,7 +214,7 @@ const Navbar = () => {
               </li>
             </Link>
             <Link href="/Contact" onClick={closeAll}>
-              <button className="text-[16px] bg-[#f6ff7a] text-black px-4 py-2 rounded-lg hover:bg-[#f6ff7a]/80 transition-colors cursor-pointer">
+              <button className="text-[16px] bg-[#f6ff7a] text-black px-4 py-2 rounded-lg transition-colors duration-300 hover:bg-[#AAB418] cursor-pointer">
                 Get in Touch  ➔
               </button>
             </Link>

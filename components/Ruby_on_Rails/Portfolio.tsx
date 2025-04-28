@@ -42,7 +42,7 @@ const Portfolio = () => {
                                 Migrated database to comply with GDPR, supported key backend initiatives, and improved the overall development process.
                             </p>
                             <div className='flex justify-center items-center mt-5'>
-                                <button className='text-[16px] font-semibold  bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
+                                <button className='text-[16px] font-semibold  bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418]'>
                                     Learn More
                                 </button>
                             </div>
@@ -81,7 +81,7 @@ const Portfolio = () => {
                                 Scaled MasterClass to millions of users and billions of views in less than a few years through multiple data-intensive user engagement initiatives and modernizing its payment infrastructure.
                             </p>
                             <div className='flex justify-center items-center mt-5'>
-                                <button className='text-[16px] font-semibold  bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
+                                <button className='text-[16px] font-semibold  bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418]'>
                                     Learn More
                                 </button>
                             </div>
@@ -119,7 +119,7 @@ const Portfolio = () => {
                                 Stablized, modernized, and continuously optimized a mission-critical Ruby on Rails application that had suffered crashes and performance issues.
                             </p>
                             <div className='flex justify-center items-center mt-5'>
-                                <button className='text-[16px] font-semibold  bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
+                                <button className='text-[16px] font-semibold  bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418]'>
                                     Learn More
                                 </button>
                             </div>

@@ -41,7 +41,7 @@ const Portfolio = () => {
                                 Secured containerized environment with ECR and ECS. Automated CI/CD with CodePipeline. RDS and ElasticCache ensured fast and reliable access to the data.
                             </p>
                             <div className='flex justify-center items-center mt-5'>
-                                <button className='text-[16px] font-semibold bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
+                                <button className='text-[16px] font-semibold bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418]'>
                                     Learn More
                                 </button>
                             </div>
@@ -80,7 +80,7 @@ const Portfolio = () => {
                                 Scaled EXI&apos;s Cloud Infrastructure to support increased load and user interactions. Ensured compliance with major regulations including FDA, NHS, GDPR/HIPAA, and ISO Standards.
                             </p>
                             <div className='flex justify-center items-center mt-5'>
-                                <button className='text-[16px] font-semibold bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
+                                <button className='text-[16px] font-semibold bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418]'>
                                     Learn More
                                 </button>
                             </div>
@@ -118,7 +118,7 @@ const Portfolio = () => {
                                 Migrated RGB&apos;s infrastructure to AWS, reducing risk of failure and preparing for high user demand during tax season.
                             </p>
                             <div className='flex justify-center items-center mt-5'>
-                                <button className='text-[16px] font-semibold bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
+                                <button className='text-[16px] font-semibold bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418]'>
                                     Learn More
                                 </button>
                             </div>

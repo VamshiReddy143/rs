@@ -42,7 +42,7 @@ const Portfolio = () => {
                                 Modern, user-friendly healthcare app for patients and practitioners with enhanced appointment scheduling, medical history access, and medication ordering.
                             </p>
                             <div className='flex justify-center items-center mt-5'>
-                                <button className='text-[16px] font-semibold  bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
+                                <button className='text-[16px] font-semibold  bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418]'>
                                     Learn More
                                 </button>
                             </div>
@@ -80,7 +80,7 @@ const Portfolio = () => {
                                 Elevated mobile app with subscription management, appointment handling, and unique loyalty program increased sales and customer engagement
                             </p>
                             <div className='flex justify-center items-center mt-5'>
-                                <button className='text-[16px] font-semibold  bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
+                                <button className='text-[16px] font-semibold  bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418]'>
                                     Learn More
                                 </button>
                             </div>
@@ -118,7 +118,7 @@ const Portfolio = () => {
                                 AI-driven learning platform and mobile app for parents and their kids.
                             </p>
                             <div className='flex justify-center items-center mt-5'>
-                                <button className='text-[16px] font-semibold  bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
+                                <button className='text-[16px] font-semibold  bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418]'>
                                     Learn More
                                 </button>
                             </div>

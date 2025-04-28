@@ -41,7 +41,7 @@ const Portfolio = () => {
                                 We augmented their React development team in order to modernize the payment infrastructure as well as enhance conversion, performance, and user experience of their amazing platform.
                             </p>
                             <div className='flex justify-center items-center mt-5'>
-                                <button className='text-[16px] font-semibold bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
+                                <button className='text-[16px] font-semibold bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418] cursor-pointer'>
                                     Learn More
                                 </button>
                             </div>
@@ -79,7 +79,7 @@ const Portfolio = () => {
                                 We revamped their platform to improve performance and functionality, leading a successful migration from a legacy, underperforming solution
                             </p>
                             <div className='flex justify-center items-center mt-5'>
-                                <button className='text-[16px] font-semibold  bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
+                                <button className='text-[16px] font-semibold  bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418] cursor-pointer'>
                                     Learn More
                                 </button>
                             </div>
@@ -117,7 +117,7 @@ const Portfolio = () => {
                                 We optimized their technology services, introducing ReactJS and automated testing while ensuring seamless business operations.
                             </p>
                             <div className='flex justify-center items-center mt-5'>
-                                <button className='text-[16px] font-semibold  bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>
+                                <button className='text-[16px] font-semibold  bg-[#f6ff7a] text-black px-2 py-3 w-full flex items-center justify-center rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418] cursor-pointer'>
                                     Learn More
                                 </button>
                             </div>

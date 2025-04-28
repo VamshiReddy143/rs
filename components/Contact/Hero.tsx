@@ -6,7 +6,6 @@ import React, { useState, useEffect, useRef } from "react";
 import emailjs from "@emailjs/browser";
 
 const Hero: React.FC = () => {
-  // Stable reference to current date (April 24, 2025)
   const todayRef = useRef(new Date("2025-04-24"));
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -23,17 +22,15 @@ const Hero: React.FC = () => {
   // Date selector states
   const [currentWeek, setCurrentWeek] = useState<number>(0);
   const [availableDates, setAvailableDates] = useState<{ day: string; date: string }[]>([]);
-  const [dateCount, setDateCount] = useState(5); // Default to 5, updated by useEffect
+  const [dateCount, setDateCount] = useState(5);
+  const dateContainerRef = useRef<HTMLDivElement>(null); // Ref for smooth scrolling
 
-  // Router for redirect
   const router = useRouter();
 
-  // Initialize EmailJS
   useEffect(() => {
     emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "");
   }, []);
 
-  // Clear success message and redirect after 5 seconds
   useEffect(() => {
     if (formStatus?.type === "success") {
       const timer = setTimeout(() => {
@@ -44,21 +41,18 @@ const Hero: React.FC = () => {
     }
   }, [formStatus, router]);
 
-  // Function to generate future weekdays from current date
   const getFutureWeekdays = () => {
     const dates: { day: string; date: string }[] = [];
     const currentDate = new Date(todayRef.current);
 
-    // Look ahead for 12 weeks (84 days)
     for (let i = 0; i < 84; i++) {
       const nextDate = new Date(currentDate);
       nextDate.setDate(currentDate.getDate() + i);
 
-      // Include current day and future weekdays (exclude Sat and Sun)
       if (
         nextDate >= todayRef.current &&
-        nextDate.getDay() !== 0 && // Sunday
-        nextDate.getDay() !== 6 // Saturday
+        nextDate.getDay() !== 0 &&
+        nextDate.getDay() !== 6
       ) {
         const dayName = days[nextDate.getDay()];
         const month = nextDate.toLocaleString("en-US", { month: "short" });
@@ -69,14 +63,13 @@ const Hero: React.FC = () => {
     return dates;
   };
 
-  // Set initial available dates and handle responsive date count
   useEffect(() => {
     setAvailableDates(getFutureWeekdays());
     const handleResize = () => {
       if (typeof window !== "undefined") {
-        if (window.innerWidth < 768) setDateCount(3); // Mobile: 3 dates
-        else if (window.innerWidth < 1024) setDateCount(4); // md: 4 dates
-        else setDateCount(5); // lg and above: 5 dates
+        if (window.innerWidth < 768) setDateCount(3);
+        else if (window.innerWidth < 1024) setDateCount(4);
+        else setDateCount(5);
       }
     };
     handleResize();
@@ -84,23 +77,37 @@ const Hero: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Navigate to previous week
-  const prevWeek = () => {
+  // Smooth scroll to the current week's dates
+  useEffect(() => {
+    if (dateContainerRef.current) {
+      const scrollAmount = currentWeek * (dateContainerRef.current.offsetWidth / dateCount);
+      dateContainerRef.current.scrollTo({
+        left: scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  }, [currentWeek, dateCount]);
+
+  const prevWeek = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent default behavior
     if (currentWeek > 0) setCurrentWeek(currentWeek - 1);
   };
 
-  // Navigate to next week
-  const nextWeek = () => {
+  const nextWeek = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent default behavior
     if (currentWeek < availableDates.length - dateCount) setCurrentWeek(currentWeek + 1);
   };
 
-  // Handle form submission with EmailJS
+  const handleDateSelect = (e: React.MouseEvent, date: string) => {
+    e.preventDefault(); // Prevent default behavior
+    setSelectedDate(date);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setFormStatus(null);
 
-    // Validate required fields
     if (!name || !email || !company || !message) {
       setFormStatus({ type: "error", message: "Please fill all required fields." });
       setLoading(false);
@@ -124,7 +131,6 @@ const Hero: React.FC = () => {
       );
 
       setFormStatus({ type: "success", message: "Message sent successfully!" });
-      // Reset form
       setName("");
       setEmail("");
       setCompany("");
@@ -193,13 +199,18 @@ const Hero: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between mt-3">
                   <button
+                    type="button"
                     onClick={prevWeek}
                     className="text-gray-400 hover:text-white focus:outline-none cursor-pointer"
                     disabled={currentWeek === 0}
                   >
                     {"◁"}
                   </button>
-                  <div className="flex gap-4">
+                  <div
+                    ref={dateContainerRef}
+                    className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory"
+                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                  >
                     {availableDates.length === 0 ? (
                       <p className="text-[#969699] text-sm">No available dates.</p>
                     ) : (
@@ -207,12 +218,12 @@ const Hero: React.FC = () => {
                         <button
                           key={index}
                           type="button"
-                          className={`bg-[#242425] px-3 py-2 rounded-lg text-sm text-[#969699] border-1 ${
+                          className={`bg-[#242425] px-3 py-2 rounded-lg text-sm text-[#969699] border-1 snap-center flex-shrink-0 ${
                             selectedDate === `${day.day}, ${day.date}`
                               ? "border-[#f6ff7a]"
                               : "border-[#969699]"
                           }`}
-                          onClick={() => setSelectedDate(`${day.day}, ${day.date}`)}
+                          onClick={(e) => handleDateSelect(e, `${day.day}, ${day.date}`)}
                         >
                           <span className="text-[18px] leading-[32px] font-medium">{day.day}</span> <br /> {day.date}
                         </button>
@@ -220,6 +231,7 @@ const Hero: React.FC = () => {
                     )}
                   </div>
                   <button
+                    type="button"
                     onClick={nextWeek}
                     className="text-gray-400 hover:text-white focus:outline-none cursor-pointer"
                     disabled={currentWeek >= availableDates.length - dateCount}
@@ -228,21 +240,21 @@ const Hero: React.FC = () => {
                   </button>
                 </div>
                 <div className="flex items-center justify-between mt-5 text-sm">
-                  <div className="flex gap-2">
-                    <select
-                      className="p-2 rounded-lg outline-none"
+                  <div className="flex items-center">
+                   <p>Timezone-</p>
+                   <select
+                      className=" rounded-lg outline-none font-bold text-[#f6ff7a]"
                       value={timezone}
                       onChange={(e) => setTimezone(e.target.value)}
                     >
-                      <option>Timezone - EST</option>
-                      <option>Timezone - PST</option>
-                      <option>Timezone - GMT</option>
+                      <option>EST</option>
+                      <option>PST</option>
+                      <option>GMT</option>
                     </select>
                   </div>
                 </div>
               </div>
             </div>
-            {/* Form Status */}
             {formStatus && (
               <p
                 className={`mt-2 text-sm ${
@@ -254,7 +266,7 @@ const Hero: React.FC = () => {
             )}
             <button
               type="submit"
-              className="bg-[#f6ff7a] text-black p-3 w-full mt-2 rounded-lg text-[1em] font-bold"
+              className="bg-[#f6ff7a] text-black p-3 w-full mt-2 rounded-lg text-[1em] transition-colors duration-300 hover:bg-[#AAB418] font-bold"
               disabled={loading}
             >
               {loading ? "Sending..." : "Send"}
@@ -300,6 +312,13 @@ const Hero: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Inline CSS for hiding scrollbar */}
+      <style jsx>{`
+        .date-container::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 };

@@ -160,7 +160,7 @@ const Team: React.FC = () => {
 
 
 
-        <div className="relative lg:w-[35%] rounded-xl overflow-hidden group">
+        <div className="relative lg:w-[35%]  overflow-hidden group">
           <Link href="/Portfolio/Featuredcases/farmers_dog">
             {/* Image with zoom effect */}
             <Image
@@ -168,7 +168,7 @@ const Team: React.FC = () => {
               alt="team"
               width={900}
               height={900}
-              className="lg:h-[40em] h-[20em] w-full object-cover transform transition-transform duration-500 group-hover:scale-[1.03]"
+              className="lg:h-[40em] h-[20em] w-full  object-cover transform transition-transform duration-500 group-hover:scale-[1.03]"
             />
 
             {/* Black overlay with fade on hover */}
@@ -188,26 +188,27 @@ const Team: React.FC = () => {
 
       <div className="lg:flex justify-center rounded-xl gap-5 text-center">
         <div className="flex flex-col lg:gap-6 gap-5 lg:w-[35%] mx-auto lg:mt-5 mt-5 relative">
-          <div className="relative overflow-hidden group">
+            
+          <div className="relative overflow-hidden rounded-xl group">
             <Link href="/Portfolio/Featuredcases/emeritus">
-              {/* Image with zoom on hover */}
+              {/* Image with subtle zoom on hover */}
               <Image
                 src={img3}
                 alt="team"
                 width={900}
                 height={900}
-                className="w-full h-auto object-cover transform rounded-lg transition-transform duration-500 group-hover:scale-[1.03]"
+                className="w-full h-auto object-cover rounded-lg transform transition-transform duration-500 group-hover:scale-[1.03]"
               />
 
-              {/* Dark overlay with smooth fade on hover */}
+              {/* Dark overlay that fades on hover */}
               <div className="absolute inset-0 bg-black opacity-50 group-hover:opacity-0 transition-opacity duration-300" />
 
-              {/* Black gradient at the bottom */}
+              {/* Soft bottom gradient for text readability */}
               <div className="absolute bottom-0 left-0 w-full h-[4em] bg-gradient-to-t from-black via-black/80 to-transparent z-10" />
 
-              {/* Text on top of gradient */}
+              {/* Headline text */}
               <h1 className="absolute bottom-5 left-0 z-20 pl-8 w-[75%] md:w-full lg:text-[24px] text-[1.2em] lg:pl-7 text-left font-semibold text-white">
-                Making Higher Education Accessible Online
+              Making Higher Education Accessible Online
               </h1>
             </Link>
           </div>

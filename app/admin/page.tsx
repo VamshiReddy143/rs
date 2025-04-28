@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Subscribers from "@/components/Subscribers/Subscribers";
 import Image from "next/image";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
@@ -204,7 +205,7 @@ function ToolbarPlugin() {
   };
 
 
-  
+
   const toggleList = (listType: "bullet" | "number") => (e: React.MouseEvent) => {
     e.preventDefault();
     try {
@@ -222,11 +223,11 @@ function ToolbarPlugin() {
           listItem.select();
           return;
         }
-  
+
         const anchorNode = selection.anchor.getNode();
         const element = anchorNode.getTopLevelElementOrThrow();
         const isList = $isListNode(element) && element.getListType() === listType;
-  
+
         if (isList) {
           // Convert list to paragraphs
           editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
@@ -282,99 +283,88 @@ function ToolbarPlugin() {
     <div className="flex gap-2 mb-4 flex-wrap bg-[#2d2d2f] p-2 rounded-t-lg">
       <button
         onClick={setBlockType("h1")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${
-          activeBlocks.has("h1") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-        } hover:bg-[#f6ff7a] hover:text-black`}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${activeBlocks.has("h1") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+          } hover:bg-[#f6ff7a] hover:text-black`}
         aria-label="Heading 1"
       >
         H1
       </button>
       <button
         onClick={setBlockType("h2")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${
-          activeBlocks.has("h2") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-        } hover:bg-[#f6ff7a] hover:text-black`}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${activeBlocks.has("h2") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+          } hover:bg-[#f6ff7a] hover:text-black`}
         aria-label="Heading 2"
       >
         H2
       </button>
       <button
         onClick={setBlockType("h3")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${
-          activeBlocks.has("h3") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-        } hover:bg-[#f6ff7a] hover:text-black`}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${activeBlocks.has("h3") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+          } hover:bg-[#f6ff7a] hover:text-black`}
         aria-label="Heading 3"
       >
         H3
       </button>
       <button
         onClick={setBlockType("paragraph")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[100px] ${
-          activeBlocks.has("paragraph") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-        } hover:bg-[#f6ff7a] hover:text-black`}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[100px] ${activeBlocks.has("paragraph") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+          } hover:bg-[#f6ff7a] hover:text-black`}
         aria-label="Paragraph"
       >
         Paragraph
       </button>
       <button
         onClick={toggleList("bullet")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[100px] ${
-          activeBlocks.has("bullet") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-        } hover:bg-[#f6ff7a] hover:text-black`}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[100px] ${activeBlocks.has("bullet") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+          } hover:bg-[#f6ff7a] hover:text-black`}
         aria-label="Bullet List"
       >
         Bullet List
       </button>
       <button
         onClick={toggleList("number")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[100px] ${
-          activeBlocks.has("number") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-        } hover:bg-[#f6ff7a] hover:text-black`}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[100px] ${activeBlocks.has("number") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+          } hover:bg-[#f6ff7a] hover:text-black`}
         aria-label="Ordered List"
       >
         Ordered List
       </button>
       <button
         onClick={setBlockType("code")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[100px] ${
-          activeBlocks.has("code") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-        } hover:bg-[#f6ff7a] hover:text-black`}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[100px] ${activeBlocks.has("code") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+          } hover:bg-[#f6ff7a] hover:text-black`}
         aria-label="Code Block"
       >
         Code Block
       </button>
       <button
         onClick={toggleMark("bold")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${
-          activeMarks.has("bold") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-        } hover:bg-[#f6ff7a] hover:text-black`}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${activeMarks.has("bold") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+          } hover:bg-[#f6ff7a] hover:text-black`}
         aria-label="Bold"
       >
         Bold
       </button>
       <button
         onClick={toggleMark("italic")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${
-          activeMarks.has("italic") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-        } hover:bg-[#f6ff7a] hover:text-black`}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${activeMarks.has("italic") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+          } hover:bg-[#f6ff7a] hover:text-black`}
         aria-label="Italic"
       >
         Italic
       </button>
       <button
         onClick={toggleMark("underline")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${
-          activeMarks.has("underline") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-        } hover:bg-[#f6ff7a] hover:text-black`}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${activeMarks.has("underline") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+          } hover:bg-[#f6ff7a] hover:text-black`}
         aria-label="Underline"
       >
         Underline
       </button>
       <button
         onClick={toggleMark("code")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${
-          activeMarks.has("code") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-        } hover:bg-[#f6ff7a] hover:text-black`}
+        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${activeMarks.has("code") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
+          } hover:bg-[#f6ff7a] hover:text-black`}
         aria-label="Inline Code"
       >
         Code
@@ -472,7 +462,7 @@ function LexicalEditor({ index, initialValue, onChange }: LexicalEditorProps) {
           }
           placeholder={
             <div className="absolute top-4 left-4 text-gray-400 pointer-events-none">
-              Start typing...
+              
             </div>
           }
           ErrorBoundary={LexicalErrorBoundary}
@@ -561,7 +551,7 @@ interface Errors {
 }
 
 function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<"create" | "blogs" | "team" | "jobs">("create");
+  const [activeTab, setActiveTab] = useState<"create" | "blogs" | "team" | "jobs" | "Subscribers">("create");
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -783,13 +773,13 @@ function AdminDashboard() {
       if (!title || !category || !author) throw new Error("Title, category, and author are required");
       const effectiveCategory = category === "Other" ? customCategory : category;
       if (!effectiveCategory) throw new Error("Please specify a category");
-  
+
       const formData = new FormData();
       formData.append("title", title);
       formData.append("category", effectiveCategory);
       formData.append("author", author);
       if (primaryImage) formData.append("primaryImage", primaryImage);
-  
+
       // Process content array, converting Lexical JSON to HTML where applicable
       const processedContent = content.map((item, index) => {
         if (item.type === "image") {
@@ -809,20 +799,20 @@ function AdminDashboard() {
           };
         }
       });
-  
+
       formData.append("content", JSON.stringify(processedContent));
       content.forEach((item, index) => {
         if (item.type === "image" && item.value instanceof File) {
           formData.append(`image-${index}`, item.value);
         }
       });
-  
+
       const url = editingBlog ? `/api/blogs/${editingBlog._id}` : "/api/blogs/create";
       const method = editingBlog ? "PUT" : "POST";
-  
+
       const response = await fetch(url, { method, body: formData });
       if (!response.ok) throw new Error(`Failed to ${editingBlog ? "update" : "create"} blog: ${await response.text()}`);
-  
+
       toast.success(`Blog ${editingBlog ? "updated" : "created"} successfully!`);
       resetBlogForm(); // Reset form fields after successful submission
       if (editingBlog) {
@@ -1259,6 +1249,14 @@ function AdminDashboard() {
         .rd-4 + .label:hover ~ .slidebar {
           transform: translateX(300%) scaleX(1);
         }
+             
+        .rd-5:checked ~ .bar,
+.rd-5:checked ~ .slidebar,
+.rd-5 + .label:hover ~ .slidebar {
+  transform: translateX(400%) scaleX(1);
+}
+      
+   
         .custom-scroll-content {
           overflow-y: auto;
           max-height: calc(85vh - 80px);
@@ -1455,57 +1453,68 @@ function AdminDashboard() {
           </div>
         )}
         <div className="container">
-          <div className="wrap">
-            <input
-              type="radio"
-              id="rd-1"
-              name="radio"
-              className="rd-1"
-              checked={activeTab === "create"}
-              onChange={() => {
-                setActiveTab("create");
-                resetBlogForm();
-              }}
-            />
-            <label htmlFor="rd-1" className="label">
-              <span>Create</span>
-            </label>
-            <input
-              type="radio"
-              id="rd-2"
-              name="radio"
-              className="rd-2"
-              checked={activeTab === "blogs"}
-              onChange={() => setActiveTab("blogs")}
-            />
-            <label htmlFor="rd-2" className="label">
-              <span>Blogs</span>
-            </label>
-            <input
-              type="radio"
-              id="rd-3"
-              name="radio"
-              className="rd-3"
-              checked={activeTab === "team"}
-              onChange={() => setActiveTab("team")}
-            />
-            <label htmlFor="rd-3" className="label">
-              <span>Team</span>
-            </label>
-            <input
-              type="radio"
-              id="rd-4"
-              name="radio"
-              className="rd-4"
-              checked={activeTab === "jobs"}
-              onChange={() => setActiveTab("jobs")}
-            />
-            <label htmlFor="rd-4" className="label">
-              <span>Jobs</span>
-            </label>
-            <div className="bar"></div>
-            <div className="slidebar"></div>
-          </div>
+        <div className="wrap">
+  <input
+    type="radio"
+    id="rd-1"
+    name="radio"
+    className="rd-1"
+    checked={activeTab === "create"}
+    onChange={() => {
+      setActiveTab("create");
+      resetBlogForm();
+    }}
+  />
+  <label htmlFor="rd-1" className="label">
+    <span>Create</span>
+  </label>
+  <input
+    type="radio"
+    id="rd-2"
+    name="radio"
+    className="rd-2"
+    checked={activeTab === "blogs"}
+    onChange={() => setActiveTab("blogs")}
+  />
+  <label htmlFor="rd-2" className="label">
+    <span>Blogs</span>
+  </label>
+  <input
+    type="radio"
+    id="rd-3"
+    name="radio"
+    className="rd-3"
+    checked={activeTab === "team"}
+    onChange={() => setActiveTab("team")}
+  />
+  <label htmlFor="rd-3" className="label">
+    <span>Team</span>
+  </label>
+  <input
+    type="radio"
+    id="rd-4"
+    name="radio"
+    className="rd-4"
+    checked={activeTab === "jobs"}
+    onChange={() => setActiveTab("jobs")}
+  />
+  <label htmlFor="rd-4" className="label">
+    <span>Jobs</span>
+  </label>
+  <input
+    type="radio"
+    id="rd-5"
+    name="radio"
+    className="rd-5"
+    checked={activeTab === "Subscribers"}
+    onChange={() => setActiveTab("Subscribers")}
+  />
+  <label htmlFor="rd-5" className="label">
+    <span>Subscribers</span>
+  </label>
+  <div className="bar"></div>
+  <div className="slidebar"></div>
+</div>
         </div>
         {activeTab === "create" && (
           <form onSubmit={handleBlogSubmit} className="space-y-8 mt-6">
@@ -1754,6 +1763,13 @@ function AdminDashboard() {
             </div>
           </form>
         )}
+
+        {activeTab === "Subscribers" && (
+          <div className="space-y-6 mt-6">
+   
+            <Subscribers />
+          </div>
+        )}
         {activeTab === "blogs" && (
           <div className="space-y-6 mt-6">
             <h2 className="text-2xl font-bold text-[#f6ff7a]">Your Blogs</h2>
@@ -1901,8 +1917,8 @@ function AdminDashboard() {
                       ? "Updating..."
                       : "Creating..."
                     : editingTeamMember
-                    ? "Update Team Member"
-                    : "Create Team Member"}
+                      ? "Update Team Member"
+                      : "Create Team Member"}
                 </button>
                 {editingTeamMember && (
                   <button
@@ -1911,306 +1927,306 @@ function AdminDashboard() {
                     className="flex-1 py-4 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-500"
                   >
                     Cancel
-                    </button>
-              )}
-            </div>
-          </form>
-          <h2 className="text-2xl font-bold mt-8 text-[#f6ff7a]">Current Team Members</h2>
-          {teamMembers.length === 0 ? (
-            <p className="text-gray-400">No team members found.</p>
-          ) : (
-            <div className="grid gap-6">
-              {teamMembers.map((member,index) => (
-                <div key={index} className="bg-[#3d3d3f] p-6 rounded-xl border border-gray-600 shadow-lg">
-                  <div className="flex items-center gap-4">
-                    <Image
-                      src={member.image || "/h1c44.png"}
-                      alt={member.name}
-                      width={96}
-                      height={96}
-                      className="w-24 h-24 rounded-full object-cover"
-                    />
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-200">{member.name}</h3>
-                      <p className="text-gray-400">Role: {member.role}</p>
-                      <p className="text-gray-400">Testimonial: {member.testimonial}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => handleEditTeamMember(member)}
-                        className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
-                      >
-                        Edit
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setShowDeleteConfirm({ id: member._id, type: "team" })}
-                        className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
-                      >
-                        Delete
-                      </motion.button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-      {activeTab === "jobs" && (
-        <div className="space-y-6 mt-6">
-          <h2 className="text-2xl font-bold text-[#f6ff7a]">
-            {editingJob ? "Edit Job Posting" : "Create New Job Posting"}
-          </h2>
-          <form onSubmit={handleJobSubmit} className="space-y-8">
-            <div>
-              <label htmlFor="job-title" className="block text-lg font-medium mb-2 text-gray-200">
-                Job Title
-              </label>
-              <input
-                type="text"
-                id="job-title"
-                value={jobTitle}
-                onChange={(e) => setJobTitle(e.target.value)}
-                required
-                className={inputStyle}
-                placeholder="Enter job title"
-              />
-              {errors.jobTitle && <p className="text-red-400 text-sm mt-1">{errors.jobTitle}</p>}
-            </div>
-            <div>
-              <label htmlFor="job-location" className="block text-lg font-medium mb-2 text-gray-200">
-                Location
-              </label>
-              <input
-                type="text"
-                id="job-location"
-                value={jobLocation}
-                onChange={(e) => setJobLocation(e.target.value)}
-                required
-                className={inputStyle}
-                placeholder="Enter job location"
-              />
-              {errors.jobLocation && <p className="text-red-400 text-sm mt-1">{errors.jobLocation}</p>}
-            </div>
-            <div>
-              <label htmlFor="job-description" className="block text-lg font-medium mb-2 text-gray-200">
-                Job Description
-              </label>
-              <LexicalEditor
-                index={0}
-                initialValue={jobDescription}
-                onChange={(value) => setJobDescription(value)}
-              />
-              {errors.jobDescription && <p className="text-red-400 text-sm mt-1">{errors.jobDescription}</p>}
-            </div>
-            <div>
-              <label htmlFor="employment-type" className="block text-lg font-medium mb-2 text-gray-200">
-                Employment Type
-              </label>
-              <select
-                id="employment-type"
-                value={employmentType}
-                onChange={(e) => setEmploymentType(e.target.value)}
-                required
-                className={inputStyle}
-              >
-                <option value="Full-Time">Full-Time</option>
-                <option value="Part-Time">Part-Time</option>
-                <option value="Contract">Contract</option>
-                <option value="Internship">Internship</option>
-              </select>
-            </div>
-            <div className="flex gap-4">
-              <button
-                type="submit"
-                disabled={loading || Object.keys(errors).length > 0}
-                className="flex-1 py-4 bg-[#f6ff7a] text-black font-bold rounded-lg hover:bg-yellow-500 disabled:opacity-50"
-              >
-                {loading ? (editingJob ? "Updating..." : "Creating...") : editingJob ? "Update Job" : "Create Job"}
-              </button>
-              {editingJob && (
-                <button
-                  type="button"
-                  onClick={resetJobForm}
-                  className="flex-1 py-4 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-500"
-                >
-                  Cancel
-                </button>
-              )}
-            </div>
-          </form>
-          <h2 className="text-2xl font-bold mt-8 text-[#f6ff7a]">Current Job Postings</h2>
-          {jobs.length === 0 ? (
-            <p className="text-gray-400">No jobs found.</p>
-          ) : (
-            <div className="grid gap-6">
-              {jobs.map((job) => (
-                <div key={job._id} className="bg-[#3d3d3f] p-6 rounded-xl border border-gray-600 shadow-lg">
-                  <div className="flex items-center gap-4">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-200">{job.title}</h3>
-                      <p className="text-gray-400">Location: {job.location}</p>
-                      <p className="text-gray-400">Type: {job.employmentType}</p>
-                      <p className="text-gray-400">
-                        Posted: {new Date(job.postedDate).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => handleEditJob(job)}
-                        className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
-                      >
-                        Edit
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setShowDeleteConfirm({ id: job._id, type: "job" })}
-                        className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
-                      >
-                        Delete
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setViewingApplicationsForJob(job._id)}
-                        className="px-4 py-2 bg-transparent text-white border-1 font-semibold rounded-lg hover:bg-gray-600 hover:border-gray-600"
-                      >
-                        View Applications
-                      </motion.button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          {viewingApplicationsForJob && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center pt-10 justify-center z-[50]">
-              <div
-                ref={scrollRef}
-                className="bg-[#3d3d3f] p-6 rounded-lg w-[90%] max-w-4xl custom-scroll-content"
-              >
-                <h2 className="text-xl font-semibold text-[#f6ff7a] mb-4">
-                  Applications for {jobs.find((job) => job._id === viewingApplicationsForJob)?.title}
-                </h2>
-                <button
-  onClick={closeModal}
-  className="absolute top-4 right-4 sm:top-5 pt-[5em] sm:right-5 md:top-6 md:right-6 lg:top-10 lg:right-90 text-white text-base font-semibold py-2 px-4 rounded-lg hover:text-gray-400 z-50"
->
-  Close
-</button>
-                {applications.filter((app) => app.jobId === viewingApplicationsForJob).length === 0 ? (
-                  <p className="text-gray-400">No applications found for this job.</p>
-                ) : (
-                  <div className="space-y-4">
-                    {applications
-                      .filter((app) => app.jobId === viewingApplicationsForJob)
-                      .map((application) => (
-                        <div
-                          key={application._id}
-                          className="application-item bg-[#2d2d2f] p-4 rounded-lg border border-gray-600 hover:bg-[#353537] transition-all duration-200"
+                  </button>
+                )}
+              </div>
+            </form>
+            <h2 className="text-2xl font-bold mt-8 text-[#f6ff7a]">Current Team Members</h2>
+            {teamMembers.length === 0 ? (
+              <p className="text-gray-400">No team members found.</p>
+            ) : (
+              <div className="grid gap-6">
+                {teamMembers.map((member, index) => (
+                  <div key={index} className="bg-[#3d3d3f] p-6 rounded-xl border border-gray-600 shadow-lg">
+                    <div className="flex items-center gap-4">
+                      <Image
+                        src={member.image || "/h1c44.png"}
+                        alt={member.name}
+                        width={96}
+                        height={96}
+                        className="w-24 h-24 rounded-full object-cover"
+                      />
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold text-gray-200">{member.name}</h3>
+                        <p className="text-gray-400">Role: {member.role}</p>
+                        <p className="text-gray-400">Testimonial: {member.testimonial}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handleEditTeamMember(member)}
+                          className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
                         >
-                          <p className="text-gray-200">
-                            <strong>Name:</strong> {application.firstName} {application.lastName}
-                          </p>
-                          <p className="text-gray-400">
-                            <strong>Email:</strong> {application.email}
-                          </p>
-                          <p className="text-gray-400">
-                            <strong>Phone:</strong> {application.phone}
-                          </p>
-                          <p className="text-gray-400">
-                            <strong>Country:</strong> {application.country}
-                          </p>
-                          {application.linkedIn && (
-                            <p className="text-gray-400">
-                              <strong>LinkedIn:</strong>{" "}
-                              <a
-                                href={application.linkedIn}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-[#f6ff7a] hover:underline"
-                              >
-                                Profile
-                              </a>
-                            </p>
-                          )}
-                          {application.website && (
-                            <p className="text-gray-400">
-                              <strong>Website:</strong>{" "}
-                              <a
-                                href={application.website}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-[#f6ff7a] hover:underline"
-                              >
-                                Link
-                              </a>
-                            </p>
-                          )}
-                          <p className="text-gray-400">
-                            <strong>Submitted:</strong>{" "}
-                            {new Date(application.submittedAt).toLocaleDateString()}
-                          </p>
-                          <div className="flex gap-2 mt-2">
-                            <motion.button
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                              onClick={() => handleViewResume(application.resume)}
-                              className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
-                            >
-                              View Resume
-                            </motion.button>
-                            <motion.button
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                              onClick={() =>
-                                setShowDeleteConfirm({ id: application._id, type: "application" })
-                              }
-                              className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
-                            >
-                              Delete
-                            </motion.button>
-                          </div>
-                        </div>
-                      ))}
+                          Edit
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => setShowDeleteConfirm({ id: member._id, type: "team" })}
+                          className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
+                        >
+                          Delete
+                        </motion.button>
+                      </div>
+                    </div>
                   </div>
-                )}
+                ))}
               </div>
-            </div>
-          )}
-          {viewResumeUrl && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
-              <div className="bg-[#3d3d3f] p-6 rounded-lg w-[90%] max-w-4xl relative">
-                <button
-                  onClick={closeModal}
-                  className="absolute top-4 right-4 text-gray-200 hover:text-gray-400"
+            )}
+          </div>
+        )}
+        {activeTab === "jobs" && (
+          <div className="space-y-6 mt-6">
+            <h2 className="text-2xl font-bold text-[#f6ff7a]">
+              {editingJob ? "Edit Job Posting" : "Create New Job Posting"}
+            </h2>
+            <form onSubmit={handleJobSubmit} className="space-y-8">
+              <div>
+                <label htmlFor="job-title" className="block text-lg font-medium mb-2 text-gray-200">
+                  Job Title
+                </label>
+                <input
+                  type="text"
+                  id="job-title"
+                  value={jobTitle}
+                  onChange={(e) => setJobTitle(e.target.value)}
+                  required
+                  className={inputStyle}
+                  placeholder="Enter job title"
+                />
+                {errors.jobTitle && <p className="text-red-400 text-sm mt-1">{errors.jobTitle}</p>}
+              </div>
+              <div>
+                <label htmlFor="job-location" className="block text-lg font-medium mb-2 text-gray-200">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  id="job-location"
+                  value={jobLocation}
+                  onChange={(e) => setJobLocation(e.target.value)}
+                  required
+                  className={inputStyle}
+                  placeholder="Enter job location"
+                />
+                {errors.jobLocation && <p className="text-red-400 text-sm mt-1">{errors.jobLocation}</p>}
+              </div>
+              <div>
+                <label htmlFor="job-description" className="block text-lg font-medium mb-2 text-gray-200">
+                  Job Description
+                </label>
+                <LexicalEditor
+                  index={0}
+                  initialValue={jobDescription}
+                  onChange={(value) => setJobDescription(value)}
+                />
+                {errors.jobDescription && <p className="text-red-400 text-sm mt-1">{errors.jobDescription}</p>}
+              </div>
+              <div>
+                <label htmlFor="employment-type" className="block text-lg font-medium mb-2 text-gray-200">
+                  Employment Type
+                </label>
+                <select
+                  id="employment-type"
+                  value={employmentType}
+                  onChange={(e) => setEmploymentType(e.target.value)}
+                  required
+                  className={inputStyle}
                 >
-                  Close
+                  <option value="Full-Time">Full-Time</option>
+                  <option value="Part-Time">Part-Time</option>
+                  <option value="Contract">Contract</option>
+                  <option value="Internship">Internship</option>
+                </select>
+              </div>
+              <div className="flex gap-4">
+                <button
+                  type="submit"
+                  disabled={loading || Object.keys(errors).length > 0}
+                  className="flex-1 py-4 bg-[#f6ff7a] text-black font-bold rounded-lg hover:bg-yellow-500 disabled:opacity-50"
+                >
+                  {loading ? (editingJob ? "Updating..." : "Creating...") : editingJob ? "Update Job" : "Create Job"}
                 </button>
-                {errorMessage ? (
-                  <p className="text-red-400">{errorMessage}</p>
-                ) : (
-                  <iframe
-                    src={viewResumeUrl}
-                    title="Resume"
-                    className="w-full h-[80vh] rounded-lg"
-                  />
+                {editingJob && (
+                  <button
+                    type="button"
+                    onClick={resetJobForm}
+                    className="flex-1 py-4 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-500"
+                  >
+                    Cancel
+                  </button>
                 )}
               </div>
-            </div>
-          )}
-        </div>
-      )}
+            </form>
+            <h2 className="text-2xl font-bold mt-8 text-[#f6ff7a]">Current Job Postings</h2>
+            {jobs.length === 0 ? (
+              <p className="text-gray-400">No jobs found.</p>
+            ) : (
+              <div className="grid gap-6">
+                {jobs.map((job) => (
+                  <div key={job._id} className="bg-[#3d3d3f] p-6 rounded-xl border border-gray-600 shadow-lg">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold text-gray-200">{job.title}</h3>
+                        <p className="text-gray-400">Location: {job.location}</p>
+                        <p className="text-gray-400">Type: {job.employmentType}</p>
+                        <p className="text-gray-400">
+                          Posted: {new Date(job.postedDate).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handleEditJob(job)}
+                          className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
+                        >
+                          Edit
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => setShowDeleteConfirm({ id: job._id, type: "job" })}
+                          className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
+                        >
+                          Delete
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => setViewingApplicationsForJob(job._id)}
+                          className="px-4 py-2 bg-transparent text-white border-1 font-semibold rounded-lg hover:bg-gray-600 hover:border-gray-600"
+                        >
+                          View Applications
+                        </motion.button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {viewingApplicationsForJob && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center pt-10 justify-center z-[50]">
+                <div
+                  ref={scrollRef}
+                  className="bg-[#3d3d3f] p-6 rounded-lg w-[90%] max-w-4xl custom-scroll-content"
+                >
+                  <h2 className="text-xl font-semibold text-[#f6ff7a] mb-4">
+                    Applications for {jobs.find((job) => job._id === viewingApplicationsForJob)?.title}
+                  </h2>
+                  <button
+                    onClick={closeModal}
+                    className="absolute top-4 right-4 sm:top-5 pt-[5em] sm:right-5 md:top-6 md:right-6 lg:top-10 lg:right-90 text-white text-base font-semibold py-2 px-4 rounded-lg hover:text-gray-400 z-50"
+                  >
+                    Close
+                  </button>
+                  {applications.filter((app) => app.jobId === viewingApplicationsForJob).length === 0 ? (
+                    <p className="text-gray-400">No applications found for this job.</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {applications
+                        .filter((app) => app.jobId === viewingApplicationsForJob)
+                        .map((application) => (
+                          <div
+                            key={application._id}
+                            className="application-item bg-[#2d2d2f] p-4 rounded-lg border border-gray-600 hover:bg-[#353537] transition-all duration-200"
+                          >
+                            <p className="text-gray-200">
+                              <strong>Name:</strong> {application.firstName} {application.lastName}
+                            </p>
+                            <p className="text-gray-400">
+                              <strong>Email:</strong> {application.email}
+                            </p>
+                            <p className="text-gray-400">
+                              <strong>Phone:</strong> {application.phone}
+                            </p>
+                            <p className="text-gray-400">
+                              <strong>Country:</strong> {application.country}
+                            </p>
+                            {application.linkedIn && (
+                              <p className="text-gray-400">
+                                <strong>LinkedIn:</strong>{" "}
+                                <a
+                                  href={application.linkedIn}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[#f6ff7a] hover:underline"
+                                >
+                                  Profile
+                                </a>
+                              </p>
+                            )}
+                            {application.website && (
+                              <p className="text-gray-400">
+                                <strong>Website:</strong>{" "}
+                                <a
+                                  href={application.website}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[#f6ff7a] hover:underline"
+                                >
+                                  Link
+                                </a>
+                              </p>
+                            )}
+                            <p className="text-gray-400">
+                              <strong>Submitted:</strong>{" "}
+                              {new Date(application.submittedAt).toLocaleDateString()}
+                            </p>
+                            <div className="flex gap-2 mt-2">
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => handleViewResume(application.resume)}
+                                className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
+                              >
+                                View Resume
+                              </motion.button>
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() =>
+                                  setShowDeleteConfirm({ id: application._id, type: "application" })
+                                }
+                                className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
+                              >
+                                Delete
+                              </motion.button>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            {viewResumeUrl && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
+                <div className="bg-[#3d3d3f] p-6 rounded-lg w-[90%] max-w-4xl relative">
+                  <button
+                    onClick={closeModal}
+                    className="absolute top-4 right-4 text-gray-200 hover:text-gray-400"
+                  >
+                    Close
+                  </button>
+                  {errorMessage ? (
+                    <p className="text-red-400">{errorMessage}</p>
+                  ) : (
+                    <iframe
+                      src={viewResumeUrl}
+                      title="Resume"
+                      className="w-full h-[80vh] rounded-lg"
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
 }
 
 export default AdminDashboard;

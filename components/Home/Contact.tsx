@@ -34,10 +34,13 @@ const Contact = () => {
         </div>
 
         <Link href={"/Contact"}>
-        <div className='md:flex items-center justify-center mt-15 hidden'>
-        <button className='text-[16px] bg-[#f6ff7a] text-black px-4 py-3 rounded-lg cursor-pointer hover:bg-[#f6ff7a]/80'>Get in Touch ➔</button>
-        </div>
-        </Link>
+  <div className='md:flex items-center justify-center mt-15 hidden'>
+    <button className='text-[16px] bg-[#f6ff7a] text-black px-4 py-2 rounded-lg cursor-pointer transition-colors duration-300 hover:bg-[#AAB418]'>
+      Get in Touch ➔
+    </button>
+  </div>
+</Link>
+
 
     </div>
   )
