@@ -1803,212 +1803,266 @@ function AdminDashboard() {
             <Subscribers />
           </div>
         )}
-        {activeTab === "blogs" && (
-          <div className="space-y-6 mt-6">
-            <h2 className="text-2xl font-bold text-[#f6ff7a]">Your Blogs</h2>
-            {blogs.length === 0 ? (
-              <p className="text-gray-400">No blogs found.</p>
-            ) : (
-              <div className="grid gap-6">
-                {blogs.map((blog) => (
-                  <div key={blog._id} className="bg-[#3d3d3f] p-6 rounded-xl border border-gray-600 shadow-lg">
-                    <div className="flex items-center gap-4">
-                      {blog.primaryImage && (
-                        <Image
-                          src={blog.primaryImage}
-                          alt={blog.title}
-                          width={96}
-                          height={96}
-                          className="w-24 h-24 object-cover rounded-lg"
-                        />
-                      )}
-                      <div className="flex-1">
-                        <h3 className="text-xl font-semibold text-gray-200">{blog.title}</h3>
-                        <p className="text-gray-400">Category: {blog.category}</p>
-                        <p className="text-gray-400">Author: {blog.author}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => handleEditBlog(blog)}
-                          className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
-                        >
-                          Edit
-                        </motion.button>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => setShowDeleteConfirm({ id: blog._id, type: "blog" })}
-                          className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
-                        >
-                          Delete
-                        </motion.button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+
+
+
+{activeTab === "blogs" && (
+  <div className="space-y-6 mt-6">
+    <h2 className="text-2xl sm:text-3xl font-bold text-[#f6ff7a]">
+      Your Blogs
+    </h2>
+    {blogs.length === 0 ? (
+      <p className="text-gray-400 text-base sm:text-lg">No blogs found.</p>
+    ) : (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        {blogs.map((blog) => (
+          <div
+            key={blog._id}
+            className="bg-[#3d3d3f] p-4 sm:p-6 rounded-xl border border-gray-600 shadow-lg flex flex-col"
+          >
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              {blog.primaryImage && (
+                <Image
+                  src={blog.primaryImage}
+                  alt={blog.title}
+                  width={80}
+                  height={80}
+                  className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg flex-shrink-0"
+                />
+              )}
+              <div className="flex-1">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-200 line-clamp-2">
+                  {blog.title}
+                </h3>
+                <p className="text-gray-400 text-sm sm:text-base">
+                  Category: {blog.category}
+                </p>
+                <p className="text-gray-400 text-sm sm:text-base">
+                  Author: {blog.author}
+                </p>
               </div>
-            )}
+            </div>
+            <div className="flex gap-2 mt-4 sm:mt-6 justify-end">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleEditBlog(blog)}
+                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 text-sm sm:text-base"
+              >
+                Edit
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() =>
+                  setShowDeleteConfirm({ id: blog._id, type: "blog" })
+                }
+                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500 text-sm sm:text-base"
+              >
+                Delete
+              </motion.button>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
+
+
+{activeTab === "team" && (
+  <div className="space-y-6 mt-6">
+    <h2 className="text-2xl sm:text-3xl font-bold text-[#f6ff7a]">Team Members</h2>
+    <form onSubmit={handleTeamSubmit} className="space-y-6 sm:space-y-8">
+      <div className="border-2 border-dashed border-gray-600 rounded-lg p-4 sm:p-6 text-center">
+        <label
+          htmlFor="team-image"
+          className="block text-base sm:text-lg font-medium mb-2 text-gray-200"
+        >
+          Team Member Image (Drag & Drop or Click)
+        </label>
+        <input
+          type="file"
+          id="team-image"
+          accept="image/*"
+          onChange={(e) => handleTeamImageChange(e.target.files?.[0] || null)}
+          className="hidden"
+        />
+        <label
+          htmlFor="team-image"
+          className="cursor-pointer inline-block px-4 py-2 sm:px-6 sm:py-3 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 text-sm sm:text-base"
+        >
+          Select Image
+        </label>
+        {teamImagePreview && (
+          <div className="mt-4">
+            <Image
+              src={teamImagePreview}
+              alt="Team Member Preview"
+              width={96}
+              height={96}
+              className="w-24 h-24 sm:w-32 sm:h-32 mx-auto rounded-full object-cover"
+            />
+            <button
+              type="button"
+              onClick={() => handleTeamImageChange(null)}
+              className="mt-2 text-red-400 hover:text-red-500 text-sm sm:text-base"
+            >
+              Remove Image
+            </button>
           </div>
         )}
-        {activeTab === "team" && (
-          <div className="space-y-6 mt-6">
-            <h2 className="text-2xl font-bold text-[#f6ff7a]">Team Members</h2>
-            <form onSubmit={handleTeamSubmit} className="space-y-8">
-              <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
-                <label htmlFor="team-image" className="block text-lg font-medium mb-2 text-gray-200">
-                  Team Member Image (Drag & Drop or Click)
-                </label>
-                <input
-                  type="file"
-                  id="team-image"
-                  accept="image/*"
-                  onChange={(e) => handleTeamImageChange(e.target.files?.[0] || null)}
-                  className="hidden"
-                />
-                <label
-                  htmlFor="team-image"
-                  className="cursor-pointer inline-block px-6 py-3 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
-                >
-                  Select Image
-                </label>
-                {teamImagePreview && (
-                  <div className="mt-4">
-                    <Image
-                      src={teamImagePreview}
-                      alt="Team Member Preview"
-                      width={128}
-                      height={128}
-                      className="w-32 h-32 mx-auto rounded-full object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleTeamImageChange(null)}
-                      className="mt-2 text-red-400 hover:text-red-500"
-                    >
-                      Remove Image
-                    </button>
-                  </div>
-                )}
-                <div onDrop={handleTeamImageDrop} onDragOver={(e) => e.preventDefault()} className="h-20" />
-              </div>
-              <div>
-                <label htmlFor="testimonial" className="block text-lg font-medium mb-2 text-gray-200">
-                  Testimonial (Max 5 lines, 500 characters)
-                </label>
-                <textarea
-                  id="testimonial"
-                  value={testimonial}
-                  onChange={(e) => setTestimonial(e.target.value)}
-                  required
-                  rows={5}
-                  maxLength={500}
-                  className={`${inputStyle} rounded-lg`}
-                  placeholder="Enter team member testimonial"
-                />
-                {errors.testimonial && <p className="text-red-400 text-sm mt-1">{errors.testimonial}</p>}
-              </div>
-              <div>
-                <label htmlFor="name" className="block text-lg font-medium mb-2 text-gray-200">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className={inputStyle}
-                  placeholder="Enter team member name"
-                />
-                {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
-              </div>
-              <div>
-                <label htmlFor="role" className="block text-lg font-medium mb-2 text-gray-200">
-                  Role
-                </label>
-                <input
-                  type="text"
-                  id="role"
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  required
-                  className={inputStyle}
-                  placeholder="Enter team member role"
-                />
-                {errors.role && <p className="text-red-400 text-sm mt-1">{errors.role}</p>}
-              </div>
-              <div className="flex gap-4">
-                <button
-                  type="submit"
-                  disabled={loading || Object.keys(errors).length > 0}
-                  className="flex-1 py-4 bg-[#f6ff7a] text-black font-bold rounded-lg hover:bg-yellow-500 disabled:opacity-50"
-                >
-                  {loading
-                    ? editingTeamMember
-                      ? "Updating..."
-                      : "Creating..."
-                    : editingTeamMember
-                      ? "Update Team Member"
-                      : "Create Team Member"}
-                </button>
-                {editingTeamMember && (
-                  <button
-                    type="button"
-                    onClick={resetTeamForm}
-                    className="flex-1 py-4 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-500"
-                  >
-                    Cancel
-                  </button>
-                )}
-              </div>
-            </form>
-            <h2 className="text-2xl font-bold mt-8 text-[#f6ff7a]">Current Team Members</h2>
-            {teamMembers.length === 0 ? (
-              <p className="text-gray-400">No team members found.</p>
-            ) : (
-              <div className="grid gap-6">
-                {teamMembers.map((member, index) => (
-                  <div key={index} className="bg-[#3d3d3f] p-6 rounded-xl border border-gray-600 shadow-lg">
-                    <div className="flex items-center gap-4">
-                      <Image
-                        src={member.image || "/h1c44.png"}
-                        alt={member.name}
-                        width={96}
-                        height={96}
-                        className="w-24 h-24 rounded-full object-cover"
-                      />
-                      <div className="flex-1">
-                        <h3 className="text-xl font-semibold text-gray-200">{member.name}</h3>
-                        <p className="text-gray-400">Role: {member.role}</p>
-                        <p className="text-gray-400">Testimonial: {member.testimonial}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => handleEditTeamMember(member)}
-                          className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
-                        >
-                          Edit
-                        </motion.button>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => setShowDeleteConfirm({ id: member._id, type: "team" })}
-                          className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
-                        >
-                          Delete
-                        </motion.button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+        <div
+          onDrop={handleTeamImageDrop}
+          onDragOver={(e) => e.preventDefault()}
+          className="h-16 sm:h-20"
+        />
+      </div>
+      <div>
+        <label
+          htmlFor="testimonial"
+          className="block text-base sm:text-lg font-medium mb-2 text-gray-200"
+        >
+          Testimonial (Max 5 lines, 500 characters)
+        </label>
+        <textarea
+          id="testimonial"
+          value={testimonial}
+          onChange={(e) => setTestimonial(e.target.value)}
+          required
+          rows={5}
+          maxLength={500}
+          className={`${inputStyle} rounded-lg text-sm sm:text-base`}
+          placeholder="Enter team member testimonial"
+        />
+        {errors.testimonial && (
+          <p className="text-red-400 text-sm mt-1">{errors.testimonial}</p>
         )}
+      </div>
+      <div>
+        <label
+          htmlFor="name"
+          className="block text-base sm:text-lg font-medium mb-2 text-gray-200"
+        >
+          Name
+        </label>
+        <input
+          type="text"
+          id="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          className={`${inputStyle} text-sm sm:text-base`}
+          placeholder="Enter team member name"
+        />
+        {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
+      </div>
+      <div>
+        <label
+          htmlFor="role"
+          className="block text-base sm:text-lg font-medium mb-2 text-gray-200"
+        >
+          Role
+        </label>
+        <input
+          type="text"
+          id="role"
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+          required
+          className={`${inputStyle} text-sm sm:text-base`}
+          placeholder="Enter team member role"
+        />
+        {errors.role && <p className="text-red-400 text-sm mt-1">{errors.role}</p>}
+      </div>
+      <div className="flex flex-col sm:flex-row gap-4">
+        <button
+          type="submit"
+          disabled={loading || Object.keys(errors).length > 0}
+          className="flex-1 py-3 sm:py-4 bg-[#f6ff7a] text-black font-bold rounded-lg hover:bg-yellow-500 disabled:opacity-50 text-sm sm:text-base"
+        >
+          {loading
+            ? editingTeamMember
+              ? "Updating..."
+              : "Creating..."
+            : editingTeamMember
+              ? "Update Team Member"
+              : "Create Team Member"}
+        </button>
+        {editingTeamMember && (
+          <button
+            type="button"
+            onClick={resetTeamForm}
+            className="flex-1 py-3 sm:py-4 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-500 text-sm sm:text-base"
+          >
+            Cancel
+          </button>
+        )}
+      </div>
+    </form>
+
+    <h2 className="text-2xl sm:text-3xl font-bold mt-8 text-[#f6ff7a]">
+      Current Team Members
+    </h2>
+    {teamMembers.length === 0 ? (
+      <p className="text-gray-400 text-base sm:text-lg">No team members found.</p>
+    ) : (
+      <div className="grid grid-cols-1  gap-4 sm:gap-6">
+        {teamMembers.map((member, index) => (
+          <div
+            key={index}
+            className="bg-[#3d3d3f] p-4 sm:p-6 rounded-xl border border-gray-600 shadow-lg flex flex-col"
+          >
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <Image
+                src={member.image || "/h1c44.png"}
+                alt={member.name}
+                width={80}
+                height={80}
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover flex-shrink-0"
+              />
+              <div className="flex-1">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-200 line-clamp-2">
+                  {member.name}
+                </h3>
+                <p className="text-gray-400 text-sm sm:text-base">
+                  Role: {member.role}
+                </p>
+                <p className="text-gray-400 text-sm sm:text-base line-clamp-3">
+                  Testimonial: {member.testimonial}
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2 mt-4 sm:mt-6 justify-end">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleEditTeamMember(member)}
+                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 text-sm sm:text-base"
+              >
+                Edit
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() =>
+                  setShowDeleteConfirm({ id: member._id, type: "team" })
+                }
+                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500 text-sm sm:text-base"
+              >
+                Delete
+              </motion.button>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
+
+
         {activeTab === "jobs" && (
           <div className="space-y-6 mt-6">
             <h2 className="text-2xl font-bold text-[#f6ff7a]">

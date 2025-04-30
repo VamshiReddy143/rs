@@ -468,7 +468,7 @@ const JobApplication: React.FC = () => {
   };
 
   return (
-    <div style={{ fontFamily: "Poppins, sans-serif" }} className="min-h-screen bg-white p-4 sm:p-6 lg:pt-24 text-black">
+    <div style={{ fontFamily: "Poppins, sans-serif" }} className="min-h-screen bg-white p-4 pt-[7em] sm:p-6 lg:pt-24 text-black">
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} closeOnClick pauseOnHover />
       <div className="max-w-full sm:max-w-3xl md:max-w-4xl mx-auto">
         {jobLoading ? (
