@@ -40,6 +40,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { motion, AnimatePresence } from "framer-motion";
 import { lexicalToHtml } from "@/utils/lexicalToHtml";
 import { $wrapNodes } from "@lexical/selection";
+import SelectTemplate from "../SelectTemplate/page";
+import Allprojectss from "@/components/Allprojectsss/Allprojects"
+
 
 const LexicalErrorBoundary = ({ children }: { children: React.ReactNode }) => {
   try {
@@ -551,7 +554,7 @@ interface Errors {
 }
 
 function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<"create" | "blogs" | "team" | "jobs" | "Subscribers">("create");
+  const [activeTab, setActiveTab] = useState<"create" | "blogs" | "team" | "jobs" | "Subscribers" | "Projects">("create");
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -616,9 +619,10 @@ function AdminDashboard() {
       if (activeTab === "blogs") {
         try {
           const response = await fetch("/api/blogs/allblogs");
-          if (!response.ok) throw new Error("Failed to fetch blogs");
+          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
           const data: Blog[] = await response.json();
           setBlogs(data);
+          console.log("Fetched blogs:", data);
         } catch (error) {
           const message = error instanceof Error ? error.message : "Unknown error";
           toast.error(`Error fetching blogs: ${message}`);
@@ -626,9 +630,10 @@ function AdminDashboard() {
       } else if (activeTab === "team") {
         try {
           const response = await fetch("/api/team");
-          if (!response.ok) throw new Error("Failed to fetch team members");
+          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
           const data: TeamMember[] = await response.json();
           setTeamMembers(data);
+          console.log("Fetched team members:", data);
         } catch (error) {
           const message = error instanceof Error ? error.message : "Unknown error";
           toast.error(`Error fetching team members: ${message}`);
@@ -639,14 +644,16 @@ function AdminDashboard() {
             fetch("/api/jobs"),
             fetch("/api/applications"),
           ]);
-          if (!jobsResponse.ok) throw new Error("Failed to fetch jobs");
-          if (!appsResponse.ok) throw new Error("Failed to fetch applications");
+          if (!jobsResponse.ok) throw new Error(`Jobs fetch failed: ${jobsResponse.status}`);
+          if (!appsResponse.ok) throw new Error(`Applications fetch failed: ${appsResponse.status}`);
           const [jobsData, appsData] = await Promise.all([
             jobsResponse.json() as Promise<Job[]>,
             appsResponse.json() as Promise<Application[]>,
           ]);
           setJobs(jobsData);
           setApplications(appsData);
+          console.log("Fetched jobs:", jobsData);
+          console.log("Fetched applications:", appsData);
         } catch (error) {
           const message = error instanceof Error ? error.message : "Unknown error";
           toast.error(`Error fetching jobs or applications: ${message}`);
@@ -1097,15 +1104,15 @@ function AdminDashboard() {
   };
 
   const handleViewResume = (resumeUrl: string) => {
-    setErrorMessage(null);
     if (!resumeUrl || !resumeUrl.startsWith("https://res.cloudinary.com")) {
-      setErrorMessage("Invalid resume URL. Please check the database entry.");
+      console.error("Invalid resume URL:", resumeUrl);
+      toast.error("Invalid resume URL.");
       return;
     }
-
-    const baseUrl = resumeUrl.split("?")[0];
-    const inlineUrl = `${baseUrl}/fl_attachment:false,fl_inline,f_pdf`;
-    setViewResumeUrl(inlineUrl);
+    const isPdf = resumeUrl.toLowerCase().endsWith(".pdf");
+    const finalUrl = isPdf ? `${resumeUrl}#view=FitH&toolbar=1` : resumeUrl;
+    console.log("Opening URL:", finalUrl);
+    window.open(finalUrl, "_blank");
   };
 
   const closeModal = () => {
@@ -1254,6 +1261,11 @@ function AdminDashboard() {
 .rd-5:checked ~ .slidebar,
 .rd-5 + .label:hover ~ .slidebar {
   transform: translateX(400%) scaleX(1);
+}
+   .rd-6:checked ~ .bar,
+.rd-6:checked ~ .slidebar,
+.rd-6 + .label:hover ~ .slidebar {
+  transform: translateX(500%) scaleX(1);
 }
       
    
@@ -1512,6 +1524,19 @@ function AdminDashboard() {
   <label htmlFor="rd-5" className="label">
     <span>Subscribers</span>
   </label>
+
+  
+  <input
+    type="radio"
+    id="rd-6"
+    name="radio"
+    className="rd-6"
+    checked={activeTab === "Projects"}
+    onChange={() => setActiveTab("Projects")}
+  />
+  <label htmlFor="rd-6" className="label">
+    <span>Projects</span>
+  </label>
   <div className="bar"></div>
   <div className="slidebar"></div>
 </div>
@@ -1763,6 +1788,13 @@ function AdminDashboard() {
             </div>
           </form>
         )}
+
+
+{activeTab === "Projects" && (
+  <div className="space-y-6 mt-6">
+    <Allprojectss/>
+  </div>
+)}
 
         {activeTab === "Subscribers" && (
           <div className="space-y-6 mt-6">
@@ -2063,165 +2095,198 @@ function AdminDashboard() {
             {jobs.length === 0 ? (
               <p className="text-gray-400">No jobs found.</p>
             ) : (
-              <div className="grid gap-6">
-                {jobs.map((job) => (
-                  <div key={job._id} className="bg-[#3d3d3f] p-6 rounded-xl border border-gray-600 shadow-lg">
-                    <div className="flex items-center gap-4">
-                      <div className="flex-1">
-                        <h3 className="text-xl font-semibold text-gray-200">{job.title}</h3>
-                        <p className="text-gray-400">Location: {job.location}</p>
-                        <p className="text-gray-400">Type: {job.employmentType}</p>
-                        <p className="text-gray-400">
-                          Posted: {new Date(job.postedDate).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => handleEditJob(job)}
-                          className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
-                        >
-                          Edit
-                        </motion.button>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => setShowDeleteConfirm({ id: job._id, type: "job" })}
-                          className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
-                        >
-                          Delete
-                        </motion.button>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => setViewingApplicationsForJob(job._id)}
-                          className="px-4 py-2 bg-transparent text-white border-1 font-semibold rounded-lg hover:bg-gray-600 hover:border-gray-600"
-                        >
-                          View Applications
-                        </motion.button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+
+<div className="grid grid-cols-1 gap-4 sm:gap-6">
+  {jobs.map((job) => (
+    <div
+      key={job._id}
+      className="bg-[#3d3d3f] p-4 sm:p-6 rounded-xl border border-gray-600 shadow-lg min-w-0"
+    >
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+        <div className="flex-1 min-w-0">
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-200 truncate">
+            {job.title}
+          </h3>
+          <p className="text-sm sm:text-base text-gray-400">Location: {job.location}</p>
+          <p className="text-sm sm:text-base text-gray-400">Type: {job.employmentType}</p>
+          <p className="text-sm sm:text-base text-gray-400">
+            Posted: {new Date(job.postedDate).toLocaleDateString()}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2 sm:gap-3">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => handleEditJob(job)}
+            className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] text-black font-semibold text-sm sm:text-base rounded-lg hover:bg-yellow-500 min-w-[80px] focus:outline-none focus:ring-2 focus:ring-[#f6ff7a]"
+          >
+            Edit
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowDeleteConfirm({ id: job._id, type: "job" })}
+            className="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-600 text-white font-semibold text-sm sm:text-base rounded-lg hover:bg-red-500 min-w-[80px] focus:outline-none focus:ring-2 focus:ring-[#f6ff7a]"
+          >
+            Delete
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setViewingApplicationsForJob(job._id)}
+            className="px-3 py-1.5 sm:px-4 sm:py-2 bg-transparent text-white border border-gray-600 font-semibold text-sm sm:text-base rounded-lg hover:bg-gray-600 hover:border-gray-600 min-w-[80px] focus:outline-none focus:ring-2 focus:ring-[#f6ff7a]"
+          >
+            View Applications
+          </motion.button>
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
+
             )}
-            {viewingApplicationsForJob && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center pt-10 justify-center z-[50]">
-                <div
-                  ref={scrollRef}
-                  className="bg-[#3d3d3f] p-6 rounded-lg w-[90%] max-w-4xl custom-scroll-content"
-                >
-                  <h2 className="text-xl font-semibold text-[#f6ff7a] mb-4">
-                    Applications for {jobs.find((job) => job._id === viewingApplicationsForJob)?.title}
-                  </h2>
-                  <button
-                    onClick={closeModal}
-                    className="absolute top-4 right-4 sm:top-5 pt-[5em] sm:right-5 md:top-6 md:right-6 lg:top-10 lg:right-90 text-white text-base font-semibold py-2 px-4 rounded-lg hover:text-gray-400 z-50"
+  
+
+
+
+  {viewingApplicationsForJob && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center pt-10 justify-center z-[50]">
+    <div
+      ref={scrollRef}
+      className="bg-[#3d3d3f] p-6 rounded-lg w-[90%] max-w-4xl custom-scroll-content"
+    >
+      <h2 className="text-xl font-semibold text-[#f6ff7a] mb-4">
+        Applications for {jobs.find((job) => job._id === viewingApplicationsForJob)?.title}
+      </h2>
+      <button
+        onClick={closeModal}
+        className="absolute top-4 right-4 sm:top-5 pt-[5em] sm:right-5 md:top-6 md:right-6 lg:top-10 lg:right-90 text-white text-base font-semibold py-2 px-4 rounded-lg hover:text-gray-400 z-50"
+      >
+        Close
+      </button>
+      {(() => {
+        const filteredApplications = applications.filter(
+          (app) => app.jobId === viewingApplicationsForJob
+        );
+        console.log("viewingApplicationsForJob:", viewingApplicationsForJob);
+        console.log("Filtered applications:", filteredApplications);
+        console.log("All applications:", applications);
+        return filteredApplications.length === 0 ? (
+          <p className="text-gray-400">No applications found for this job.</p>
+        ) : (
+          <div className="space-y-4">
+            {filteredApplications.map((application) => (
+              <div
+                key={application._id}
+                className="application-item bg-[#2d2d2f] p-4 rounded-lg border border-gray-600 hover:bg-[#353537] transition-all duration-200"
+              >
+                <p className="text-gray-200">
+                  <strong>Name:</strong> {application.firstName} {application.lastName}
+                </p>
+                <p className="text-gray-400">
+                  <strong>Email:</strong> {application.email}
+                </p>
+                <p className="text-gray-400">
+                  <strong>Phone:</strong> {application.phone}
+                </p>
+                <p className="text-gray-400">
+                  <strong>Country:</strong> {application.country}
+                </p>
+                {application.linkedIn && (
+                  <p className="text-gray-400">
+                    <strong>LinkedIn:</strong>{" "}
+                    <a
+                      href={application.linkedIn}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#f6ff7a] hover:underline"
+                    >
+                      Profile
+                    </a>
+                  </p>
+                )}
+                {application.website && (
+                  <p className="text-gray-400">
+                    <strong>Website:</strong>{" "}
+                    <a
+                      href={application.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#f6ff7a] hover:underline"
+                    >
+                      Link
+                    </a>
+                  </p>
+                )}
+                <p className="text-gray-400">
+                  <strong>Submitted:</strong>{" "}
+                  {new Date(application.submittedAt).toLocaleDateString()}
+                </p>
+                <div className="flex gap-2 mt-2">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleViewResume(application.resume)}
+                    className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
                   >
-                    Close
-                  </button>
-                  {applications.filter((app) => app.jobId === viewingApplicationsForJob).length === 0 ? (
-                    <p className="text-gray-400">No applications found for this job.</p>
-                  ) : (
-                    <div className="space-y-4">
-                      {applications
-                        .filter((app) => app.jobId === viewingApplicationsForJob)
-                        .map((application) => (
-                          <div
-                            key={application._id}
-                            className="application-item bg-[#2d2d2f] p-4 rounded-lg border border-gray-600 hover:bg-[#353537] transition-all duration-200"
-                          >
-                            <p className="text-gray-200">
-                              <strong>Name:</strong> {application.firstName} {application.lastName}
-                            </p>
-                            <p className="text-gray-400">
-                              <strong>Email:</strong> {application.email}
-                            </p>
-                            <p className="text-gray-400">
-                              <strong>Phone:</strong> {application.phone}
-                            </p>
-                            <p className="text-gray-400">
-                              <strong>Country:</strong> {application.country}
-                            </p>
-                            {application.linkedIn && (
-                              <p className="text-gray-400">
-                                <strong>LinkedIn:</strong>{" "}
-                                <a
-                                  href={application.linkedIn}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-[#f6ff7a] hover:underline"
-                                >
-                                  Profile
-                                </a>
-                              </p>
-                            )}
-                            {application.website && (
-                              <p className="text-gray-400">
-                                <strong>Website:</strong>{" "}
-                                <a
-                                  href={application.website}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-[#f6ff7a] hover:underline"
-                                >
-                                  Link
-                                </a>
-                              </p>
-                            )}
-                            <p className="text-gray-400">
-                              <strong>Submitted:</strong>{" "}
-                              {new Date(application.submittedAt).toLocaleDateString()}
-                            </p>
-                            <div className="flex gap-2 mt-2">
-                              <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() => handleViewResume(application.resume)}
-                                className="px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
-                              >
-                                View Resume
-                              </motion.button>
-                              <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() =>
-                                  setShowDeleteConfirm({ id: application._id, type: "application" })
-                                }
-                                className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
-                              >
-                                Delete
-                              </motion.button>
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-                  )}
+                    View Resume
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() =>
+                      setShowDeleteConfirm({ id: application._id, type: "application" })
+                    }
+                    className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500"
+                  >
+                    Delete
+                  </motion.button>
                 </div>
               </div>
-            )}
-            {viewResumeUrl && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
-                <div className="bg-[#3d3d3f] p-6 rounded-lg w-[90%] max-w-4xl relative">
-                  <button
-                    onClick={closeModal}
-                    className="absolute top-4 right-4 text-gray-200 hover:text-gray-400"
-                  >
-                    Close
-                  </button>
-                  {errorMessage ? (
-                    <p className="text-red-400">{errorMessage}</p>
-                  ) : (
-                    <iframe
-                      src={viewResumeUrl}
-                      title="Resume"
-                      className="w-full h-[80vh] rounded-lg"
-                    />
-                  )}
-                </div>
-              </div>
-            )}
+            ))}
+          </div>
+        );
+      })()}
+    </div>
+  </div>
+)}
+
+
+{viewResumeUrl && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
+    <div className="bg-[#3d3d3f] p-6 rounded-lg w-[95%] max-w-5xl relative overflow-auto max-h-[90vh]">
+      <button
+        onClick={closeModal}
+        className="absolute top-4 right-4 text-gray-200 hover:text-gray-400 z-10"
+      >
+        Close
+      </button>
+      {errorMessage ? (
+        <div className="text-red-400">
+          <p>{errorMessage}</p>
+          <a
+            href={viewResumeUrl || "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#f6ff7a] underline"
+          >
+            Open PDF in new tab
+          </a>
+        </div>
+      ) : (
+        <iframe
+          src={viewResumeUrl}
+          title="Resume"
+          className="w-full min-h-[80vh] rounded-lg"
+          allowFullScreen
+        />
+      )}
+    </div>
+  </div>
+)}
+
+
           </div>
         )}
       </div>

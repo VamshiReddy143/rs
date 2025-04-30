@@ -36,3 +36,24 @@ export interface TemplateField {
     required: boolean;
     options?: string[];
   }
+
+
+// types/index.ts
+export interface ContentBlock {
+  type: string;
+  content: string;
+  order: number;
+}
+
+export interface ICustomContent {
+  _id: string;
+  type: {
+    type: string,
+    enum: ['AI', 'Data Science', 'Cloud', 'React', 'React Native', 'Node.js', 'Ruby on Rails'],
+    required: true,
+  },
+  title: string;
+  content: ContentBlock[];
+  thumbnailText: string;
+  thumbnailImage: string;
+}

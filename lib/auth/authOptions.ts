@@ -1,10 +1,10 @@
-import { AuthOptions, DefaultSession } from "next-auth";
+import { AuthOptions, DefaultSession, Profile } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import connectToDatabase from "@/lib/connectDb";
 import User from "@/models/User";
 import Subscription from "@/models/Subscription";
 
-// Extend NextAuth session to include id
+// Extend NextAuth types
 declare module "next-auth" {
   interface Session {
     user: {
@@ -13,6 +13,14 @@ declare module "next-auth" {
       email?: string | null;
       image?: string | null;
     } & DefaultSession["user"];
+  }
+
+  // Define Google-specific profile
+  interface Profile {
+    sub?: string; // Google user ID
+    name?: string;
+    email?: string;
+    picture?: string;
   }
 }
 
@@ -23,17 +31,15 @@ export const authOptions: AuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
-          scope: "profile email https://www.googleapis.com/auth/userinfo.profile",
+          scope: "profile email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.readonly",
         },
       },
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }: { user: any; account: any; profile?: any }) {
+    async signIn({ user, account, profile }) {
       try {
         await connectToDatabase();
-
-        // Log OAuth data for debugging
         console.log("Google OAuth data:", { user, profile });
 
         if (!user.email) {
@@ -55,7 +61,6 @@ export const authOptions: AuthOptions = {
           });
           console.log(`Created new user: ${user.email}`);
         } else {
-          // Update name and image if missing or outdated
           await User.updateOne(
             { email: user.email },
             {
@@ -69,7 +74,6 @@ export const authOptions: AuthOptions = {
           console.log(`Updated user: ${user.email}`);
         }
 
-        // Ensure Subscription record exists
         await Subscription.findOneAndUpdate(
           { email: user.email },
           { email: user.email, createdAt: new Date() },
@@ -82,12 +86,11 @@ export const authOptions: AuthOptions = {
         return false;
       }
     },
-    async session({ session, token }: { session: any; token: any }) {
+    async session({ session, token }) {
       if (session.user) {
         session.user.id = token.sub as string;
         session.user.image = token.picture || session.user.image || "/default-avatar.png";
         session.user.name = session.user.name || "Anonymous";
-        console.log("Session user:", session.user);
       }
       return session;
     },

@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import Subscription from "@/models/Subscription";
-import  connectToDatabase  from "@/lib/connectDb";
+import connectToDatabase from "@/lib/connectDb";
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, context: any) {
   try {
     await connectToDatabase();
 
-    const { id } = params;
+    const { id } = context.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid subscriber ID" }, { status: 400 });

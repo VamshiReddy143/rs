@@ -1,10 +1,9 @@
 "use client";
 
 import Image from 'next/image';
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 const Projects = () => {
-  // Sample project data
   const projects = [
     {
       id: 1,
@@ -44,21 +43,71 @@ const Projects = () => {
     },
   ];
 
-  // Reference to the scrollable container, typed as HTMLDivElement
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Scroll functions
+  // Function to handle infinite scroll
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+
+      // If scrolled to the end, jump to start
+      if (scrollLeft + clientWidth >= scrollWidth - 10) {
+        scrollRef.current.scrollTo({ left: 0, behavior: 'auto' });
+      }
+      // If scrolled to the start, jump to end
+      else if (scrollLeft <= 0) {
+        scrollRef.current.scrollTo({ left: scrollWidth, behavior: 'auto' });
+      }
+    }
+  };
+
+  // Scroll functions for buttons
   const handlePrev = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+      const { scrollLeft, clientWidth } = scrollRef.current;
+      const itemWidth = 320; // Approximate width of one project card (adjust based on your CSS)
+      
+      // If at the start, jump to end before scrolling
+      if (scrollLeft <= 0) {
+        scrollRef.current.scrollTo({ left: scrollRef.current.scrollWidth, behavior: 'auto' });
+        setTimeout(() => {
+          if (scrollRef.current) {
+            scrollRef.current.scrollBy({ left: -itemWidth, behavior: 'smooth' });
+          }
+        }, 0);
+      } else {
+        scrollRef.current.scrollBy({ left: -itemWidth, behavior: 'smooth' });
+      }
     }
   };
 
   const handleNext = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      const itemWidth = 320; // Approximate width of one project card (adjust based on your CSS)
+      
+      // If at the end, jump to start before scrolling
+      if (scrollLeft + clientWidth >= scrollWidth - 10) {
+        scrollRef.current.scrollTo({ left: 0, behavior: 'auto' });
+        setTimeout(() => {
+          if (scrollRef.current) {
+            scrollRef.current.scrollBy({ left: itemWidth, behavior: 'smooth' });
+          }
+        }, 0);
+      } else {
+        scrollRef.current.scrollBy({ left: itemWidth, behavior: 'smooth' });
+      }
     }
   };
+
+  // Add scroll event listener
+  useEffect(() => {
+    const scrollElement = scrollRef.current;
+    if (scrollElement) {
+      scrollElement.addEventListener('scroll', handleScroll);
+      return () => scrollElement.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
 
   return (
     <>
@@ -78,7 +127,7 @@ const Projects = () => {
             border: 6px solid #ffca28;
             opacity: 0;
             transition: opacity 0.2s ease-in-out;
-            border-radius: 0.5rem; /* Match rounded-lg */
+            border-radius: 0.5rem;
             pointer-events: none;
           }
           .image-hover:hover::after {
@@ -86,28 +135,25 @@ const Projects = () => {
           }
           .image-hover:hover {
             transform: scale(1.05);
-            opacity: 0.95; /* Slight fade for emphasis */
+            opacity: 0.95;
           }
           .hide-scrollbar {
-            -ms-overflow-style: none; /* IE and Edge */
-            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
           }
           .hide-scrollbar::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
+            display: none;
           }
         `}
       </style>
       <div style={{ fontFamily: 'Poppins, sans-serif' }} className="bg-white min-h-screen text-black pt-[10em] pb-[10em]">
-        {/* Header Section */}
         <div className="flex items-end justify-between px-3 lg:px-[4em] lg:max-w-[90em] mx-auto">
           <div>
             <h2 className="md:text-[32px] text-[1.5em] lg:leading-[38px]">More</h2>
             <h1 className="md:text-[64px] text-[2.5em] font-semibold lg:leading-[77px]">Projects</h1>
             <div className="h-[2px] w-[60px] bg-black rounded-full mt-2" />
           </div>
-
           <div className="flex items-center gap-5 lg:pr-[20em]">
-            {/* Previous Arrow */}
             <div
               className="rotate-180 bg-[#ffb90a] md:p-7 p-5 cursor-pointer"
               onClick={handlePrev}
@@ -121,8 +167,6 @@ const Projects = () => {
                 <path d="M13.1717 12.0007L8.22192 7.05093L9.63614 5.63672L16.0001 12.0007L9.63614 18.3646L8.22192 16.9504L13.1717 12.0007Z"></path>
               </svg>
             </div>
-
-            {/* Next Arrow */}
             <div
               className="bg-[#ffb90a] md:p-7 p-5 cursor-pointer"
               onClick={handleNext}
@@ -138,8 +182,6 @@ const Projects = () => {
             </div>
           </div>
         </div>
-
-        {/* Project Display Section */}
         <div className="mt-10 px-3 overflow-hidden max-w-full">
           <div
             ref={scrollRef}
@@ -158,9 +200,23 @@ const Projects = () => {
                   />
                 </div>
                 <h2 className="lg:text-[32px] text-[21px] leading-[25px] font-medium lg:leading-[38px] mt-4">{project.title}</h2>
-                <p className="lg:text-[20px] text-[16px] leading-[24px] lg:leading-[30px] mt-4 font-medium text-[#6F6F6E]">{project.description}</p>
+                <p className="lg:text-[20px] text-[16px] leading-[24px] lg:leading-[30　　　　　px] mt-4 font-medium text-[#6F6F6E]">{project.description}</p>
               </div>
             ))}
+            {/* Duplicate the first project for smooth looping */}
+            <div className="min-w-[20em] lg:min-w-[25em] w-[20em] lg:w-[25em] flex-shrink-0">
+              <div className="relative overflow-hidden rounded-lg">
+                <Image
+                  src={projects[0].image}
+                  alt={projects[0].title}
+                  width={900}
+                  height={900}
+                  className="h-[30em] w-full object-cover rounded-lg image-hover hover:shadow-lg will-change-transform"
+                />
+              </div>
+              <h2 className="lg:text-[32px] text-[21px] leading-[25px] font-medium lg:leading-[38px] mt-4">{projects[0].title}</h2>
+              <p className="lg:text-[20px] text-[16px] leading-[24px] lg:leading-[30px] mt-4 font-medium text-[#6F6F6E]">{projects[0].description}</p>
+            </div>
           </div>
         </div>
       </div>

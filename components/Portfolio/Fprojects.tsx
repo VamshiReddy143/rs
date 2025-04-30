@@ -1,85 +1,112 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import React from 'react'
+'use client';
 
-const Fprojects = () => {
-  return (
-    <div className='flex flex-col items-start pt-[7em] lg:pt-[0em] justify-center pb-10'>
-      <div className='flex flex-col gap-1 leading-snug'>
-        <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[32px] text-[21px] font-medium'>Featured</h1>
-        <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[64px] text-[42px] font-medium'>Projects</h1>
-        <div className='bg-white w-[70px] h-[4px] mt-5' />
-      </div>
+import Image from 'next/image';
+import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
 
-      <div className='mt-10'>
-        <div className='grid lg:grid-cols-2 grid-cols-1 gap-10'>
-          {/* Project 1 */}
-         <Link href={"/Portfolio/Featuredcases/masterclass"}>
-         <div className='group'>
-            <div className='relative  w-full lg:w-full md:w-full lg:h-[40em] h-[30em]  object-cover  overflow-hidden bg-transparent group-hover:outline group-hover:outline-5 group-hover:outline-[#FDD017]'>
-              <Image
-                src={"/ms.jpg"}
-                fill
-                alt='team'
-                className='object-cover transition-all duration-300 group-hover:scale-110'
-              />
-            </div>
-            <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[32px] font-medium mt-4'>MasterClass</h1>
-            <p style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[20px] text-[16px] leading-[26px]'>A dynamic partnership shaping the future of online education</p>
-          </div>
-         </Link>
-
-          {/* Project 2 */}
-          <Link href={"/Portfolio/Featuredcases/emeritus"}>
-          <div className='group pt-10'>
-            <div className='relative  w-full lg:w-full md:w-full h-[38em] object-cover  overflow-hidden bg-transparent group-hover:outline group-hover:outline-5 group-hover:outline-[#FDD017]'>
-              <Image
-                src={"/emirutus.jpg"}
-                fill
-                alt='team'
-                className='object-cover transition-all duration-300 group-hover:scale-110'
-              />
-            </div>
-            <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[32px] font-medium mt-4'>Emeritus</h1>
-            <p style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[20px] text-[16px] leading-[26px]'>Delving into the progressive transformation that boosted user experience and conversions.</p>
-          </div>
-          </Link>
-
-          {/* Project 3 */}
-          <Link href={"/Portfolio/Featuredcases/livestock"}>
-          <div className='group'>
-            <div className='relative  w-full lg:w-full md:w-full h-[37em]  object-cover  overflow-hidden bg-transparent group-hover:outline group-hover:outline-5 group-hover:outline-[#FDD017]'>
-              <Image
-                src={"/cow.jpg"}
-                fill
-                alt='team'
-                className='object-cover transition-all duration-300 group-hover:scale-110'
-              />
-            </div>
-            <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className='text-[32px] font-medium mt-4'>Livestock Health</h1>
-            <p style={{ fontFamily: 'Poppins, sans-serif' }} className='lg:text-[20px] text-[16px] leading-[26px]'>A revolutionary step in animal health: AI-based illness detection</p>
-          </div>
-          </Link>
-
-          {/* Project 4 */}
-          <Link href={"/Portfolio/Featuredcases/madison"}>
-          <div className='group pt-10'>
-            <div className='relative  w-full lg:w-full md:w-full h-[38em] object-cover  overflow-hidden bg-transparent group-hover:outline group-hover:outline-5 group-hover:outline-[#FDD017]'>
-              <Image
-                src={"/madison.jpg"}
-                fill
-                alt='team'
-                className='object-cover transition-all duration-300 group-hover:scale-110'
-              />
-            </div>
-            <h1 className='text-[2em] font-bold mt-4'>Madison Reed</h1>
-            <p className='lg:text-[20px] text-[16px] leading-[26px]'>Elevating an omnichannel customer experience</p>
-          </div>
-          </Link>
-        </div>
-      </div>
-    </div>
-  )
+interface UnifiedProject {
+  _id: string;
+  title: string;
+  thumbnailText: string;
+  image?: string | null;
+  model: 'Project' | 'Template3Project' | 'CustomContent';
+  isFeatured: boolean;
 }
 
-export default Fprojects
+const Fprojects = () => {
+  const [projects, setProjects] = useState<UnifiedProject[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeaturedProjects = async () => {
+      try {
+        const res = await fetch('/api/projects/feature');
+        if (!res.ok) {
+          console.error(`Fetch failed with status: ${res.status} ${res.statusText}`);
+          throw new Error('Failed to fetch featured projects');
+        }
+        const data = await res.json();
+        console.log('Fetched projects:', data);
+        setProjects(data);
+      } catch (error) {
+        console.error('Error fetching featured projects:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFeaturedProjects();
+  }, []);
+
+  return (
+    <div className="flex flex-col items-start pt-[7em] lg:pt-[0em] justify-center pb-10">
+      <div className="flex flex-col gap-1 leading-snug">
+        <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[32px] text-[21px] font-medium">
+          Featured
+        </h1>
+        <h1 style={{ fontFamily: 'Poppins, sans-serif' }} className="lg:text-[64px] text-[42px] font-medium">
+          Projects
+        </h1>
+        <div className="bg-white w-[70px] h-[4px] mt-5" />
+      </div>
+
+      <div className="mt-10">
+        {loading ? (
+          <p style={{ fontFamily: 'Poppins, sans-serif' }} className="text-gray-400">
+            Loading featured projects...
+          </p>
+        ) : projects.length === 0 ? (
+          <p style={{ fontFamily: 'Poppins, sans-serif' }} className="text-gray-400">
+            No featured projects found.
+          </p>
+        ) : (
+          <div className="grid lg:grid-cols-2 grid-cols-1 gap-10">
+            {projects.map((project, index) => (
+              <Link key={project._id} href={`/projects/${project._id}`}>
+                <div className={`group ${index === 1 || index === 3 ? 'pt-10' : ''}`}>
+            
+
+                <div
+  className={`relative w-full ${
+    index === 0
+      ? 'lg:h-[40em] h-[30em]'
+      : index === 2
+      ? ''
+      : ''
+  } overflow-hidden bg-transparent group-hover:outline group-hover:outline-5 group-hover:outline-[#FDD017]`}
+>
+<Image
+  src={project.image || '/default-project-image.png'}
+  alt={project.title}
+  width={700}
+  height={400}
+  className="object-cover lg:h-[40em] h-[30em] transition-all duration-300 group-hover:scale-110"
+
+  quality={100}
+  priority={index === 0 || index === 1}
+/>
+
+</div>
+
+                  <h1
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                    className={`text-[32px] ${index === 3 ? 'font-bold' : 'font-medium'} mt-4`}
+                  >
+                    {project.title}
+                  </h1>
+                  <p
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                    className="lg:text-[20px] text-[16px] leading-[26px]"
+                  >
+                    {project.thumbnailText}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Fprojects;
