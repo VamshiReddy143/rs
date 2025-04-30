@@ -6,7 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
 import { GrAddCircle, GrTrash } from "react-icons/gr";
-import { AiOutlineStar, AiFillStar } from "react-icons/ai";
+import { AiOutlineStar, AiFillStar, AiOutlineClose } from "react-icons/ai";
 import Link from "next/link";
 
 // Interface for a unified project structure
@@ -29,18 +29,16 @@ const ProjectsDashboard: React.FC = () => {
     model: string;
   } | null>(null);
 
-  // Fetch all projects from the unified endpoint
+  // Fetch all projects
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         setLoading(true);
         const res = await fetch("/api/projects/allprojects");
-        if (!res.ok) {
-          throw new Error("Failed to fetch projects");
-        }
+        if (!res.ok) throw new Error("Failed to fetch projects");
         const data = await res.json();
         setProjects(data);
-        setFilteredProjects(data); // Initialize filtered projects
+        setFilteredProjects(data);
       } catch (err) {
         toast.error("Failed to load projects", { theme: "dark" });
       } finally {
@@ -124,6 +122,9 @@ const ProjectsDashboard: React.FC = () => {
     }
   };
 
+  // Featured projects
+  const featuredProjects = filteredProjects.filter((project) => project.isFeatured);
+
   return (
     <div
       style={{ fontFamily: "Poppins, sans-serif" }}
@@ -138,10 +139,10 @@ const ProjectsDashboard: React.FC = () => {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
-            className="bg-[#3d3d3f] p-6 rounded-xl w-96 shadow-xl"
+            className="bg-[#242425] p-6 rounded-xl w-96 shadow-xl border border-[#3d3d3f]"
           >
             <h2 className="text-xl font-semibold text-[#f6ff7a] mb-4">Confirm Deletion</h2>
-            <p className="text-gray-200 mb-6">
+            <p className="text-gray-200 mb-6 text-sm">
               Are you sure you want to delete this {showDeleteConfirm.model}? This action cannot be undone.
             </p>
             <div className="flex gap-4">
@@ -158,7 +159,7 @@ const ProjectsDashboard: React.FC = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowDeleteConfirm(null)}
-                className="flex-1 py-2 bg-[#242425] text-white font-bold rounded-lg hover:bg-[#3d3d3f]"
+                className="flex-1 py-2 bg-[#3d3d3f] text-white font-bold rounded-lg hover:bg-[#4a4a4c]"
               >
                 Cancel
               </motion.button>
@@ -168,37 +169,114 @@ const ProjectsDashboard: React.FC = () => {
       )}
 
       <div className="max-w-4xl mx-auto bg-[#191a1b] rounded-xl p-8">
+        {/* Header */}
         <div className="flex justify-between items-center gap-4 mb-7">
-          <h2 className="text-2xl font-bold text-[#f6ff7a] ">All Projects</h2>
-          <input
-            type="text"
-            placeholder="Search projects..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 p-3 bg-[#242425] text-white rounded-lg border border-[#3d3d3f] focus:outline-none focus:border-b-2 focus:border-b-[#f6ff7a] focus:border-t-transparent focus:border-l-transparent focus:border-r-transparent placeholder-gray-400"
-            style={{ fontFamily: "Poppins, sans-serif" }}
-          />
-          <Link href={"/SelectTemplate"}>
+          <h2 className="text-2xl font-bold text-[#f6ff7a]">All Projects</h2>
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder="Search projects..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full p-3 bg-[#242425] text-white rounded-lg border border-[#3d3d3f] focus:outline-none focus:border-b-2 focus:border-b-[#f6ff7a] focus:border-t-transparent focus:border-l-transparent focus:border-r-transparent placeholder-gray-400"
+              style={{ fontFamily: "Poppins, sans-serif" }}
+              aria-label="Search projects"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#f6ff7a]"
+                title="Clear search"
+                aria-label="Clear search"
+              >
+                <AiOutlineClose size={16} />
+              </button>
+            )}
+          </div>
+          <Link href="/SelectTemplate">
             <motion.div className="cursor-pointer" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
               <GrAddCircle size={30} color="#f6ff7a" />
             </motion.div>
           </Link>
         </div>
 
+        {/* Featured Projects Section */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold text-[#f6ff7a] mb-4">Featured Projects</h3>
+          {featuredProjects.length === 0 ? (
+            <div className="bg-[#242425] p-6 rounded-xl text-gray-400 text-sm text-center shadow-lg border border-[#3d3d3f]">
+              No featured projects. Star a project to showcase it here.
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {featuredProjects.map((project) => (
+                <div
+                  key={`${project.model}-${project._id}`}
+                  className="bg-[#242425] p-4 rounded-xl shadow-lg relative"
+                >
+                  <Link href={`/projects/${project._id}`} aria-label={`View ${project.title}`}>
+                    <div className="flex flex-col gap-4">
+                      <div className="relative w-full h-40">
+                        <Image
+                          src={project.image || "/default-project-image.png"}
+                          alt={project.title}
+                          fill
+                          className="rounded-lg object-cover"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-[#f6ff7a]">{project.title}</h3>
+                        <p className="text-gray-400 text-sm line-clamp-2">{project.thumbnailText}</p>
+                        <p className="text-gray-400 text-xs mt-1">Model: {project.model}</p>
+                      </div>
+                    </div>
+                  </Link>
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleFeatured(project._id, project.model, project.isFeatured);
+                    }}
+                    className={`absolute top-2 right-2 p-2 bg-[#242425] rounded-lg text-[#AAB418]`}
+                    aria-label={`Remove ${project.title} from featured`}
+                  >
+                    <AiFillStar size={24} />
+                  </motion.button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* All Projects Section */}
         {loading ? (
-          <p className="text-gray-400">Loading projects...</p>
-        ) : filteredProjects.length === 0 ? (
-          <p className="text-gray-400">No projects found.</p>
-        ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-[#242425] p-4 rounded-xl shadow-lg animate-pulse">
+                <div className="relative w-full h-40 bg-gray-700 rounded-lg mb-4"></div>
+                <div className="h-5 bg-gray-700 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-gray-700 rounded w-1/2"></div>
+              </div>
+            ))}
+          </div>
+        ) : filteredProjects.length === 0 ? (
+          <div className="bg-[#242425] p-6 rounded-xl text-gray-400 text-sm text-center shadow-lg border border-[#3d3d3f]">
+            No projects found.
+          </div>
+        ) : (
+          
+         <div className="mb-8">
+             <h3 className="text-lg font-semibold text-[#f6ff7a] mb-4"> All Projects</h3>
+           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredProjects.map((project) => (
               <div
                 key={`${project.model}-${project._id}`}
                 className="bg-[#242425] p-4 rounded-xl shadow-lg relative"
               >
-                <Link href={`/projects/${project._id}`}>
+                <Link href={`/projects/${project._id}`} aria-label={`View ${project.title}`}>
                   <div className="flex flex-col gap-4">
-                    {/* Project Image */}
                     <div className="relative w-full h-40">
                       <Image
                         src={project.image || "/default-project-image.png"}
@@ -208,7 +286,6 @@ const ProjectsDashboard: React.FC = () => {
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     </div>
-                    {/* Project Details */}
                     <div>
                       <h3 className="text-lg font-semibold text-[#f6ff7a]">{project.title}</h3>
                       <p className="text-gray-400 text-sm line-clamp-2">{project.thumbnailText}</p>
@@ -216,7 +293,6 @@ const ProjectsDashboard: React.FC = () => {
                     </div>
                   </div>
                 </Link>
-                {/* Star Button */}
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
@@ -224,14 +300,13 @@ const ProjectsDashboard: React.FC = () => {
                     e.stopPropagation();
                     handleToggleFeatured(project._id, project.model, project.isFeatured);
                   }}
-                  className={`absolute top-2 right-2 p-2 bg-[#242425] p-3 rounded-lg ${
+                  className={`absolute top-2 right-2 p-2 bg-[#242425] rounded-lg ${
                     project.isFeatured ? "text-[#AAB418]" : "text-[#f6ff7a]"
                   }`}
                   aria-label={project.isFeatured ? `Remove ${project.title} from featured` : `Add ${project.title} to featured`}
                 >
                   {project.isFeatured ? <AiFillStar size={24} /> : <AiOutlineStar size={24} />}
                 </motion.button>
-                {/* Delete Button */}
                 <div className="flex justify-end mt-2">
                   <motion.button
                     whileHover={{ scale: 1.1 }}
@@ -249,6 +324,7 @@ const ProjectsDashboard: React.FC = () => {
               </div>
             ))}
           </div>
+         </div>
         )}
       </div>
     </div>

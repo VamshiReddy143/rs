@@ -199,15 +199,26 @@ const JobApplication: React.FC = () => {
       toast.error("Dropbox SDK is not loaded. Please try again.");
       return;
     }
+  
     setUploadLoading(true);
+  
     window.Dropbox.choose({
       success: async (files: any[]) => {
+        if (!files || files.length === 0) {
+          toast.error("No file selected from Dropbox.");
+          setUploadLoading(false);
+          return;
+        }
+  
         try {
           const fileUrl = files[0].link;
           const response = await fetch(fileUrl);
+  
           if (!response.ok) throw new Error("Failed to fetch Dropbox file");
+  
           const blob = await response.blob();
           const file = new File([blob], files[0].name, { type: blob.type });
+  
           setResumeFile(file);
           setShowManualEntry(false);
           toast.success("Dropbox file selected successfully!");
@@ -227,6 +238,7 @@ const JobApplication: React.FC = () => {
       extensions: [".pdf", ".doc", ".docx", ".txt"],
     });
   };
+  
 
   const handleGoogleDriveUpload = async () => {
     if (!isGoogleApiLoaded) {

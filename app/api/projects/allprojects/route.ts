@@ -34,9 +34,9 @@ export async function GET() {
     await connectDB();
 
     // Fetch all projects with explicit typing
-    const projects = await Project.find().lean() as ProjectDocument[];
-    const template3Projects = await Template3Project.find().lean() as Template3ProjectDocument[];
-    const customContents = await CustomContent.find().lean() as CustomContentDocument[];
+    const projects = await Project.find().sort({ _id: -1 }).lean() as ProjectDocument[];
+    const template3Projects = await Template3Project.find().sort({ _id: -1 }).lean() as Template3ProjectDocument[];
+    const customContents = await CustomContent.find().sort({ _id: -1 }).lean() as CustomContentDocument[];
 
     // Normalize data to match ProjectsDashboard's UnifiedProject interface
     const normalizedProjects = [

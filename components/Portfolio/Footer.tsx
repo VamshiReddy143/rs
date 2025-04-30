@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import React from 'react'
 
 const Footer = () => {
@@ -11,9 +12,11 @@ const Footer = () => {
         style={{ fontFamily: 'Poppins, sans-serif' }}
         className='lg:text-[72px] text-[3em] font-normal border-b-7 border-black w-fit leading-none overflow-hidden relative  group  '
       >
-        <span className='relative z-10 group-hover:text-[#FDD017] transition-colors duration-300'>
+       <Link href={"/Contact"}>
+       <span className='relative z-10 group-hover:text-[#FDD017] transition-colors duration-300'>
           Let's Talk!
         </span>
+       </Link>
         <span
           className='absolute inset-[-1] bg-black    transform -translate-x-full group-hover:translate-x-0  group-hover:talk-slider-hover transition-all duration-400 z-0'
         ></span>

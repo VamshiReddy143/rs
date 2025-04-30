@@ -34,7 +34,7 @@ const Projects = () => {
           new Map(data.map((p) => [p._id, p])).values()
         );
         // Select up to 5 projects (or all if fewer)
-        const selectedProjects = uniqueProjects.slice(0, 5);
+        const selectedProjects = uniqueProjects.slice(0, 7);
         setProjects(selectedProjects);
         console.log('Selected Projects:', selectedProjects); // Debug log
       } catch (error) {
@@ -56,23 +56,34 @@ const Projects = () => {
   }, [projects]);
 
   // Scroll functions for buttons
-  const handlePrev = () => {
-    if (scrollRef.current) {
-      const { scrollLeft } = scrollRef.current;
-      if (scrollLeft > 0) {
-        scrollRef.current.scrollBy({ left: -itemWidth, behavior: 'smooth' });
-      }
+// Scroll functions for buttons
+const handlePrev = () => {
+  if (scrollRef.current) {
+    const { scrollLeft } = scrollRef.current;
+    if (scrollLeft <= 0) {
+      // If at the start, scroll to the end
+      scrollRef.current.scrollTo({
+        left: scrollRef.current.scrollWidth,
+        behavior: 'smooth',
+      });
+    } else {
+      scrollRef.current.scrollBy({ left: -itemWidth, behavior: 'smooth' });
     }
-  };
+  }
+};
 
-  const handleNext = () => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      if (scrollLeft < scrollWidth - clientWidth) {
-        scrollRef.current.scrollBy({ left: itemWidth, behavior: 'smooth' });
-      }
+const handleNext = () => {
+  if (scrollRef.current) {
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    // Check if at or near the end (accounting for small floating-point differences)
+    if (scrollLeft + clientWidth >= scrollWidth - 1) {
+      // If at the end, scroll back to the start
+      scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      scrollRef.current.scrollBy({ left: itemWidth, behavior: 'smooth' });
     }
-  };
+  }
+};
 
   // Log rendered projects
   useEffect(() => {

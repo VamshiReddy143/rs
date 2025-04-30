@@ -10,8 +10,6 @@ import placeholder from '@/public/ph.jpg';
 import Projects from '@/components/Portfolio/Featured_cases/emeritus/Projects';
 import Footer from '@/components/Portfolio/Footer';
 
-
-
 gsap.registerPlugin(ScrollTrigger);
 
 interface IProject {
@@ -72,12 +70,12 @@ export default function ProjectPage() {
     if (id) fetchProject();
   }, [id]);
 
-  // Initialize Lenis and sync with ScrollTrigger (for project type)
+  // Initialize Lenis and sync with ScrollTrigger (for project and custom types)
   useEffect(() => {
-    if (project?.type !== 'project') return;
+    if (project?.type !== 'project' && project?.type !== 'custom') return;
 
     const lenisOptions: CustomLenisOptions = {
-      duration: 0,
+      duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smooth: true,
     };
@@ -144,6 +142,101 @@ export default function ProjectPage() {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, [project]);
+
+// GSAP animations for custom type
+useLayoutEffect(() => {
+  if (project?.type !== 'custom') return;
+
+  ScrollTrigger.refresh();
+
+  const ctx = gsap.context(() => {
+    // Hero section animations
+    gsap.fromTo(
+      '.custom-hero-title',
+      { y: 100, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 1.5,
+        ease: 'power4.out',
+        scrollTrigger: {
+          trigger: '.custom-hero',
+          start: 'top 80%',
+          toggleActions: 'play none none reverse',
+        },
+      }
+    );
+
+    gsap.fromTo(
+      '.custom-hero-text',
+      { y: 50, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 1.5,
+        delay: 0.3,
+        ease: 'power4.out',
+        scrollTrigger: {
+          trigger: '.custom-hero',
+          start: 'top 80%',
+          toggleActions: 'play none none reverse',
+        },
+      }
+    );
+
+    gsap.fromTo(
+      '.custom-hero-image',
+      { scale: 1.2, opacity: 0 },
+      {
+        scale: 1,
+        opacity: 1,
+        duration: 2,
+        ease: 'power4.out',
+        scrollTrigger: {
+          trigger: '.custom-hero',
+          start: 'top 80%',
+          toggleActions: 'play none none reverse',
+        },
+      }
+    );
+
+    // Content block animations
+    gsap.utils.toArray<HTMLElement>('.custom-content-block').forEach((block, index) => {
+      gsap.fromTo(
+        block,
+        { y: 50, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: block,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse',
+          },
+        }
+      );
+
+      // Parallax effect for images and videos
+      if (block.querySelector('.custom-media')) {
+        gsap.to(block.querySelector('.custom-media'), {
+          y: () => window.innerHeight * 0.15,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: block,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
+      }
+    });
+  }, sectionRef);
+
+  return () => ctx.revert();
+}, [project]);
+
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center text-white">Loading...</div>;
@@ -277,8 +370,10 @@ export default function ProjectPage() {
         </div>
 
         {/* Project Motive Section */}
-        <div className="min-h-screen bg-[#212121] text-white">
-          <div className="lg:px-[10em] pb-[5em] lg:pt-[2em] pt-[5em] px-3 mx-auto flex flex-col gap-10">
+        <div>
+          
+        <div className="min-h-screen bg-[#212121] pb-[8em]  text-white">
+          <div className="lg:px-[10em] pb-[5までにem] lg:pt-[2em] pt-[5em] px-3 mx-auto flex flex-col gap-10">
             <div className="pt-[3em] pb-[1em] lg:text-[64px] text-[60px] font-medium">
               {project.projectMotive ? (
                 <>
@@ -293,15 +388,18 @@ export default function ProjectPage() {
               )}
             </div>
             {project.companyDetails && project.companyDetails.map((detail, idx) => (
-              <p key={idx} className="lg:text-[32px] text-[#D6D5D1] text-[2em] lg:leading-[48px] font-extralight lg:w-[70%]">
+              <p key={idx} className="lg:text-[32px] text-[#D6D5D1] text-[2em] lg:leading-[48px]  font-extralight lg:w-[70%]">
                 {detail}
               </p>
             ))}
           </div>
 
+        
+        </div>
+
           {/* Capabilities */}
           {project.capabilities && (
-            <div className="bg-gray-100 text-black">
+            <div className="bg-gray-100 py-[10em] text-black">
               <div className="lg:px-[10em] pb-[4em] pt-[4em] px-3 mx-auto lg:flex gap-10">
                 <h1 className="lg:text-[48px] text-[2em] font-medium lg:leading-[58px] lg:w-[46em]">
                   {project.capabilities.title}
@@ -339,8 +437,8 @@ export default function ProjectPage() {
             </div>
           </section>
         )}
-         <Projects/>
-         <Footer/>
+        <Projects />
+        <Footer />
       </div>
     );
   }
@@ -455,53 +553,117 @@ export default function ProjectPage() {
             </div>
           </div>
         )}
-        <Projects/>
-        <Footer/>
-    
+        <Projects />
+        <Footer />
       </div>
-
     );
   }
 
-  // Fallback for custom type
+  // Enhanced Custom Type
   return (
-    <div style={{ fontFamily: 'Poppins, sans-serif' }} className="min-h-screen bg-gray-200 text-black lg:pt-[16em] pt-[10em]">
-      <div className="px-3 lg:px-[4em] lg:max-w-[90em] mx-auto">
-        <h2 className="lg:text-[48px] text-[2em] font-medium">{project.title}</h2>
-        <p className="lg:text-[24px] text-[18px] mt-4">{project.thumbnailText}</p>
+    <div ref={sectionRef} style={{ fontFamily: 'Poppins, sans-serif' }} className="relative bg-[#0A0A0A] text-white">
+      <style>
+        {`
+          .custom-hero-image {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+          }
+          .custom-hero-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+          }
+          .custom-content-block {
+            transition: background 0.3s ease;
+          }
+          .custom-content-block:hover {
+            background: rgba(255, 255, 255, 0.05);
+          }
+          .custom-media {
+            will-change: transform;
+          }
+          .gradient-bg {
+            background: linear-gradient(135deg, #1B1B1B 0%, #2A2A2A 100%);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            animation: gradientShift 15s ease infinite;
+          }
+          @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
+        `}
+      </style>
+      <div className="gradient-bg" />
+      {/* Hero Section */}
+      <section className="custom-hero min-h-screen flex flex-col justify-center px-3 lg:px-[4em] lg:max-w-[90em] mx-auto pt-[10em] lg:pt-[16em]">
+        <h2 className="custom-hero-title lg:text-[80px] text-[2.5em] font-bold leading-tight">
+          {project.title}
+        </h2>
+        <p className="custom-hero-text lg:text-[28px] text-[18px] mt-6 max-w-[60%] leading-relaxed">
+          {project.thumbnailText}
+        </p>
         {project.thumbnailImage && (
-          <Image
-            src={project.thumbnailImage}
-            alt={project.thumbnailText}
-            width={900}
-            height={600}
-            className="object-cover w-full mt-6"
-          />
+          <div className="mt-10">
+            <Image
+              src={project.thumbnailImage}
+              alt={project.thumbnailText}
+              width={1200}
+              height={800}
+              className="custom-hero-image custom-media w-full object-cover rounded-xl"
+            />
+          </div>
         )}
+      </section>
+
+      {/* Content Sections */}
+      <section className="px-3 lg:px-[4em] lg:max-w-[90em] mx-auto pb-[10em]">
         {project.content?.map((item, idx) => (
-          <div key={idx} className="mt-4">
-            {item.type === 'text' && <p className="lg:text-[24px] text-[18px]">{item.value}</p>}
+          <div
+            key={idx}
+            className="custom-content-block my-10 p-6 rounded-xl"
+          >
+            {item.type === 'text' && (
+              <p className="lg:text-[24px] text-[18px] leading-relaxed max-w-[80%] mx-auto text-center">
+                {item.value}
+              </p>
+            )}
             {item.type === 'image' && (
-              <Image
-                src={item.value}
-                alt={item.description || 'Content image'}
-                width={900}
-                height={600}
-                className="object-cover w-full"
-              />
+              <div className="relative overflow-hidden rounded-xl">
+                <Image
+                  src={item.value}
+                  alt={item.description || 'Content image'}
+                  width={1200}
+                  height={800}
+                  className="custom-media w-full object-cover rounded-xl"
+                />
+              </div>
             )}
             {item.type === 'video' && (
-              <video controls className="w-full max-w-[900px]">
-                <source src={item.value} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+              <div className="relative overflow-hidden rounded-xl">
+                <video
+                  controls
+                  className="custom-media w-full max-w-[1200px] rounded-xl"
+                >
+                  <source src={item.value} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
             )}
-            {item.description && <p className="lg:text-[24px] text-[18px] mt-2">{item.description}</p>}
+            {item.description && (
+              <p className="lg:text-[20px] text-[16px] mt-4 text-gray-300 text-center">
+                {item.description}
+              </p>
+            )}
           </div>
         ))}
-      </div>
-      <Projects/>
-      <Footer/>
+      </section>
+
+      <Projects />
+      <Footer />
     </div>
   );
 }
