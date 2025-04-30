@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectMongoDB from '@/lib/connectDb';
-import Project from '@/models/project';
+import Project from '@/models/Project';
 
 export async function GET(req: NextRequest, context: any) {
   const { id } = context.params;

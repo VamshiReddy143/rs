@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import Project from '@/models/project';
+import Project from '@/models/Project';
 import Template3Project from '@/models/Template3Project';
 import CustomContent from '@/models/CustomContent';
 import connectDB from '@/lib/connectDb';

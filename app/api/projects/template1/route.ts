@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
-import Project from '@/models/project';
+import Project from '@/models/Project';
 import connectDB from '@/lib/connectDb';
 import { v2 as cloudinary } from 'cloudinary';
 
