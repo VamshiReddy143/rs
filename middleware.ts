@@ -12,7 +12,7 @@ export async function middleware(req: NextRequest) {
   console.log(`[Middleware] Normalized pathname: ${normalizedPathname}`);
 
   // Define protected routes
-  const protectedRoutes = ['/admin', '/select', '/templates'];
+  const protectedRoutes = ['/admin', '/select', '/templates',"/SelectTemplate"];
   const isProtectedRoute = protectedRoutes.some((route) => normalizedPathname.startsWith(route));
   console.log(`[Middleware] Protected route: ${isProtectedRoute}`);
 

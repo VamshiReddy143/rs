@@ -26,7 +26,7 @@ export default function SelectTemplate() {
     },
     {
       href: "/templates/template3/create",
-      label: "Template 3 (Predefined)",
+      label: "Template 2 (Predefined)",
       bgColor: "bg-gray-800",
       hoverBgColor: "hover:bg-gray-700",
     },
