@@ -117,7 +117,7 @@ const Cards: React.FC<CardsProps> = ({ searchTerm, selectedCategory }) => {
   // Render loading state with skeleton
   if (loading) {
     return (
-      <div className="mt-[5em] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="mt-[5em] min-h-screen grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {[...Array(cardsPerPage)].map((_, index) => (
           <div
             key={index}
@@ -174,7 +174,7 @@ const Cards: React.FC<CardsProps> = ({ searchTerm, selectedCategory }) => {
                 {/* Button at absolute bottom-right */}
                 <div className="pb-10">
                   <Link href={`/blogs/${card._id}`} passHref>
-                    <button className="text-[16px] hover:border-[#bcbcc0] hover:text-[#bcbcc0] font-bold border border-gray-400 px-4 py-2 rounded-lg absolute bottom-4 right-5 transition-colors">
+                    <button className="text-[16px] cursor-pointer hover:border-[#bcbcc0] hover:text-[#bcbcc0] font-bold border border-gray-400 px-4 py-2 rounded-lg absolute bottom-4 right-5 transition-colors">
                       Read ➔
                     </button>
                   </Link>
@@ -185,7 +185,7 @@ const Cards: React.FC<CardsProps> = ({ searchTerm, selectedCategory }) => {
         ) : (
           <div
             style={{ fontFamily: "Poppins, sans-serif" }}
-            className="col-span-full text-center text-gray-600 lg:text-[5em] text-[2em] font-bold"
+            className="col-span-full   flex items-center justify-center text-center text-gray-600 lg:text-[5em] text-[2em] font-bold"
           >
             No blog posts found.
           </div>

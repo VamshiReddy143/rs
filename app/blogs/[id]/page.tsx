@@ -1,4 +1,3 @@
-
 import { notFound } from "next/navigation";
 import Blog from "@/models/Blog";
 import connectToDatabase from "@/lib/connectDb";
@@ -25,11 +24,9 @@ interface BlogDocument {
   createdAt: string;
 }
 
-// @ts-ignore: Temporary workaround for Next.js type generation issue
 export default async function BlogPage({ params }: { params: any }) {
   const { id } = params;
 
-  // Validate the ID
   if (!id || !mongoose.Types.ObjectId.isValid(id)) {
     console.error("Invalid or missing ID:", id);
     notFound();
@@ -44,13 +41,14 @@ export default async function BlogPage({ params }: { params: any }) {
       notFound();
     }
 
+    console.log("Blog content:", blog.content);
+
     return (
       <div className="min-h-screen p-8 bg-[#191A1B] text-white">
-        <ScrollProgress className="top-[78px]" />
-        {/* Blog Header */}
+        <ScrollProgress className="md:top-[76px] lg:top-[80px]" />
         <div className="max-w-7xl mx-auto pt-[5em]">
           <div className="flex gap-4 lg:text-[16px] lg:leading-[32px] font-normal text-gray-400 mb-4">
-            <span className="">{blog.category}</span>
+            <span>{blog.category}</span>
             <span>-</span>
             <span>
               {new Date(blog.createdAt).toLocaleDateString("en-US", {
@@ -69,30 +67,27 @@ export default async function BlogPage({ params }: { params: any }) {
             <User />
             <span>{blog.author}</span>
           </div>
-          {/* Primary Image */}
           {blog.primaryImage && (
-            <div className="relative w-full h-[600px]  rounded-lg overflow-hidden  mb-8">
+            <div className="relative w-full h-[600px] rounded-lg overflow-hidden mb-8">
               <Image
                 src={blog.primaryImage}
                 alt={blog.title}
                 layout="fill"
                 objectFit="cover"
-                className="rounded-lg "
+                className="rounded-lg"
               />
             </div>
           )}
-
-          {/* Content Sections */}
           {blog.content?.map((item, index) => (
             <div key={index} className="mb-8 pt-[3em] lg:max-w-[50em] mx-auto">
               {item.type === "heading" && (
-                <h2 className="lg:text-[18px] text-[25px] leading-[27px]  font-medium lg:leading-[27px] font-semibold mb-4">
+                <h2 className="lg:text-[18px] text-[25px] leading-[27px] font-medium lg:leading-[27px] font-semibold mb-4">
                   {item.value}
                 </h2>
               )}
               {item.type === "paragraph" && (
                 <div
-                  className="text-[18px] leading-[27px] text-[18px] leading-[27px] font-normal prose prose-invert max-w-none"
+                  className="blog-content"
                   dangerouslySetInnerHTML={{ __html: item.value }}
                 />
               )}

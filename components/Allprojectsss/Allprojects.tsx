@@ -5,11 +5,21 @@ import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
-import { GrAddCircle, GrTrash } from "react-icons/gr";
+import { GrAddCircle, GrTrash, GrDrag } from "react-icons/gr";
 import { AiOutlineStar, AiFillStar, AiOutlineClose } from "react-icons/ai";
 import Link from "next/link";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { SortableContext, sortableKeyboardCoordinates, useSortable, arrayMove } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
-// Interface for a unified project structure
 interface UnifiedProject {
   _id: string;
   title: string;
@@ -17,19 +27,102 @@ interface UnifiedProject {
   image?: string | null;
   model: "Project" | "Template3Project" | "CustomContent";
   isFeatured: boolean;
+  order: number;
 }
+
+const SortableProject: React.FC<{
+  project: UnifiedProject;
+  index: number;
+  onDelete: (id: string, model: string) => void;
+  onToggleFeatured: (id: string, model: string, isFeatured: boolean) => void;
+  section: "featured" | "all";
+}> = ({ project, index, onDelete, onToggleFeatured, section }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: `${section}-${project.model}-${project._id}`,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.7 : 1,
+    zIndex: isDragging ? 100 : 0,
+    boxShadow: isDragging ? "0 8px 16px rgba(0, 0, 0, 0.3)" : "0 4px 6px rgba(0, 0, 0, 0.1)",
+    border: isDragging ? "2px solid #f6ff7a" : "1px solid #3d3d3f",
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="bg-[#242425] p-4 rounded-xl shadow-lg relative pb-[4em] touch-manipulation">
+      <Link href={`/projects/${project._id}`} aria-label={`View ${project.title}`}>
+        <div className="flex flex-col gap-4">
+          <div className="relative w-full h-32 sm:h-40">
+            <Image
+              src={project.image || "/default-project-image.png"}
+              alt={project.title}
+              fill
+              className="rounded-lg object-cover"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          </div>
+          <div>
+            <h3 className="text-base sm:text-lg font-semibold text-[#f6ff7a]">{project.title}</h3>
+            <p className="text-gray-400 text-xs sm:text-sm line-clamp-2">{project.thumbnailText}</p>
+            <p className="text-gray-400 text-xs mt-1">Model: {project.model}</p>
+          </div>
+        </div>
+      </Link>
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleFeatured(project._id, project.model, project.isFeatured);
+        }}
+        className={`absolute top-2 right-2 p-1 sm:p-2 bg-[#242425] rounded-lg ${
+          project.isFeatured ? "text-[#AAB418]" : "text-[#f6ff7a]"
+        }`}
+        aria-label={project.isFeatured ? `Remove ${project.title} from featured` : `Add ${project.title} to featured`}
+      >
+        {project.isFeatured ? <AiFillStar size={20} /> : <AiOutlineStar size={20} />}
+      </motion.button>
+      <div className="flex justify-between items-center absolute bottom-4 left-4 right-4">
+        <div
+          {...attributes}
+          {...listeners}
+          className="p-2 bg-[#3d3d3f] rounded-full cursor-grab active:cursor-grabbing touch-manipulation"
+          aria-label={`Drag to reorder ${project.title}`}
+        >
+          <GrDrag size={20} className="text-[#f6ff7a]" />
+        </div>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(project._id, project.model);
+          }}
+          className="p-1 sm:p-2 bg-red-600 text-white rounded-full hover:bg-red-500"
+          aria-label={`Delete ${project.title}`}
+        >
+          <GrTrash size={14} />
+        </motion.button>
+      </div>
+    </div>
+  );
+};
 
 const ProjectsDashboard: React.FC = () => {
   const [projects, setProjects] = useState<UnifiedProject[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<UnifiedProject[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<{
-    id: string;
-    model: string;
-  } | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<{ id: string; model: string } | null>(null);
 
-  // Fetch all projects
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 100, tolerance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -37,8 +130,9 @@ const ProjectsDashboard: React.FC = () => {
         const res = await fetch("/api/projects/allprojects");
         if (!res.ok) throw new Error("Failed to fetch projects");
         const data = await res.json();
-        setProjects(data);
-        setFilteredProjects(data);
+        const sortedData = data.sort((a: UnifiedProject, b: UnifiedProject) => a.order - b.order);
+        setProjects(sortedData);
+        setFilteredProjects(sortedData);
       } catch (err) {
         toast.error("Failed to load projects", { theme: "dark" });
       } finally {
@@ -48,17 +142,15 @@ const ProjectsDashboard: React.FC = () => {
     fetchProjects();
   }, []);
 
-  // Filter projects based on search query
   useEffect(() => {
     const filtered = projects.filter(
       (project) =>
         project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         project.thumbnailText.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    setFilteredProjects(filtered);
+    setFilteredProjects(filtered.sort((a, b) => a.order - b.order));
   }, [searchQuery, projects]);
 
-  // Handle project deletion
   const handleDeleteProject = async (id: string, model: string) => {
     setLoading(true);
     try {
@@ -92,7 +184,6 @@ const ProjectsDashboard: React.FC = () => {
     }
   };
 
-  // Handle toggling featured status
   const handleToggleFeatured = async (id: string, model: string, isFeatured: boolean) => {
     try {
       const response = await fetch("/api/projects/feature", {
@@ -104,12 +195,16 @@ const ProjectsDashboard: React.FC = () => {
 
       setProjects((prev) =>
         prev.map((project) =>
-          project._id === id ? { ...project, isFeatured: !isFeatured } : project
+          project._id === id
+            ? { ...project, isFeatured: !isFeatured, order: !isFeatured ? 0 : prev.filter((p) => !p.isFeatured).length }
+            : project
         )
       );
       setFilteredProjects((prev) =>
         prev.map((project) =>
-          project._id === id ? { ...project, isFeatured: !isFeatured } : project
+          project._id === id
+            ? { ...project, isFeatured: !isFeatured, order: !isFeatured ? 0 : prev.filter((p) => !p.isFeatured).length }
+            : project
         )
       );
       toast.success(
@@ -122,8 +217,56 @@ const ProjectsDashboard: React.FC = () => {
     }
   };
 
-  // Featured projects
+     const handleDragEnd = async (event: any, section: "featured" | "all") => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    const projectsInSection =
+      section === "featured"
+        ? filteredProjects.filter((p) => p.isFeatured)
+        : filteredProjects.filter((p) => !p.isFeatured);
+    const oldIndex = projectsInSection.findIndex((p) => `${section}-${p.model}-${p._id}` === active.id);
+    const newIndex = projectsInSection.findIndex((p) => `${section}-${p.model}-${p._id}` === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) {
+      console.warn("Invalid drag indices:", { oldIndex, newIndex });
+      return;
+    }
+
+    const reorderedProjects = arrayMove(projectsInSection, oldIndex, newIndex).map((project, index) => ({
+      ...project,
+      order: index,
+    }));
+
+    const updatedProjects = filteredProjects.map((p) => {
+      const updatedProject = reorderedProjects.find((rp) => rp._id === p._id);
+      return updatedProject || p;
+    });
+
+    setFilteredProjects(updatedProjects);
+    setProjects(updatedProjects);
+
+    try {
+      const response = await fetch("/api/projects/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ projects: updatedProjects }),
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to save project order: ${errorText}`);
+      }
+      toast.success("Project order updated!", { theme: "dark" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      console.error("Reorder error:", message);
+      toast.error(`Error: ${message}`, { theme: "dark" });
+    }
+  };
+
   const featuredProjects = filteredProjects.filter((project) => project.isFeatured);
+  const allProjects = filteredProjects.filter((project) => !project.isFeatured);
 
   return (
     <div
@@ -132,7 +275,6 @@ const ProjectsDashboard: React.FC = () => {
     >
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} closeOnClick theme="dark" />
 
-      {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000] px-4">
           <motion.div
@@ -169,9 +311,8 @@ const ProjectsDashboard: React.FC = () => {
       )}
 
       <div className="max-w-full sm:max-w-3xl lg:max-w-4xl mx-auto bg-[#191a1b] rounded-xl p-4 sm:p-6 lg:p-8">
-        {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-7">
-          <h2 className="text-xl sm:text-2xl font-bold text-[#f6ff7a]">All Projects</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-[#f6ff7a]">Projects</h2>
           <div className="relative flex-1 w-full sm:w-auto">
             <input
               type="text"
@@ -195,7 +336,7 @@ const ProjectsDashboard: React.FC = () => {
           </div>
           <Link href="/SelectTemplate">
             <motion.div className="cursor-pointer" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <GrAddCircle size={30}  color="#f6ff7a" />
+              <GrAddCircle size={30} color="#f6ff7a" />
             </motion.div>
           </Link>
         </div>
@@ -203,128 +344,77 @@ const ProjectsDashboard: React.FC = () => {
         {/* Featured Projects Section */}
         <div className="mb-6 sm:mb-8">
           <h3 className="text-base sm:text-lg font-semibold text-[#f6ff7a] mb-4">Featured Projects</h3>
-          {featuredProjects.length === 0 ? (
-            <div className="bg-[#242425] p-4 sm:p-6 rounded-xl text-gray-400 text-xs sm:text-sm text-center shadow-lg border border-[#3d3d3f]">
-              No featured projects. Star a project to showcase it here.
-            </div>
-          ) : (
-            <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {featuredProjects.map((project) => (
-                <div
-                  key={`${project.model}-${project._id}`}
-                  className="bg-[#242425] p-4 rounded-xl shadow-lg relative"
-                >
-                  <Link href={`/projects/${project._id}`} aria-label={`View ${project.title}`}>
-                    <div className="flex flex-col gap-4">
-                      <div className="relative w-full h-32 sm:h-40">
-                        <Image
-                          src={project.image || "/default-project-image.png"}
-                          alt={project.title}
-                          fill
-                          className="rounded-lg object-cover"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        />
-                      </div>
-                      <div>
-                        <h3 className="text-base sm:text-lg font-semibold text-[#f6ff7a]">{project.title}</h3>
-                        <p className="text-gray-400 text-xs sm:text-sm line-clamp-2">{project.thumbnailText}</p>
-                        <p className="text-gray-400 text-xs mt-1">Model: {project.model}</p>
-                      </div>
-                    </div>
-                  </Link>
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleToggleFeatured(project._id, project.model, project.isFeatured);
-                    }}
-                    className={`absolute top-2 right-2 p-1 sm:p-2 bg-[#242425] rounded-lg text-[#AAB418]`}
-                    aria-label={`Remove ${project.title} from featured`}
-                  >
-                    <AiFillStar size={20}  />
-                  </motion.button>
-                </div>
-              ))}
-            </div>
-          )}
+       
+          <DndContext
+            id="featured"
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={(event) => handleDragEnd(event, "featured")}
+          >
+            <SortableContext items={featuredProjects.map((p) => `featured-${p.model}-${p._id}`)}>
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                {featuredProjects.length === 0 ? (
+                  <div className="bg-[#242425] p-4 sm:p-6 rounded-xl text-gray-400 text-xs sm:text-sm text-center shadow-lg border border-[#3d3d3f] col-span-full">
+                    No featured projects. Star a project to showcase it here.
+                  </div>
+                ) : (
+                  featuredProjects.map((project, index) => (
+                    <SortableProject
+                      key={`featured-${project.model}-${project._id}`}
+                      project={project}
+                      index={index}
+                      onDelete={() => setShowDeleteConfirm({ id: project._id, model: project.model })}
+                      onToggleFeatured={handleToggleFeatured}
+                      section="featured"
+                    />
+                  ))
+                )}
+              </div>
+            </SortableContext>
+          </DndContext>
         </div>
 
         {/* All Projects Section */}
-        {loading ? (
-          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-[#242425] p-4 rounded-xl shadow-lg animate-pulse">
-                <div className="relative w-full h-32 sm:h-40 bg-gray-700 rounded-lg mb-4"></div>
-                <div className="h-4 sm:h-5 bg-gray-700 rounded w-3/4 mb-2"></div>
-                <div className="h-3 sm:h-4 bg-gray-700 rounded w-1/2"></div>
-              </div>
-            ))}
-          </div>
-        ) : filteredProjects.length === 0 ? (
-          <div className="bg-[#242425] p-4 sm:p-6 rounded-xl text-gray-400 text-xs sm:text-sm text-center shadow-lg border border-[#3d3d3f]">
-            No projects found.
-          </div>
-        ) : (
-          <div className="mb-6 sm:mb-8">
-            <h3 className="text-base sm:text-lg font-semibold text-[#f6ff7a] mb-4">All Projects</h3>
-            <div className="grid gap-4 sm:gap-6 grid-cols-1  sm:grid-cols-2 lg:grid-cols-3">
-              {filteredProjects.map((project) => (
-                <div
-                  key={`${project.model}-${project._id}`}
-                  className="bg-[#242425] p-4 rounded-xl pb-10 shadow-lg relative"
-                >
-                  <Link href={`/projects/${project._id}`} aria-label={`View ${project.title}`}>
-                    <div className="flex flex-col gap-4">
-                      <div className="relative w-full h-32 sm:h-40">
-                        <Image
-                          src={project.image || "/default-project-image.png"}
-                          alt={project.title}
-                          fill
-                          className="rounded-lg object-cover"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        />
-                      </div>
-                      <div>
-                        <h3 className="text-base sm:text-lg font-semibold text-[#f6ff7a]">{project.title}</h3>
-                        <p className="text-gray-400 text-xs sm:text-sm line-clamp-2">{project.thumbnailText}</p>
-                        <p className="text-gray-400 text-xs mt-1">Model: {project.model}</p>
-                      </div>
-                    </div>
-                  </Link>
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleToggleFeatured(project._id, project.model, project.isFeatured);
-                    }}
-                    className={`absolute top-2 right-2 p-1 sm:p-2 bg-[#242425] rounded-lg ${
-                      project.isFeatured ? "text-[#AAB418]" : "text-[#f6ff7a]"
-                    }`}
-                    aria-label={project.isFeatured ? `Remove ${project.title} from featured` : `Add ${project.title} to featured`}
-                  >
-                    {project.isFeatured ? <AiFillStar size={20}  /> : <AiOutlineStar size={20}  />}
-                  </motion.button>
-                  <div className="flex justify-end mt-2">
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowDeleteConfirm({ id: project._id, model: project.model });
-                      }}
-                      className="p-1 sm:p-2 bg-red-600 text-white rounded-full absolute bottom-5 hover:bg-red-500"
-                      aria-label={`Delete ${project.title}`}
-                    >
-                      <GrTrash size={14}  />
-                    </motion.button>
-                  </div>
+        <div className="mb-6 sm:mb-8">
+          <h3 className="text-base sm:text-lg font-semibold text-[#f6ff7a] mb-4">All Projects</h3>
+          {loading ? (
+            <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-[#242425] p-4 rounded-xl shadow-lg animate-pulse">
+                  <div className="relative w-full h-32 sm:h-40 bg-gray-700 rounded-lg mb-4"></div>
+                  <div className="h-4 sm:h-5 bg-gray-700 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 sm:h-4 bg-gray-700 rounded w-1/2"></div>
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          ) : allProjects.length === 0 ? (
+            <div className="bg-[#242425] p-4 sm:p-6 rounded-xl text-gray-400 text-xs sm:text-sm text-center shadow-lg border border-[#3d3d3f]">
+              No projects found.
+            </div>
+          ) : (
+            <DndContext
+              id="all"
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={(event) => handleDragEnd(event, "all")}
+            >
+              <SortableContext items={allProjects.map((p) => `all-${p.model}-${p._id}`)}>
+                <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                  {allProjects.map((project, index) => (
+                    <SortableProject
+                      key={`all-${project.model}-${project._id}`}
+                      project={project}
+                      index={index}
+                      onDelete={() => setShowDeleteConfirm({ id: project._id, model: project.model })}
+                      onToggleFeatured={handleToggleFeatured}
+                      section="all"
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          )}
+        </div>
       </div>
     </div>
   );

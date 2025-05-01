@@ -67,7 +67,7 @@ const Navbar = () => {
   }, [isDropdownOpen, isServicedropdownOpen]);
 
   return (
-    <div className="fixed top-0 left-0 z-[999] bg-[#191a1b] w-full">
+    <div className="fixed top-0 left-0 z-[9999]  bg-[#191a1b] w-full">
       <div ref={navbarRef} className="lg:max-w-[90em] reltive lg:mx-auto px-3 lg:px-[6em] flex justify-between items-center py-5">
         <Link href="/" onClick={closeAll} className="hidden md:block">
           <div className="hidden md:block">

@@ -4,513 +4,44 @@ import React, { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Subscribers from "@/components/Subscribers/Subscribers";
 import Image from "next/image";
-import { LexicalComposer } from "@lexical/react/LexicalComposer";
-import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { ContentEditable } from "@lexical/react/LexicalContentEditable";
-import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-import { ListPlugin } from "@lexical/react/LexicalListPlugin";
-import { HeadingNode, $createHeadingNode, $isHeadingNode } from "@lexical/rich-text";
-import {
-  ListNode,
-  ListItemNode,
-  $isListNode,
-  INSERT_UNORDERED_LIST_COMMAND,
-  INSERT_ORDERED_LIST_COMMAND,
-  REMOVE_LIST_COMMAND,
-} from "@lexical/list";
-import { $getRoot } from "lexical";
-import { LinkNode, $createLinkNode } from "@lexical/link";
-import { CodeNode, $createCodeNode } from "@lexical/code";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {
-  $getSelection,
-  $isRangeSelection,
-  $createParagraphNode,
-  $isTextNode,
-  FORMAT_TEXT_COMMAND,
-  UNDO_COMMAND,
-  REDO_COMMAND,
-  $isElementNode,
-} from "lexical";
+import CKEditorWrapper from "@/components/CKEditorWrapper";
+import { useDropzone } from "react-dropzone";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { GrAnnounce, GrTrash } from "react-icons/gr";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion, AnimatePresence } from "framer-motion";
-import { lexicalToHtml } from "@/utils/lexicalToHtml";
-import { $wrapNodes } from "@lexical/selection";
-import SelectTemplate from "../SelectTemplate/page";
-import Allprojectss from "@/components/Allprojectsss/Allprojects"
-import { FaEye, FaTrash, FaTimes } from 'react-icons/fa';
+import Allprojectss from "@/components/Allprojectsss/Allprojects";
+import { FaEye, FaTrash, FaTimes } from "react-icons/fa";
 
-
-const LexicalErrorBoundary = ({ children }: { children: React.ReactNode }) => {
-  try {
-    return <>{children}</>;
-  } catch (error) {
-    console.error("Lexical Error:", error);
-    return <div>Something went wrong in the editor.</div>;
-  }
-};
-
-// Lexical theme configuration
-const theme = {
-  heading: {
-    h1: "font-bold text-[32px] leading-[40px] my-4 text-white",
-    h2: "font-semibold text-[24px] leading-[32px] my-3 text-white",
-    h3: "font-semibold text-[20px] leading-[28px] my-2 text-white",
-  },
-  paragraph: "text-[16px] leading-[24px] my-2 text-white",
-  list: {
-    ul: "list-disc list-outside ml-6 my-2 text-white",
-    ol: "list-decimal list-outside ml-6 my-2 text-white",
-    listitem: "text-[16px] leading-[24px] text-white",
-  },
-  link: "text-[#f6ff7a] underline",
-  text: {
-    bold: "font-bold",
-    italic: "italic",
-    underline: "underline",
-    code: "font-mono bg-[#2d2d2f] px-1 rounded text-[#f6ff7a]",
-  },
-  code: "font-mono bg-[#2d2d2f] p-4 rounded block text-[#f6ff7a] text-[14px] overflow-x-auto",
-};
-
-// Debug Plugin to display HTML output
-function DebugPlugin() {
-  const [editor] = useLexicalComposerContext();
-  const [html, setHtml] = useState<string>("");
-
-  useEffect(() => {
-    const updateHtml = () => {
-      editor.read(() => {
-        const root = editor.getRootElement();
-        setHtml(root?.innerHTML || "No content");
-      });
-    };
-    updateHtml();
-    const unregister = editor.registerUpdateListener(() => updateHtml());
-    return () => unregister();
-  }, [editor]);
-
-  return null;
-}
-
-// Toolbar Plugin with formatting controls
-function ToolbarPlugin() {
-  const [editor] = useLexicalComposerContext();
-  const [showLinkInput, setShowLinkInput] = useState<boolean>(false);
-  const [linkUrl, setLinkUrl] = useState<string>("");
-  const [activeBlocks, setActiveBlocks] = useState<Set<string>>(new Set());
-  const [activeMarks, setActiveMarks] = useState<Set<string>>(new Set());
-
-  // Update active blocks and marks
-  useEffect(() => {
-    const updateActiveStates = () => {
-      editor.getEditorState().read(() => {
-        const selection = $getSelection();
-        const newActiveBlocks = new Set<string>();
-        const newActiveMarks = new Set<string>();
-
-        if ($isRangeSelection(selection)) {
-          const anchorNode = selection.anchor.getNode();
-          const element =
-            anchorNode.getKey() === "root"
-              ? anchorNode
-              : anchorNode.getTopLevelElementOrThrow();
-
-          // Detect block types
-          if ($isHeadingNode(element)) {
-            newActiveBlocks.add(element.getTag());
-          } else if (element.getType() === "paragraph") {
-            newActiveBlocks.add("paragraph");
-          } else if ($isListNode(element)) {
-            newActiveBlocks.add(element.getListType());
-          } else if (element.getType() === "code") {
-            newActiveBlocks.add("code");
-          }
-
-          // Detect marks
-          if (selection.hasFormat("bold")) newActiveMarks.add("bold");
-          if (selection.hasFormat("italic")) newActiveMarks.add("italic");
-          if (selection.hasFormat("underline")) newActiveMarks.add("underline");
-          if (selection.hasFormat("code")) newActiveMarks.add("code");
-        }
-
-        setActiveBlocks(newActiveBlocks);
-        setActiveMarks(newActiveMarks);
-      });
-    };
-
-    return editor.registerUpdateListener(({ editorState }) => {
-      editorState.read(() => {
-        updateActiveStates();
-      });
-    });
-  }, [editor]);
-
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeydown = (event: KeyboardEvent) => {
-      if (event.ctrlKey || event.metaKey) {
-        switch (event.key) {
-          case "b":
-            event.preventDefault();
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
-            break;
-          case "i":
-            event.preventDefault();
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
-            break;
-          case "u":
-            event.preventDefault();
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
-            break;
-          case "z":
-            event.preventDefault();
-            editor.dispatchCommand(UNDO_COMMAND, undefined);
-            break;
-          case "y":
-          case "Z":
-            event.preventDefault();
-            editor.dispatchCommand(REDO_COMMAND, undefined);
-            break;
-        }
-      }
-    };
-
-    document.addEventListener("keydown", handleKeydown);
-    return () => document.removeEventListener("keydown", handleKeydown);
-  }, [editor]);
-
-  const setBlockType = (type: "h1" | "h2" | "h3" | "paragraph" | "code") => (e: React.MouseEvent) => {
-    e.preventDefault();
-    try {
-      editor.update(() => {
-        const selection = $getSelection();
-        if ($isRangeSelection(selection)) {
-          let newNode;
-          if (type === "paragraph") {
-            newNode = $createParagraphNode();
-          } else if (type === "code") {
-            newNode = $createCodeNode();
-          } else {
-            newNode = $createHeadingNode(type);
-          }
-          $wrapNodes(selection, () => newNode);
-        }
-      });
-      editor.focus();
-    } catch (error) {
-      console.error(`Error setting block type ${type}:`, error);
-      toast.error("Failed to apply formatting", { theme: "dark" });
-    }
-  };
+import { v4 as uuidv4 } from 'uuid';
+import { div } from "framer-motion/client";
+import AdminReviews from "@/components/AdminReviews/AdminReviews";
 
 
 
-  const toggleList = (listType: "bullet" | "number") => (e: React.MouseEvent) => {
-    e.preventDefault();
-    try {
-      editor.update(() => {
-        const selection = $getSelection();
-        if (!$isRangeSelection(selection)) {
-          // Handle empty selection by creating a new list
-          const paragraph = $createParagraphNode();
-          const listNode = new ListNode(listType === "bullet" ? "bullet" : "number");
-          const listItem = new ListItemNode(); // Use new ListItemNode() instead of $createListItemNode
-          listItem.append(paragraph);
-          listNode.append(listItem);
-          const root = $getRoot(); // Use $getRoot() instead of editor.getRoot()
-          root.append(listNode);
-          listItem.select();
-          return;
-        }
 
-        const anchorNode = selection.anchor.getNode();
-        const element = anchorNode.getTopLevelElementOrThrow();
-        const isList = $isListNode(element) && element.getListType() === listType;
-
-        if (isList) {
-          // Convert list to paragraphs
-          editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
-        } else {
-          // Convert to list
-          const command = listType === "bullet" ? INSERT_UNORDERED_LIST_COMMAND : INSERT_ORDERED_LIST_COMMAND;
-          editor.dispatchCommand(command, undefined);
-        }
-      });
-      editor.focus();
-    } catch (error) {
-      console.error(`Error toggling ${listType} list:`, error);
-      toast.error("Failed to toggle list", { theme: "dark" });
-    }
-  };
-
-  const toggleMark = (mark: "bold" | "italic" | "underline" | "code") => (e: React.MouseEvent) => {
-    e.preventDefault();
-    try {
-      editor.dispatchCommand(FORMAT_TEXT_COMMAND, mark);
-      editor.focus();
-    } catch (error) {
-      console.error(`Error toggling ${mark}:`, error);
-      toast.error("Failed to apply formatting", { theme: "dark" });
-    }
-  };
-
-  const handleLinkSubmit = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (!linkUrl) {
-      toast.error("Please enter a valid URL", { theme: "dark" });
-      return;
-    }
-    try {
-      editor.update(() => {
-        const selection = $getSelection();
-        if ($isRangeSelection(selection)) {
-          const linkNode = $createLinkNode(linkUrl);
-          $wrapNodes(selection, () => linkNode);
-        }
-      });
-      setLinkUrl("");
-      setShowLinkInput(false);
-      toast.success("Link added successfully!", { theme: "dark" });
-      editor.focus();
-    } catch (error) {
-      console.error("Error adding link:", error);
-      toast.error("Failed to add link", { theme: "dark" });
-    }
-  };
-
-  return (
-    <div className="flex gap-2 mb-4 flex-wrap bg-[#2d2d2f] p-2 rounded-t-lg">
-      <button
-        onClick={setBlockType("h1")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${activeBlocks.has("h1") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-          } hover:bg-[#f6ff7a] hover:text-black`}
-        aria-label="Heading 1"
-      >
-        H1
-      </button>
-      <button
-        onClick={setBlockType("h2")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${activeBlocks.has("h2") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-          } hover:bg-[#f6ff7a] hover:text-black`}
-        aria-label="Heading 2"
-      >
-        H2
-      </button>
-      <button
-        onClick={setBlockType("h3")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${activeBlocks.has("h3") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-          } hover:bg-[#f6ff7a] hover:text-black`}
-        aria-label="Heading 3"
-      >
-        H3
-      </button>
-      <button
-        onClick={setBlockType("paragraph")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[100px] ${activeBlocks.has("paragraph") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-          } hover:bg-[#f6ff7a] hover:text-black`}
-        aria-label="Paragraph"
-      >
-        Paragraph
-      </button>
-      <button
-        onClick={toggleList("bullet")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[100px] ${activeBlocks.has("bullet") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-          } hover:bg-[#f6ff7a] hover:text-black`}
-        aria-label="Bullet List"
-      >
-        Bullet List
-      </button>
-      <button
-        onClick={toggleList("number")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[100px] ${activeBlocks.has("number") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-          } hover:bg-[#f6ff7a] hover:text-black`}
-        aria-label="Ordered List"
-      >
-        Ordered List
-      </button>
-      <button
-        onClick={setBlockType("code")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[100px] ${activeBlocks.has("code") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-          } hover:bg-[#f6ff7a] hover:text-black`}
-        aria-label="Code Block"
-      >
-        Code Block
-      </button>
-      <button
-        onClick={toggleMark("bold")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${activeMarks.has("bold") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-          } hover:bg-[#f6ff7a] hover:text-black`}
-        aria-label="Bold"
-      >
-        Bold
-      </button>
-      <button
-        onClick={toggleMark("italic")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${activeMarks.has("italic") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-          } hover:bg-[#f6ff7a] hover:text-black`}
-        aria-label="Italic"
-      >
-        Italic
-      </button>
-      <button
-        onClick={toggleMark("underline")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${activeMarks.has("underline") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-          } hover:bg-[#f6ff7a] hover:text-black`}
-        aria-label="Underline"
-      >
-        Underline
-      </button>
-      <button
-        onClick={toggleMark("code")}
-        className={`px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] ${activeMarks.has("code") ? "bg-[#f6ff7a] text-black" : "bg-gray-600 text-white"
-          } hover:bg-[#f6ff7a] hover:text-black`}
-        aria-label="Inline Code"
-      >
-        Code
-      </button>
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          setShowLinkInput(true);
-          editor.focus();
-        }}
-        className="px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] bg-gray-600 text-white hover:bg-[#f6ff7a] hover:text-black"
-        aria-label="Link"
-      >
-        Link
-      </button>
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          editor.dispatchCommand(UNDO_COMMAND, undefined);
-          editor.focus();
-        }}
-        className="px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] bg-gray-600 text-white hover:bg-[#f6ff7a] hover:text-black"
-        aria-label="Undo"
-      >
-        Undo
-      </button>
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          editor.dispatchCommand(REDO_COMMAND, undefined);
-          editor.focus();
-        }}
-        className="px-4 py-2 rounded font-semibold text-[16px] min-w-[60px] bg-gray-600 text-white hover:bg-[#f6ff7a] hover:text-black"
-        aria-label="Redo"
-      >
-        Redo
-      </button>
-      {showLinkInput && (
-        <div className="flex gap-2 mt-2 w-full">
-          <input
-            type="text"
-            value={linkUrl}
-            onChange={(e) => setLinkUrl(e.target.value)}
-            placeholder="Enter URL"
-            className="flex-1 px-4 py-2 bg-[#3d3d3f] text-white rounded text-[16px]"
-            aria-label="Link URL"
-          />
-          <button
-            onClick={handleLinkSubmit}
-            className="px-4 py-2 bg-[#f6ff7a] text-black rounded hover:bg-yellow-500 font-semibold text-[16px]"
-            aria-label="Add Link"
-          >
-            Add
-          </button>
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              setShowLinkInput(false);
-              editor.focus();
-            }}
-            className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500 font-semibold text-[16px]"
-            aria-label="Cancel Link"
-          >
-            Cancel
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Lexical Editor Component
-interface LexicalEditorProps {
-  index: number;
-  initialValue: string;
-  onChange: (value: string) => void;
-}
-
-function LexicalEditor({ index, initialValue, onChange }: LexicalEditorProps) {
-  const initialConfig = {
-    namespace: `Editor-${index}`,
-    theme,
-    nodes: [HeadingNode, ListNode, ListItemNode, LinkNode, CodeNode],
-    onError: (error: Error) => console.error("Lexical Error:", error),
-    editorState: initialValue ? initialValue : undefined,
-  };
-
-  return (
-    <div className="bg-gray-700 rounded-lg border border-gray-600">
-      <LexicalComposer initialConfig={initialConfig}>
-        <ToolbarPlugin />
-        <RichTextPlugin
-          contentEditable={
-            <ContentEditable className="lexical-editor min-h-[260px] p-4 focus:outline-none" />
-          }
-          placeholder={
-            <div className="absolute top-4 left-4 text-gray-400 pointer-events-none">
-              
-            </div>
-          }
-          ErrorBoundary={LexicalErrorBoundary}
-        />
-        <HistoryPlugin />
-        <ListPlugin />
-        <DebugPlugin />
-        <OnChangePlugin onChange={onChange} />
-      </LexicalComposer>
-    </div>
-  );
-}
-
-// OnChange Plugin to capture editor state
-function OnChangePlugin({ onChange }: { onChange: (value: string) => void }) {
-  const [editor] = useLexicalComposerContext();
-
-  useEffect(() => {
-    const unregister = editor.registerUpdateListener(({ editorState }) => {
-      editorState.read(() => {
-        const json = editorState.toJSON();
-        onChange(JSON.stringify(json));
-      });
-    });
-    return () => unregister();
-  }, [editor, onChange]);
-
-  return null;
-}
 
 // Interfaces for data models
-interface Blog {
-  _id: string;
+
+type Blog = {
+  _id: string; // Make _id required
   title: string;
-  category: string;
   author: string;
-  primaryImage?: string;
+  primaryImage: string;
+  image?: string;
   content: Array<{
     type: string;
-    value: string;
+    value: string | File | null;
+    image?: string | null;
+    imagePreview?: string | null;
     language?: string;
-    imagePreview?: string;
   }>;
-}
+  category: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
 
 interface TeamMember {
   _id: string;
@@ -544,6 +75,7 @@ interface Application {
 }
 
 interface ContentItem {
+  id: string; // Add unique ID
   type: string;
   value: string | File | null;
   language?: string;
@@ -555,7 +87,7 @@ interface Errors {
 }
 
 function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<"create" | "blogs" | "team" | "jobs" | "Subscribers" | "Projects">("create");
+  const [activeTab, setActiveTab] = useState<"create" | "blogs" | "team" | "jobs" | "Subscribers" | "Projects" | "Reviews">("create");
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -592,6 +124,7 @@ function AdminDashboard() {
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Debounce utility
   const debounce = <T extends (...args: any[]) => void>(func: T, wait: number) => {
     let timeout: NodeJS.Timeout;
     return (...args: Parameters<T>) => {
@@ -600,6 +133,7 @@ function AdminDashboard() {
     };
   };
 
+  // Scroll handling for applications modal
   useEffect(() => {
     const scrollContainer = scrollRef.current;
     if (!scrollContainer) return;
@@ -610,11 +144,11 @@ function AdminDashboard() {
     };
 
     const debouncedHandleWheel = debounce(handleWheel, 10);
-
     scrollContainer.addEventListener("wheel", debouncedHandleWheel, { passive: false });
     return () => scrollContainer.removeEventListener("wheel", debouncedHandleWheel);
   }, [viewingApplicationsForJob]);
 
+  // Fetch data for blogs, team, and jobs
   useEffect(() => {
     const fetchData = async () => {
       if (activeTab === "blogs") {
@@ -622,8 +156,22 @@ function AdminDashboard() {
           const response = await fetch("/api/blogs/allblogs");
           if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
           const data: Blog[] = await response.json();
-          setBlogs(data);
-          console.log("Fetched blogs:", data);
+          const sanitizedData = data.map((blog) => ({
+            ...blog,
+            title: blog.title || "",
+            category: blog.category || "",
+            author: blog.author || "",
+            primaryImage: blog.primaryImage || blog.image || "",
+            content: Array.isArray(blog.content)
+              ? blog.content.map((item) => ({
+                type: item.type || "paragraph",
+                value: typeof item.value === "string" ? item.value : "",
+                language: item.language || (item.type === "code" ? "javascript" : undefined),
+                imagePreview: item.imagePreview || "",
+              }))
+              : [],
+          }));
+          setBlogs(sanitizedData);
         } catch (error) {
           const message = error instanceof Error ? error.message : "Unknown error";
           toast.error(`Error fetching blogs: ${message}`);
@@ -634,7 +182,6 @@ function AdminDashboard() {
           if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
           const data: TeamMember[] = await response.json();
           setTeamMembers(data);
-          console.log("Fetched team members:", data);
         } catch (error) {
           const message = error instanceof Error ? error.message : "Unknown error";
           toast.error(`Error fetching team members: ${message}`);
@@ -653,8 +200,6 @@ function AdminDashboard() {
           ]);
           setJobs(jobsData);
           setApplications(appsData);
-          console.log("Fetched jobs:", jobsData);
-          console.log("Fetched applications:", appsData);
         } catch (error) {
           const message = error instanceof Error ? error.message : "Unknown error";
           toast.error(`Error fetching jobs or applications: ${message}`);
@@ -664,6 +209,7 @@ function AdminDashboard() {
     fetchData();
   }, [activeTab]);
 
+  // Form validation
   useEffect(() => {
     const newErrors: Errors = {};
     if (activeTab === "create") {
@@ -683,11 +229,22 @@ function AdminDashboard() {
     } else if (activeTab === "jobs") {
       if (jobTitle && jobTitle.length < 3) newErrors.jobTitle = "Job title must be at least 3 characters";
       if (jobLocation && jobLocation.length < 3) newErrors.jobLocation = "Location must be at least 3 characters";
-      if (jobDescription && JSON.parse(jobDescription).root.children.length === 0)
+      if (jobDescription && jobDescription.length === 0)
         newErrors.jobDescription = "Description cannot be empty";
     }
     setErrors(newErrors);
   }, [title, author, category, customCategory, name, role, testimonial, jobTitle, jobLocation, jobDescription, activeTab]);
+
+  // Clean up image previews
+  useEffect(() => {
+    return () => {
+      content.forEach((item) => {
+        if (item.type === "image" && item.imagePreview && item.imagePreview.startsWith("blob:")) {
+          URL.revokeObjectURL(item.imagePreview);
+        }
+      });
+    };
+  }, [content]);
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCategory(e.target.value);
@@ -732,40 +289,71 @@ function AdminDashboard() {
     []
   );
 
-  const handleImageDrop = useCallback(
-    (index: number, e: React.DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith("image/")) handleContentChange(index, "value", file);
-    },
-    []
-  );
-
-  const addContentItem = (type: string) => {
-    let newItem: ContentItem = { type, value: "" };
-    if (type === "image") newItem = { type, value: null, imagePreview: "" };
-    else if (type === "code") newItem = { type, value: "", language: "javascript" };
-    setContent([...content, newItem]);
-    setNewContentType("");
+  const addBlogContentItem = (type: ContentItem['type']) => {
+    let newItem: ContentItem;
+    if (type === 'image') {
+      newItem = { id: uuidv4(), type, value: null, imagePreview: '' };
+    } else if (type === 'code') {
+      newItem = { id: uuidv4(), type, value: '', language: 'javascript' };
+    } else {
+      newItem = { id: uuidv4(), type, value: '' }; // No imagePreview for heading or paragraph
+    }
+    console.log(`Adding content item:`, newItem);
+    setContent((prev) => {
+      const newContent = [...prev, newItem];
+      console.log(`Updated content array:`, newContent);
+      return newContent;
+    });
+    setNewContentType('');
   };
 
   const handleContentChange = (index: number, field: string, value: string | File | null) => {
-    const updatedContent = [...content];
-    if (field === "value") {
-      updatedContent[index].value = value;
-      if (updatedContent[index].type === "image" && value instanceof File) {
-        updatedContent[index].imagePreview = URL.createObjectURL(value);
-      } else if (updatedContent[index].type === "image" && value === null) {
-        updatedContent[index].imagePreview = "";
+    console.log(`handleContentChange index ${index}, field: ${field}, value:`, value);
+    setContent((prevContent) => {
+      const updatedContent = [...prevContent];
+      const updatedItem = { ...updatedContent[index] };
+  
+      if (field === 'value') {
+        updatedItem.value = value;
+        if (updatedItem.type === 'image' && value instanceof File) {
+          if (updatedItem.imagePreview && updatedItem.imagePreview.startsWith('blob:')) {
+            console.log(`Revoking old blob URL for index ${index}:`, updatedItem.imagePreview);
+            URL.revokeObjectURL(updatedItem.imagePreview);
+          }
+          const previewUrl = URL.createObjectURL(value);
+          updatedItem.imagePreview = previewUrl;
+          console.log(`Set new imagePreview for index ${index}:`, previewUrl);
+        } else if (updatedItem.type === 'image' && value === null) {
+          if (updatedItem.imagePreview && updatedItem.imagePreview.startsWith('blob:')) {
+            console.log(`Revoking blob URL on remove for index ${index}:`, updatedItem.imagePreview);
+            URL.revokeObjectURL(updatedItem.imagePreview);
+          }
+          updatedItem.imagePreview = '';
+          console.log(`Cleared imagePreview for index ${index}`);
+        } else {
+          // Ensure non-image items have no imagePreview
+          if (updatedItem.imagePreview !== undefined) {
+            console.warn(`Removing unexpected imagePreview for ${updatedItem.type} at index ${index}`);
+            updatedItem.imagePreview = undefined;
+          }
+        }
+      } else if (field === 'language' && typeof value === 'string') {
+        updatedItem.language = value;
       }
-    } else if (field === "language" && typeof value === "string") {
-      updatedContent[index].language = value;
-    }
-    setContent(updatedContent);
+  
+      updatedContent[index] = updatedItem;
+      console.log(`Updated content[${index}]:`, updatedItem);
+      console.log(`Full content state:`, updatedContent);
+      return updatedContent;
+    });
   };
 
   const removeContentItem = (index: number) => {
     const updatedContent = [...content];
+    const item = updatedContent[index];
+    if (item.type === "image" && item.imagePreview && item.imagePreview.startsWith("blob:")) {
+      URL.revokeObjectURL(item.imagePreview);
+    }
     updatedContent.splice(index, 1);
     setContent(updatedContent);
   };
@@ -781,48 +369,35 @@ function AdminDashboard() {
       if (!title || !category || !author) throw new Error("Title, category, and author are required");
       const effectiveCategory = category === "Other" ? customCategory : category;
       if (!effectiveCategory) throw new Error("Please specify a category");
-
+  
       const formData = new FormData();
       formData.append("title", title);
       formData.append("category", effectiveCategory);
       formData.append("author", author);
       if (primaryImage) formData.append("primaryImage", primaryImage);
-
-      // Process content array, converting Lexical JSON to HTML where applicable
-      const processedContent = content.map((item, index) => {
-        if (item.type === "image") {
-          // Image: Keep as placeholder
-          return {
-            type: item.type,
-            value: `image-${index}`,
-            language: item.language,
-          };
-        } else {
-          // Non-image (e.g., text): Convert Lexical JSON to HTML
-          const htmlValue = typeof item.value === "string" ? lexicalToHtml(item.value) : item.value;
-          return {
-            type: item.type,
-            value: htmlValue,
-            language: item.language,
-          };
-        }
-      });
-
+  
+      const processedContent = content.map((item, index) => ({
+        type: item.type,
+        value: item.type === "image" && item.value instanceof File ? `image-${index}` : item.value,
+        language: item.language,
+      }));
+  
+      console.log("Sending content:", JSON.stringify(processedContent, null, 2)); // Debug
       formData.append("content", JSON.stringify(processedContent));
       content.forEach((item, index) => {
         if (item.type === "image" && item.value instanceof File) {
           formData.append(`image-${index}`, item.value);
         }
       });
-
+  
       const url = editingBlog ? `/api/blogs/${editingBlog._id}` : "/api/blogs/create";
       const method = editingBlog ? "PUT" : "POST";
-
+  
       const response = await fetch(url, { method, body: formData });
       if (!response.ok) throw new Error(`Failed to ${editingBlog ? "update" : "create"} blog: ${await response.text()}`);
-
+  
       toast.success(`Blog ${editingBlog ? "updated" : "created"} successfully!`);
-      resetBlogForm(); // Reset form fields after successful submission
+      resetBlogForm();
       if (editingBlog) {
         setEditingBlog(null);
         setActiveTab("blogs");
@@ -898,13 +473,10 @@ function AdminDashboard() {
         throw new Error("Title, location, and description are required");
       }
 
-      // Convert Lexical JSON to HTML
-      const descriptionHtml = lexicalToHtml(jobDescription);
-
       const formData = new FormData();
       formData.append("title", jobTitle);
       formData.append("location", jobLocation);
-      formData.append("description", descriptionHtml); // Send HTML instead of JSON
+      formData.append("description", jobDescription); // CKEditor HTML
       formData.append("employmentType", employmentType);
 
       const url = editingJob ? `/api/jobs/${editingJob._id}` : "/api/jobs";
@@ -971,17 +543,41 @@ function AdminDashboard() {
 
   const handleEditBlog = (blog: Blog) => {
     setEditingBlog(blog);
-    setTitle(blog.title);
-    setCategory(blog.category);
-    setCustomCategory(blog.category === "Other" ? blog.category : "");
-    setAuthor(blog.author);
-    setPrimaryImagePreview(blog.primaryImage || "");
-    setContent(
-      blog.content?.map((item) => ({
-        ...item,
-        imagePreview: item.type === "image" && typeof item.value === "string" ? item.value : item.imagePreview,
-      }))
+    setTitle(blog.title || "");
+    setCategory(blog.category || "");
+    setCustomCategory(
+      blog.category &&
+        ![
+          "AI / Machine Learning",
+          "Agile",
+          "Blockchain",
+          "Data Services",
+          "DevOps",
+          "Development",
+          "Marketing",
+          "Product Design",
+          "QA / Testing",
+          "Security",
+          "Soft Skills",
+          "Software Architecture",
+        ].includes(blog.category)
+        ? blog.category
+        : ""
     );
+    const authorValue = blog.author || "";
+    setAuthor(authorValue);
+    setPrimaryImagePreview(blog.primaryImage || blog.image || "");
+    const blogContent = Array.isArray(blog.content)
+      ? blog.content.map((item) => ({
+          id: uuidv4(), // Generate unique ID for each content item
+          type: item.type || "paragraph",
+          value: typeof item.value === "string" ? item.value : "",
+          language: item.language || (item.type === "code" ? "javascript" : undefined),
+          imagePreview: item.type === "image" && typeof item.value === "string" ? item.value : item.imagePreview || "",
+        }))
+      : [];
+    console.log("Setting content for edit:", blogContent); // Debug log
+    setContent(blogContent);
     setActiveTab("create");
   };
 
@@ -1000,7 +596,6 @@ function AdminDashboard() {
       setLoading(false);
     }
   };
-
   const handleEditJob = (job: Job) => {
     setEditingJob(job);
     setJobTitle(job.title);
@@ -1008,6 +603,11 @@ function AdminDashboard() {
     setJobDescription(job.description);
     setEmploymentType(job.employmentType);
     setActiveTab("jobs");
+    setTimeout(() => {
+      if (typeof window !== "undefined") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }, 100);
   };
 
   const handleTeamDelete = async (memberId: string) => {
@@ -1051,29 +651,33 @@ function AdminDashboard() {
   };
 
   const handleEditTeamMember = (member: TeamMember) => {
-    // Move the selected member to the top of the list
     setTeamMembers((prev) => {
-      const updatedMembers = prev.filter((m) => m._id !== member._id); // Remove the member from its current position
-      return [member, ...updatedMembers]; // Add it to the top
+      const updatedMembers = prev.filter((m) => m._id !== member._id);
+      return [member, ...updatedMembers];
     });
-
-    // Populate the form fields for editing
     setEditingTeamMember(member);
     setTeamImagePreview(member.image);
     setTestimonial(member.testimonial);
     setName(member.name);
     setRole(member.role);
-
-    // Switch to the "team" tab
     setActiveTab("team");
-
-    // Scroll to the top of the screen
     setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }, 100); // Small delay to ensure the DOM updates before scrolling
+      if (typeof window !== "undefined") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }, 100);
   };
 
   const resetBlogForm = () => {
+    // Revoke blob URLs
+    content.forEach((item) => {
+      if (item.type === "image" && item.imagePreview && item.imagePreview.startsWith("blob:")) {
+        console.log(`Revoking blob URL for item ${item.id}:`, item.imagePreview);
+        URL.revokeObjectURL(item.imagePreview);
+      }
+    });
+  
+    // Clear form state
     setEditingBlog(null);
     setTitle("");
     setCategory("");
@@ -1081,8 +685,14 @@ function AdminDashboard() {
     setAuthor("");
     setPrimaryImage(null);
     setPrimaryImagePreview("");
-    setContent([]);
+    setContent([]); // Clear content last to allow CKEditor cleanup
     setErrors({});
+    setNewContentType("");
+  
+    // Reset file inputs
+    document.querySelectorAll<HTMLInputElement>('input[type="file"]').forEach((input) => {
+      input.value = "";
+    });
   };
 
   const resetTeamForm = () => {
@@ -1106,14 +716,14 @@ function AdminDashboard() {
 
   const handleViewResume = (resumeUrl: string) => {
     if (!resumeUrl || !resumeUrl.startsWith("https://res.cloudinary.com")) {
-      console.error("Invalid resume URL:", resumeUrl);
       toast.error("Invalid resume URL.");
       return;
     }
-    const isPdf = resumeUrl.toLowerCase().endsWith(".pdf");
-    const finalUrl = isPdf ? `${resumeUrl}#view=FitH&toolbar=1` : resumeUrl;
-    console.log("Opening URL:", finalUrl);
-    window.open(finalUrl, "_blank");
+    if (typeof window !== "undefined") {
+      const isPdf = resumeUrl.toLowerCase().endsWith(".pdf");
+      const finalUrl = isPdf ? `${resumeUrl}#view=FitH&toolbar=1` : resumeUrl;
+      window.open(finalUrl, "_blank");
+    }
   };
 
   const closeModal = () => {
@@ -1121,245 +731,291 @@ function AdminDashboard() {
     setErrorMessage(null);
     setViewingApplicationsForJob(null);
   };
-
+  const ImageDropzone = ({ index }: { index: number }) => {
+    const onDrop = useCallback(
+      (acceptedFiles: File[]) => {
+        const file = acceptedFiles[0];
+        if (file) {
+          console.log(`ImageDropzone ${index} selected file:`, {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+          });
+  
+          // Validate image by attempting to load it
+          const img = new window.Image();
+          const objectUrl = URL.createObjectURL(file);
+          img.src = objectUrl;
+  
+          img.onload = () => {
+            console.log(`ImageDropzone ${index} image validated successfully`);
+            handleContentChange(index, "value", file);
+            URL.revokeObjectURL(objectUrl); // Clean up temporary URL
+          };
+  
+          img.onerror = () => {
+            console.error(`ImageDropzone ${index} failed to validate image:`, file.name);
+            toast.error(`Invalid image file for content item ${index + 1}. Please select a valid image.`);
+            URL.revokeObjectURL(objectUrl); // Clean up temporary URL
+            handleContentChange(index, "value", null); // Clear invalid image
+          };
+        }
+      },
+      [index]
+    );
+  
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+      accept: { "image/*": [".jpeg", ".jpg", ".png", ".gif"] },
+      maxSize: 5 * 1024 * 1024, // 5MB
+      multiple: false,
+      onDrop,
+      onDropRejected: (fileRejections) => {
+        fileRejections.forEach((rejection) => {
+          const error = rejection.errors[0]?.code;
+          if (error === "file-too-large") {
+            toast.error("Image must be smaller than 5MB");
+          } else if (error === "file-invalid-type") {
+            toast.error("Only JPEG, PNG, or GIF images are allowed");
+          } else {
+            toast.error("Failed to upload image");
+          }
+        });
+      },
+    });
+  
+    return (
+      <div
+        {...getRootProps()}
+        className={`border-2 border-dashed rounded-lg p-6 text-center transition-all duration-300 ${
+          isDragActive ? "border-[#f6ff7a] bg-[#f6ff7a]/10" : "border-gray-600 hover:border-gray-500"
+        }`}
+        onClick={() => console.log(`ImageDropzone ${index} clicked`)}
+      >
+        <input {...getInputProps()} />
+        <p className="text-gray-200 text-sm sm:text-base">
+          {isDragActive ? "Drop the image here" : "Drag & drop an image, or click to select"}
+        </p>
+        <button
+          type="button"
+          className="mt-2 px-4 py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 text-sm sm:text-base"
+        >
+          Select Image
+        </button>
+        {content[index]?.imagePreview && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mt-4"
+          >
+            < Image
+              src={content[index].imagePreview}
+              alt="Preview"
+              width={300}
+              height={200}
+              style={{ maxWidth: "300px", height: "200px" }}
+              className="max-w-xs mx-auto rounded-lg shadow-md object-cover"
+              onError={(e) => {
+                console.error(`ImageDropzone ${index} failed to load image:`, content[index].imagePreview);
+                toast.error(`Failed to load image preview for content item ${index + 1}`);
+                handleContentChange(index, "value", null); // Clear invalid image
+                e.currentTarget.style.display = "none"; // Hide broken image
+              }}
+              onLoad={() => console.log(`ImageDropzone ${index} image loaded successfully`)}
+            />
+            <button
+              type="button"
+              onClick={() => handleContentChange(index, "value", null)}
+              className="mt-2 text-red-400 hover:text-red-500 text-sm sm:text-base"
+            >
+              Remove Image
+            </button>
+          </motion.div>
+        )}
+        {!content[index]?.imagePreview && (
+          <p className="mt-4 text-gray-400 text-sm sm:text-base">No image selected</p>
+        )}
+      </div>
+    );
+  };
   const inputStyle =
-    "bg-[#3d3d3f] p-4 w-full rounded-t-lg border-b-2 border-transparent focus:outline-none focus:border-[#f6ff7a] transition-all duration-300 text-white placeholder-gray-400";
+    "bg-[#3d3d3f] p-4 w-full rounded-lg border border-gray-600 focus:outline-none focus:border-[#f6ff7a] transition-all duration-300 text-white placeholder-gray-400 text-sm sm:text-base";
 
   return (
     <div style={{ fontFamily: "Poppins, sans-serif" }} className="min-h-screen bg-[#191a1b] text-white pt-[7em]">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} closeOnClick theme="dark" />
       <style jsx>{`
-        .container {
-          --color-pure: #f6ff7a;
-          --color-primary: #3d3d3f;
-          --color-secondary: #191a1b;
-          --muted: #6b7280;
-          background-color: var(--color-secondary);
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-direction: column;
-        }
-        .wrap {
-          --round: 10px;
-          --p-x: 8px;
-          --p-y: 4px;
-          --w-label: 100px;
-          display: flex;
-          align-items: center;
-          padding: var(--p-y) var(--p-x);
-          position: relative;
-          background: var(--color-primary);
-          border-radius: var(--round);
-          max-width: 100%;
-          overflow-x: auto;
-          scrollbar-width: none;
-          -webkit-overflow-scrolling: touch;
-          top: 0;
-          z-index: 1;
-        }
-        .wrap input {
-          height: 0;
-          width: 0;
-          position: absolute;
-          overflow: hidden;
-          display: none;
-          visibility: hidden;
-        }
-        .label {
-          cursor: pointer;
-          outline: none;
-          font-size: 0.875rem;
-          letter-spacing: initial;
-          font-weight: 500;
-          color: var(--color-secondary);
-          background: transparent;
-          padding: 12px 16px;
-          width: var(--w-label);
-          min-width: var(--w-label);
-          text-decoration: none;
-          -webkit-user-select: none;
-          user-select: none;
-          transition: color 0.25s ease;
-          outline-offset: -6px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-          z-index: 2;
-          -webkit-tap-highlight-color: transparent;
-        }
-        .label span {
-          overflow: hidden;
-          display: -webkit-box;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 1;
-        }
-        .wrap input[class*="rd-"]:checked + .label {
-          color: var(--color-pure);
-        }
-        .bar {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-          position: absolute;
-          transform-origin: 0 0 0;
-          height: 100%;
-          width: var(--w-label);
-          z-index: 0;
-          transition: transform 0.5s cubic-bezier(0.33, 0.83, 0.99, 0.98);
-        }
-        .bar::before,
-        .bar::after {
-          content: "";
-          position: absolute;
-          height: 4px;
-          width: 100%;
-          background: var(--color-secondary);
-        }
-        .bar::before {
-          top: 0;
-          border-radius: 0 0 9999px 9999px;
-        }
-        .bar::after {
-          bottom: 0;
-          border-radius: 9999px 9999px 0 0;
-        }
-        .slidebar {
-          position: absolute;
-          height: calc(100% - (var(--p-y) * 4));
-          width: var(--w-label);
-          border-radius: calc(var(--round) - var(--p-y));
-          background: var(--muted);
-          transform-origin: 0 0 0;
-          z-index: 0;
-          transition: transform 0.5s cubic-bezier(0.33, 0.83, 0.99, 0.98);
-        }
-        .rd-1:checked ~ .bar,
-        .rd-1:checked ~ .slidebar,
-        .rd-1 + .label:hover ~ .slidebar {
-          transform: translateX(0) scaleX(1);
-        }
-        .rd-2:checked ~ .bar,
-        .rd-2:checked ~ .slidebar,
-        .rd-2 + .label:hover ~ .slidebar {
-          transform: translateX(100%) scaleX(1);
-        }
-        .rd-3:checked ~ .bar,
-        .rd-3:checked ~ .slidebar,
-        .rd-3 + .label:hover ~ .slidebar {
-          transform: translateX(200%) scaleX(1);
-        }
-        .rd-4:checked ~ .bar,
-        .rd-4:checked ~ .slidebar,
-        .rd-4 + .label:hover ~ .slidebar {
-          transform: translateX(300%) scaleX(1);
-        }
-             
-        .rd-5:checked ~ .bar,
-.rd-5:checked ~ .slidebar,
-.rd-5 + .label:hover ~ .slidebar {
-  transform: translateX(400%) scaleX(1);
-}
-   .rd-6:checked ~ .bar,
-.rd-6:checked ~ .slidebar,
-.rd-6 + .label:hover ~ .slidebar {
-  transform: translateX(500%) scaleX(1);
-}
-      
-   
-        .custom-scroll-content {
-          overflow-y: auto;
-          max-height: calc(85vh - 80px);
-          height: 100%;
-          scroll-behavior: smooth;
-          -webkit-overflow-scrolling: touch;
-          scrollbar-width: thin;
-          scrollbar-color: rgba(246, 255, 122, 0.5) transparent;
-          will-change: scroll-position;
-        }
-        .custom-scroll-content::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scroll-content::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scroll-content::-webkit-scrollbar-thumb {
-          background: rgba(246, 255, 122, 0.5);
-          border-radius: 3px;
-        }
-        .custom-scroll-content::-webkit-scrollbar-thumb:hover {
-          background: rgba(246, 255, 122, 0.7);
-        }
-        .application-item {
-          transition: background-color 0.2s ease;
-        }
-        .lexical-editor {
-          background: #1e1e1e;
-          color: #ffffff;
-          padding: 16px;
-          border: 1px solid #444;
-          border-radius: 4px;
-        }
-        .lexical-editor h1 {
-          font-size: 32px !important;
-          line-height: 40px !important;
-          font-weight: 700 !important;
-          margin: 16px 0 8px !important;
-          color: #ffffff !important;
-        }
-        .lexical-editor h2 {
-          font-size: 24px !important;
-          line-height: 32px !important;
-          font-weight: 600 !important;
-          margin: 12px 0 6px !important;
-          color: #ffffff !important;
-        }
-        .lexical-editor h3 {
-          font-size: 20px !important;
-          line-height: 28px !important;
-          font-weight: 600 !important;
-          margin: 10px 0 5px !important;
-          color: #ffffff !important;
-        }
-        .lexical-editor p {
-          font-size: 16px !important;
-          line-height: 24px !important;
-          margin: 8px 0 !important;
-          color: #ffffff !important;
-        }
-        .lexical-editor ul {
-          list-style: disc !important;
-          margin-left: 24px !important;
-          margin: 8px 0 !important;
-          color: #ffffff !important;
-        }
-        .lexical-editor ol {
-          list-style: decimal !important;
-          margin-left: 24px !important;
-          margin: 8px 0 !important;
-          color: #ffffff !important;
-        }
-        .lexical-editor li {
-          font-size: 16px !important;
-          line-height: 24px !important;
-          color: #ffffff !important;
-        }
-        .lexical-editor a {
-          color: #f6ff7a !important;
-          text-decoration: underline !important;
-        }
-        .lexical-editor pre {
-          font-family: monospace !important;
-          background: #2d2d2f !important;
-          padding: 16px !important;
-          border-radius: 4px !important;
-          color: #f6ff7a !important;
-          overflow-x: auto !important;
-        }
-      `}</style>
+  .container {
+    --color-pure: #f6ff7a;
+    --color-primary: #3d3d3f;
+    --color-secondary: #191a1b;
+    --muted: #6b7280;
+    background-color: var(--color-secondary);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .wrap {
+    --round: 10px;
+    --p-x: 8px;
+    --p-y: 4px;
+    --w-label: 115px;
+    display: flex;
+    align-items: center;
+    padding: var(--p-y) var(--p-x);
+    position: relative;
+    background: var(--color-primary);
+    border-radius: var(--round);
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    top: 0;
+    z-index: 1;
+  }
+  .wrap input {
+    height: 0;
+    width: 0;
+    position: absolute;
+    overflow: hidden;
+    display: none;
+    visibility: hidden;
+  }
+  .label {
+    cursor: pointer;
+    outline: none;
+    font-size: 0.860rem;
+    letter-spacing: initial;
+    font-weight: 500;
+    color: var(--color-secondary);
+    background: transparent;
+    padding: 12px 16px;
+    width: var(--w-label);
+    min-width: var(--w-label);
+    text-decoration: none;
+    -webkit-user-select: none;
+    user-select: none;
+    transition: color 0.25s ease;
+    outline-offset: -6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .label span {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+  .wrap input[class*="rd-"]:checked + .label {
+    color: var(--color-pure);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: absolute;
+    transform-origin: 0 0 0;
+    height: 100%;
+    width: var(--w-label);
+    z-index: 0;
+    transition: transform 0.5s cubic-bezier(0.33, 0.83, 0.99, 0.98);
+  }
+  .bar::before,
+  .bar::after {
+    content: "";
+    position: absolute;
+    height: 4px;
+    width: 100%;
+    background: var(--color-secondary);
+  }
+  .bar::before {
+    top: 0;
+    border-radius: 0 0 9999px 9999px;
+  }
+  .bar::after {
+    bottom: 0;
+    border-radius: 9999px 9999px 0 0;
+  }
+  .slidebar {
+    position: absolute;
+    height: calc(100% - (var(--p-y) * 4));
+    width: var(--w-label);
+    border-radius: calc(var(--round) - var(--p-y));
+    background: var(--muted);
+    transform-origin: 0 0 0;
+    z-index: 0;
+    transition: transform 0.5s cubic-bezier(0.33, 0.83, 0.99, 0.98);
+  }
+  .rd-1:checked ~ .bar,
+  .rd-1:checked ~ .slidebar,
+  .rd-1 + .label:hover ~ .slidebar {
+    transform: translateX(0) scaleX(1);
+  }
+  .rd-2:checked ~ .bar,
+  .rd-2:checked ~ .slidebar,
+  .rd-2 + .label:hover ~ .slidebar {
+    transform: translateX(100%) scaleX(1);
+  }
+  .rd-3:checked ~ .bar,
+  .rd-3:checked ~ .slidebar,
+  .rd-3 + .label:hover ~ .slidebar {
+    transform: translateX(200%) scaleX(1);
+  }
+  .rd-4:checked ~ .bar,
+  .rd-4:checked ~ .slidebar,
+  .rd-4 + .label:hover ~ .slidebar {
+    transform: translateX(300%) scaleX(1);
+  }
+  .rd-5:checked ~ .bar,
+  .rd-5:checked ~ .slidebar,
+  .rd-5 + .label:hover ~ .slidebar {
+    transform: translateX(400%) scaleX(1);
+  }
+  .rd-6:checked ~ .bar,
+  .rd-6:checked ~ .slidebar,
+  .rd-6 + .label:hover ~ .slidebar {
+    transform: translateX(500%) scaleX(1);
+  }
+     .rd-7:checked ~ .bar,
+  .rd-7:checked ~ .slidebar,
+  .rd-7 + .label:hover ~ .slidebar {
+    transform: translateX(600%) scaleX(1);
+  }
+  .custom-scroll-content {
+    overflow-y: auto;
+    max-height: calc(85vh - 80px);
+    height: 100%;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(246, 255, 122, 0.5) transparent;
+    will-change: scroll-position;
+  }
+  .custom-scroll-content::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scroll-content::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scroll-content::-webkit-scrollbar-thumb {
+    background: rgba(246, 255, 122, 0.5);
+    border-radius: 3px;
+  }
+  .custom-scroll-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(246, 255, 122, 0.7);
+  }
+  .application-item {
+    transition: background-color 0.2s ease;
+  }
+ 
+  
+`}</style>
       <div className="max-w-4xl mx-auto bg-[#191a1b] rounded-xl shadow-2xl p-8 relative">
         <button
           onClick={() => setShowBroadcastForm(true)}
@@ -1466,81 +1122,91 @@ function AdminDashboard() {
           </div>
         )}
         <div className="container">
-        <div className="wrap">
-  <input
-    type="radio"
-    id="rd-1"
-    name="radio"
-    className="rd-1"
-    checked={activeTab === "create"}
-    onChange={() => {
-      setActiveTab("create");
-      resetBlogForm();
-    }}
-  />
-  <label htmlFor="rd-1" className="label">
-    <span>Create</span>
-  </label>
-  <input
-    type="radio"
-    id="rd-2"
-    name="radio"
-    className="rd-2"
-    checked={activeTab === "blogs"}
-    onChange={() => setActiveTab("blogs")}
-  />
-  <label htmlFor="rd-2" className="label">
-    <span>Blogs</span>
-  </label>
-  <input
-    type="radio"
-    id="rd-3"
-    name="radio"
-    className="rd-3"
-    checked={activeTab === "team"}
-    onChange={() => setActiveTab("team")}
-  />
-  <label htmlFor="rd-3" className="label">
-    <span>Team</span>
-  </label>
-  <input
-    type="radio"
-    id="rd-4"
-    name="radio"
-    className="rd-4"
-    checked={activeTab === "jobs"}
-    onChange={() => setActiveTab("jobs")}
-  />
-  <label htmlFor="rd-4" className="label">
-    <span>Jobs</span>
-  </label>
-  <input
-    type="radio"
-    id="rd-5"
-    name="radio"
-    className="rd-5"
-    checked={activeTab === "Subscribers"}
-    onChange={() => setActiveTab("Subscribers")}
-  />
-  <label htmlFor="rd-5" className="label">
-    <span>Subscribers</span>
-  </label>
+          <div className="wrap">
+            <input
+              type="radio"
+              id="rd-1"
+              name="radio"
+              className="rd-1"
+              checked={activeTab === "create"}
+              onChange={() => {
+                setActiveTab("create");
+                resetBlogForm();
+              }}
+            />
+            <label htmlFor="rd-1" className="label">
+              <span>Create</span>
+            </label>
+            <input
+              type="radio"
+              id="rd-2"
+              name="radio"
+              className="rd-2"
+              checked={activeTab === "blogs"}
+              onChange={() => setActiveTab("blogs")}
+            />
+            <label htmlFor="rd-2" className="label">
+              <span>Blogs</span>
+            </label>
+            <input
+              type="radio"
+              id="rd-3"
+              name="radio"
+              className="rd-3"
+              checked={activeTab === "team"}
+              onChange={() => setActiveTab("team")}
+            />
+            <label htmlFor="rd-3" className="label">
+              <span>Team</span>
+            </label>
+            <input
+              type="radio"
+              id="rd-4"
+              name="radio"
+              className="rd-4"
+              checked={activeTab === "jobs"}
+              onChange={() => setActiveTab("jobs")}
+            />
+            <label htmlFor="rd-4" className="label">
+              <span>Jobs</span>
+            </label>
+            <input
+              type="radio"
+              id="rd-5"
+              name="radio"
+              className="rd-5"
+              checked={activeTab === "Subscribers"}
+              onChange={() => setActiveTab("Subscribers")}
+            />
+            <label htmlFor="rd-5" className="label">
+              <span>Subscribers</span>
+            </label>
+            <input
+              type="radio"
+              id="rd-6"
+              name="radio"
+              className="rd-6"
+              checked={activeTab === "Projects"}
+              onChange={() => setActiveTab("Projects")}
+            />
+            <label htmlFor="rd-6" className="label">
+              <span>Projects</span>
+            </label>
 
-  
-  <input
-    type="radio"
-    id="rd-6"
-    name="radio"
-    className="rd-6"
-    checked={activeTab === "Projects"}
-    onChange={() => setActiveTab("Projects")}
-  />
-  <label htmlFor="rd-6" className="label">
-    <span>Projects</span>
-  </label>
-  <div className="bar"></div>
-  <div className="slidebar"></div>
-</div>
+            <input
+              type="radio"
+              id="rd-7"
+              name="radio"
+              className="rd-7"
+              checked={activeTab === "Reviews"}
+              onChange={() => setActiveTab("Reviews")}
+            />
+            <label htmlFor="rd-7" className="label">
+              <span>Reviews</span>
+            </label>
+            <div className="bar"></div>
+            <div className="slidebar"></div>
+          </div>
         </div>
         {activeTab === "create" && (
           <form onSubmit={handleBlogSubmit} className="space-y-8 mt-6">
@@ -1646,423 +1312,427 @@ function AdminDashboard() {
             </div>
             <div>
               <h2 className="text-2xl font-bold mb-6 text-[#f6ff7a]">Blog Content</h2>
-              {content?.map((item, index) => (
-                <div key={index} className="border border-gray-600 rounded-xl p-6 mb-6 bg-gray-900 shadow-lg">
-                  <h3 className="text-xl font-semibold mb-4 text-gray-200">
-                    {item.type.charAt(0).toUpperCase() + item.type.slice(1)} {index + 1}
-                  </h3>
-                  {item.type === "heading" && (
-                    <input
-                      type="text"
-                      value={typeof item.value === "string" ? item.value : ""}
-                      onChange={(e) => handleContentChange(index, "value", e.target.value)}
-                      required
-                      className={inputStyle}
-                      placeholder="Enter heading"
-                    />
-                  )}
-                  {item.type === "paragraph" && (
-                    <LexicalEditor
-                      index={index}
-                      initialValue={typeof item.value === "string" ? item.value : ""}
-                      onChange={(value) => handleContentChange(index, "value", value)}
-                    />
-                  )}
-                  {item.type === "image" && (
-                    <div
-                      className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center"
-                      onDrop={(e) => handleImageDrop(index, e)}
-                      onDragOver={(e) => e.preventDefault()}
-                    >
-                      <input
-                        type="file"
-                        id={`image-${index}`}
-                        accept="image/*"
-                        onChange={(e) => handleContentChange(index, "value", e.target.files?.[0] || null)}
-                        className="hidden"
-                      />
-                      <label
-                        htmlFor={`image-${index}`}
-                        className="cursor-pointer inline-block px-6 py-3 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
-                      >
-                        Select Image
-                      </label>
-                      {item.imagePreview && (
-                        <div className="mt-4">
-                          <Image
-                            src={item.imagePreview}
-                            alt="Preview"
-                            width={300}
-                            height={200}
-                            className="max-w-xs mx-auto rounded-lg shadow-md object-cover"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => handleContentChange(index, "value", null)}
-                            className="mt-2 text-red-400 hover:text-red-500"
-                          >
-                            Remove Image
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {item.type === "code" && (
-                    <div>
-                      <select
-                        value={item.language || "javascript"}
-                        onChange={(e) => handleContentChange(index, "language", e.target.value)}
-                        className={inputStyle}
-                      >
-                        <option value="javascript">JavaScript</option>
-                        <option value="python">Python</option>
-                        <option value="java">Java</option>
-                        <option value="cpp">C++</option>
-                        <option value="html">HTML</option>
-                        <option value="css">CSS</option>
-                      </select>
-                      <textarea
-                        value={typeof item.value === "string" ? item.value : ""}
-                        onChange={(e) => handleContentChange(index, "value", e.target.value)}
-                        className={`${inputStyle} rounded-lg h-40`}
-                        placeholder="Enter your code"
-                      />
-                      {typeof item.value === "string" && item.value && (
-                        <SyntaxHighlighter
-                          language={item.language || "javascript"}
-                          style={vscDarkPlus}
-                          className="mt-2 rounded-lg"
-                        >
-                          {item.value}
-                        </SyntaxHighlighter>
-                      )}
-                    </div>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => removeContentItem(index)}
-                    className="mt-4 text-red-400 hover:text-red-500"
-                  >
-                    Remove {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
-                  </button>
-                </div>
-              ))}
-              <div className="flex gap-4">
+{content.length > 0 ? (
+  content.map((item, index) => {
+    console.log(`Rendering content[${index}]:`, item);
+    return (
+      <motion.div
+        key={item.id}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        className="border border-gray-600 rounded-xl p-6 mb-6 bg-[#2d2d2f] shadow-lg"
+      >
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-semibold text-gray-200">
+            {item.type.charAt(0).toUpperCase() + item.type.slice(1)} {index + 1}
+          </h3>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => removeContentItem(index)}
+            className="text-red-400 hover:text-red-500 flex items-center gap-2"
+          >
+            <GrTrash size={18} />
+            <span className="text-sm">Remove</span>
+          </motion.button>
+        </div>
+        {item.type === 'heading' && (
+          <input
+            type="text"
+            value={typeof item.value === 'string' ? item.value : ''}
+            onChange={(e) => handleContentChange(index, 'value', e.target.value)}
+            required
+            className={inputStyle}
+            placeholder="Enter heading"
+          />
+        )}
+        {item.type === 'paragraph' && (
+
+            <div className="ck-editor-container">
+              <CKEditorWrapper
+                data={typeof item.value === 'string' ? item.value : ''}
+                onChange={(data) => {
+                  console.log(`Editor ${index} HTML:`, data);
+                  handleContentChange(index, 'value', data);
+                }}
+                index={index}
+              />
+            </div>
+        
+        )}
+        {item.type === 'image' && (
+          <div>
+            <input
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/gif"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                console.log(`Image selected for index ${index}:`, file);
+                handleContentChange(index, 'value', file || null);
+              }}
+              className={inputStyle}
+            />
+            {item.imagePreview && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="mt-4"
+              >
+                <Image
+                  src={item.imagePreview}
+                  width={300}
+                  height={200}
+                  alt={`Content Image ${index + 1}`}
+                  style={{ maxWidth: '300px', height: '200px' }}
+                  className="max-w-xs mx-auto rounded-lg shadow-md object-cover"
+                  onError={(e) => {
+                    console.error(`Failed to load image preview for index ${index}:`, item.imagePreview);
+                    toast.error(`Failed to load image preview for content item ${index + 1}`);
+                    handleContentChange(index, 'value', null);
+                    e.currentTarget.style.display = 'none';
+                  }}
+                  onLoad={() => console.log(`Image loaded for index ${index}`)}
+                />
+                <button
+                  type="button"
+                  onClick={() => handleContentChange(index, 'value', null)}
+                  className="mt-2 text-red-400 hover:text-red-500 text-sm sm:text-base"
+                >
+                  Remove Image
+                </button>
+              </motion.div>
+            )}
+            {!item.imagePreview && (
+              <p className="mt-4 text-gray-400 text-sm sm:text-base">No image selected</p>
+            )}
+          </div>
+        )}
+        {item.type === 'code' && (
+          <div className="space-y-4">
+            <select
+              value={item.language || 'javascript'}
+              onChange={(e) => handleContentChange(index, 'language', e.target.value)}
+              className={inputStyle}
+            >
+              <option value="javascript">JavaScript</option>
+              <option value="python">Python</option>
+              <option value="java">Java</option>
+              <option value="cpp">C++</option>
+              <option value="html">HTML</option>
+              <option value="css">CSS</option>
+            </select>
+            <textarea
+              value={typeof item.value === 'string' ? item.value : ''}
+              onChange={(e) => handleContentChange(index, 'value', e.target.value)}
+              className={`${inputStyle} rounded-lg h-40`}
+              placeholder="Enter your code"
+            />
+            {typeof item.value === 'string' && item.value && (
+              <SyntaxHighlighter
+                language={item.language || 'javascript'}
+                style={vscDarkPlus}
+                className="mt-2 rounded-lg"
+              >
+                {item.value}
+              </SyntaxHighlighter>
+            )}
+          </div>
+        )}
+      </motion.div>
+    );
+  })
+) : (
+  <p className="text-gray-400 text-sm sm:test-base">No content added yet.</p>
+)}
+              <div className="flex flex-col sm:flex-row gap-4">
                 <select
                   value={newContentType}
                   onChange={(e) => setNewContentType(e.target.value)}
                   className={inputStyle}
                 >
                   <option value="">Select content to add</option>
-                  <option value="heading">Add Title</option>
+                  <option value="heading">Add Heading</option>
                   <option value="paragraph">Add Paragraph</option>
                   <option value="image">Add Image</option>
                   <option value="code">Add Code</option>
                 </select>
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   type="button"
-                  onClick={() => newContentType && addContentItem(newContentType)}
+                  onClick={() => newContentType && addBlogContentItem(newContentType)}
                   disabled={!newContentType}
                   className="px-6 py-3 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 disabled:opacity-50"
                 >
-                  Add
-                </button>
+                  Add 
+                </motion.button>
               </div>
             </div>
             <div className="flex gap-4">
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 type="submit"
                 disabled={loading || Object.keys(errors).length > 0}
                 className="flex-1 py-4 bg-[#f6ff7a] text-black font-bold rounded-lg hover:bg-yellow-500 disabled:opacity-50"
               >
                 {loading ? (editingBlog ? "Updating..." : "Creating...") : editingBlog ? "Update Blog" : "Create Blog"}
-              </button>
+              </motion.button>
               {editingBlog && (
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   type="button"
                   onClick={resetBlogForm}
                   className="flex-1 py-4 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-500"
                 >
                   Cancel
-                </button>
+                </motion.button>
               )}
             </div>
           </form>
         )}
 
+      
+{activeTab === "Reviews" && (
+         <div>
+          <AdminReviews/>
+         </div>
+        )}
 
-{activeTab === "Projects" && (
-  <div className="space-y-6 mt-6">
-    <Allprojectss/>
-  </div>
-)}
 
-        {activeTab === "Subscribers" && (
+
+        {activeTab === "blogs" && (
           <div className="space-y-6 mt-6">
-   
-            <Subscribers />
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#f6ff7a]">Your Blogs</h2>
+            {blogs.length === 0 ? (
+              <p className="text-gray-400 text-base sm:text-lg">No blogs found.</p>
+            ) : (
+              <div className="grid grid-cols-1 gap-4 sm:gap-6">
+                {blogs.map((blog) => (
+                  <div
+                    key={blog._id}
+                    className="bg-[#3d3d3f] p-4 sm:p-6 rounded-xl border border-gray-600 shadow-lg flex flex-col"
+                  >
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                      {blog.primaryImage && (
+                        <Image
+                          src={blog.primaryImage}
+                          alt={blog.title}
+                          width={80}
+                          height={80}
+                          className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg flex-shrink-0"
+                        />
+                      )}
+                      <div className="flex-1">
+                        <h3 className="text-lg sm:text-xl font-semibold text-gray-200 line-clamp-2">{blog.title}</h3>
+                        <p className="text-gray-400 text-sm sm:text-base">Category: {blog.category}</p>
+                        <p className="text-gray-400 text-sm sm:text-base">Author: {blog.author}</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 mt-4 sm:mt-6 justify-end">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleEditBlog(blog)}
+                        className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 text-sm sm:text-base"
+                      >
+                        Edit
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setShowDeleteConfirm({ id: blog._id, type: "blog" })}
+                        className="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500 text-sm sm:text-base"
+                      >
+                        Delete
+                      </motion.button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
-
-
-
-{activeTab === "blogs" && (
-  <div className="space-y-6 mt-6">
-    <h2 className="text-2xl sm:text-3xl font-bold text-[#f6ff7a]">
-      Your Blogs
-    </h2>
-    {blogs.length === 0 ? (
-      <p className="text-gray-400 text-base sm:text-lg">No blogs found.</p>
-    ) : (
-      <div className="grid grid-cols-1  gap-4 sm:gap-6">
-        {blogs.map((blog) => (
-          <div
-            key={blog._id}
-            className="bg-[#3d3d3f] p-4 sm:p-6 rounded-xl border border-gray-600 shadow-lg flex flex-col"
-          >
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              {blog.primaryImage && (
-                <Image
-                  src={blog.primaryImage}
-                  alt={blog.title}
-                  width={80}
-                  height={80}
-                  className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg flex-shrink-0"
+        {activeTab === "team" && (
+          <div className="space-y-6 mt-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#f6ff7a]">Team Members</h2>
+            <form onSubmit={handleTeamSubmit} className="space-y-6 sm:space-y-8">
+              <div className="border-2 border-dashed border-gray-600 rounded-lg p-4 sm:p-6 text-center">
+                <label
+                  htmlFor="team-image"
+                  className="block text-base sm:text-lg font-medium mb-2 text-gray-200"
+                >
+                  Team Member Image (Drag & Drop or Click)
+                </label>
+                <input
+                  type="file"
+                  id="team-image"
+                  accept="image/*"
+                  onChange={(e) => handleTeamImageChange(e.target.files?.[0] || null)}
+                  className="hidden"
                 />
-              )}
-              <div className="flex-1">
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-200 line-clamp-2">
-                  {blog.title}
-                </h3>
-                <p className="text-gray-400 text-sm sm:text-base">
-                  Category: {blog.category}
-                </p>
-                <p className="text-gray-400 text-sm sm:text-base">
-                  Author: {blog.author}
-                </p>
+                <label
+                  htmlFor="team-image"
+                  className="cursor-pointer inline-block px-4 py-2 sm:px-6 sm:py-3 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 text-sm sm:text-base"
+                >
+                  Select Image
+                </label>
+                {teamImagePreview && (
+                  <div className="mt-4">
+                    <Image
+                      src={teamImagePreview}
+                      alt="Team Member Preview"
+                      width={96}
+                      height={96}
+                      className="w-24 h-24 sm:w-32 sm:h-32 mx-auto rounded-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleTeamImageChange(null)}
+                      className="mt-2 text-red-400 hover:text-red-500 text-sm sm:text-base"
+                    >
+                      Remove Image
+                    </button>
+                  </div>
+                )}
+                <div
+                  onDrop={handleTeamImageDrop}
+                  onDragOver={(e) => e.preventDefault()}
+                  className="h-16 sm:h-20"
+                />
               </div>
-            </div>
-            <div className="flex gap-2 mt-4 sm:mt-6 justify-end">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleEditBlog(blog)}
-                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 text-sm sm:text-base"
-              >
-                Edit
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() =>
-                  setShowDeleteConfirm({ id: blog._id, type: "blog" })
-                }
-                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500 text-sm sm:text-base"
-              >
-                Delete
-              </motion.button>
-            </div>
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-)}
-
-
-
-{activeTab === "team" && (
-  <div className="space-y-6 mt-6">
-    <h2 className="text-2xl sm:text-3xl font-bold text-[#f6ff7a]">Team Members</h2>
-    <form onSubmit={handleTeamSubmit} className="space-y-6 sm:space-y-8">
-      <div className="border-2 border-dashed border-gray-600 rounded-lg p-4 sm:p-6 text-center">
-        <label
-          htmlFor="team-image"
-          className="block text-base sm:text-lg font-medium mb-2 text-gray-200"
-        >
-          Team Member Image (Drag & Drop or Click)
-        </label>
-        <input
-          type="file"
-          id="team-image"
-          accept="image/*"
-          onChange={(e) => handleTeamImageChange(e.target.files?.[0] || null)}
-          className="hidden"
-        />
-        <label
-          htmlFor="team-image"
-          className="cursor-pointer inline-block px-4 py-2 sm:px-6 sm:py-3 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 text-sm sm:text-base"
-        >
-          Select Image
-        </label>
-        {teamImagePreview && (
-          <div className="mt-4">
-            <Image
-              src={teamImagePreview}
-              alt="Team Member Preview"
-              width={96}
-              height={96}
-              className="w-24 h-24 sm:w-32 sm:h-32 mx-auto rounded-full object-cover"
-            />
-            <button
-              type="button"
-              onClick={() => handleTeamImageChange(null)}
-              className="mt-2 text-red-400 hover:text-red-500 text-sm sm:text-base"
-            >
-              Remove Image
-            </button>
-          </div>
-        )}
-        <div
-          onDrop={handleTeamImageDrop}
-          onDragOver={(e) => e.preventDefault()}
-          className="h-16 sm:h-20"
-        />
-      </div>
-      <div>
-        <label
-          htmlFor="testimonial"
-          className="block text-base sm:text-lg font-medium mb-2 text-gray-200"
-        >
-          Testimonial (Max 5 lines, 500 characters)
-        </label>
-        <textarea
-          id="testimonial"
-          value={testimonial}
-          onChange={(e) => setTestimonial(e.target.value)}
-          required
-          rows={5}
-          maxLength={500}
-          className={`${inputStyle} rounded-lg text-sm sm:text-base`}
-          placeholder="Enter team member testimonial"
-        />
-        {errors.testimonial && (
-          <p className="text-red-400 text-sm mt-1">{errors.testimonial}</p>
-        )}
-      </div>
-      <div>
-        <label
-          htmlFor="name"
-          className="block text-base sm:text-lg font-medium mb-2 text-gray-200"
-        >
-          Name
-        </label>
-        <input
-          type="text"
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          className={`${inputStyle} text-sm sm:text-base`}
-          placeholder="Enter team member name"
-        />
-        {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
-      </div>
-      <div>
-        <label
-          htmlFor="role"
-          className="block text-base sm:text-lg font-medium mb-2 text-gray-200"
-        >
-          Role
-        </label>
-        <input
-          type="text"
-          id="role"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          required
-          className={`${inputStyle} text-sm sm:text-base`}
-          placeholder="Enter team member role"
-        />
-        {errors.role && <p className="text-red-400 text-sm mt-1">{errors.role}</p>}
-      </div>
-      <div className="flex flex-col sm:flex-row gap-4">
-        <button
-          type="submit"
-          disabled={loading || Object.keys(errors).length > 0}
-          className="flex-1 py-3 sm:py-4 bg-[#f6ff7a] text-black font-bold rounded-lg hover:bg-yellow-500 disabled:opacity-50 text-sm sm:text-base"
-        >
-          {loading
-            ? editingTeamMember
-              ? "Updating..."
-              : "Creating..."
-            : editingTeamMember
-              ? "Update Team Member"
-              : "Create Team Member"}
-        </button>
-        {editingTeamMember && (
-          <button
-            type="button"
-            onClick={resetTeamForm}
-            className="flex-1 py-3 sm:py-4 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-500 text-sm sm:text-base"
-          >
-            Cancel
-          </button>
-        )}
-      </div>
-    </form>
-
-    <h2 className="text-2xl sm:text-3xl font-bold mt-8 text-[#f6ff7a]">
-      Current Team Members
-    </h2>
-    {teamMembers.length === 0 ? (
-      <p className="text-gray-400 text-base sm:text-lg">No team members found.</p>
-    ) : (
-      <div className="grid grid-cols-1  gap-4 sm:gap-6">
-        {teamMembers.map((member, index) => (
-          <div
-            key={index}
-            className="bg-[#3d3d3f] p-4 sm:p-6 rounded-xl border border-gray-600 shadow-lg flex flex-col"
-          >
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <Image
-                src={member.image || "/h1c44.png"}
-                alt={member.name}
-                width={80}
-                height={80}
-                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover flex-shrink-0"
-              />
-              <div className="flex-1">
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-200 line-clamp-2">
-                  {member.name}
-                </h3>
-                <p className="text-gray-400 text-sm sm:text-base">
-                  Role: {member.role}
-                </p>
-                <p className="text-gray-400 text-sm sm:text-base line-clamp-3">
-                  Testimonial: {member.testimonial}
-                </p>
+              <div>
+                <label
+                  htmlFor="testimonial"
+                  className="block text-base sm:text-lg font-medium mb-2 text-gray-200"
+                >
+                  Testimonial (Max 5 lines, 500 characters)
+                </label>
+                <textarea
+                  id="testimonial"
+                  value={testimonial}
+                  onChange={(e) => setTestimonial(e.target.value)}
+                  required
+                  rows={5}
+                  maxLength={500}
+                  className={`${inputStyle} rounded-lg text-sm sm:text-base`}
+                  placeholder="Enter team member testimonial"
+                />
+                {errors.testimonial && (
+                  <p className="text-red-400 text-sm mt-1">{errors.testimonial}</p>
+                )}
               </div>
-            </div>
-            <div className="flex gap-2 mt-4 sm:mt-6 justify-end">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleEditTeamMember(member)}
-                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 text-sm sm:text-base"
-              >
-                Edit
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() =>
-                  setShowDeleteConfirm({ id: member._id, type: "team" })
-                }
-                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500 text-sm sm:text-base"
-              >
-                Delete
-              </motion.button>
-            </div>
+              <div>
+                <label htmlFor="name" className="block text-base sm:text-lg font-medium mb-2 text-gray-200">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  className={`${inputStyle} text-sm sm:text-base`}
+                  placeholder="Enter team member name"
+                />
+                {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
+              </div>
+              <div>
+                <label htmlFor="role" className="block text-base sm:text-lg font-medium mb-2 text-gray-200">
+                  Role
+                </label>
+                <input
+                  type="text"
+                  id="role"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  required
+                  className={`${inputStyle} text-sm sm:text-base`}
+                  placeholder="Enter team member role"
+                />
+                {errors.role && <p className="text-red-400 text-sm mt-1">{errors.role}</p>}
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  type="submit"
+                  disabled={loading || Object.keys(errors).length > 0}
+                  className="flex-1 py-3 sm:py-4 bg-[#f6ff7a] text-black font-bold rounded-lg hover:bg-yellow-500 disabled:opacity-50 text-sm sm:text-base"
+                >
+                  {loading
+                    ? editingTeamMember
+                      ? "Updating..."
+                      : "Creating..."
+                    : editingTeamMember
+                      ? "Update Team Member"
+                      : "Create Team Member"}
+                </button>
+                {editingTeamMember && (
+                  <button
+                    type="button"
+                    onClick={resetTeamForm}
+                    className="flex-1 py-3 sm:py-4 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-500 text-sm sm:text-base"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </form>
+            <h2 className="text-2xl sm:text-3xl font-bold mt-8 text-[#f6ff7a]">
+              Current Team Members
+            </h2>
+            {teamMembers.length === 0 ? (
+              <p className="text-gray-400 text-base sm:text-lg">No team members found.</p>
+            ) : (
+              <div className="grid grid-cols-1 gap-4 sm:gap-6">
+                {teamMembers.map((member, index) => (
+                  <div
+                    key={index}
+                    className="bg-[#3d3d3f] p-4 sm:p-6 rounded-xl border border-gray-600 shadow-lg flex flex-col"
+                  >
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                      <Image
+                        src={member.image || "/h1c44.png"}
+                        alt={member.name}
+                        width={80}
+                        height={80}
+                        className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover flex-shrink-0"
+                      />
+                      <div className="flex-1">
+                        <h3 className="text-lg sm:text-xl font-semibold text-gray-200 line-clamp-2">
+                          {member.name}
+                        </h3>
+                        <p className="text-gray-400 text-sm sm:text-base">Role: {member.role}</p>
+                        <p className="text-gray-400 text-sm sm:text-base line-clamp-3">
+                          Testimonial: {member.testimonial}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 mt-4 sm:mt-6 justify-end">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleEditTeamMember(member)}
+                        className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 text-sm sm:text-base"
+                      >
+                        Edit
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setShowDeleteConfirm({ id: member._id, type: "team" })}
+                        className="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500 text-sm sm:text-base"
+                      >
+                        Delete
+                      </motion.button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        ))}
-      </div>
-    )}
-  </div>
-)}
-
-
-
+        )}
         {activeTab === "jobs" && (
           <div className="space-y-6 mt-6">
             <h2 className="text-2xl font-bold text-[#f6ff7a]">
@@ -2100,16 +1770,17 @@ function AdminDashboard() {
                 {errors.jobLocation && <p className="text-red-400 text-sm mt-1">{errors.jobLocation}</p>}
               </div>
               <div>
-                <label htmlFor="job-description" className="block text-lg font-medium mb-2 text-gray-200">
-                  Job Description
-                </label>
-                <LexicalEditor
-                  index={0}
-                  initialValue={jobDescription}
-                  onChange={(value) => setJobDescription(value)}
-                />
-                {errors.jobDescription && <p className="text-red-400 text-sm mt-1">{errors.jobDescription}</p>}
-              </div>
+  <label htmlFor="job-description" className="block text-lg font-medium mb-2 text-gray-200">
+    Job Description
+  </label>
+  <CKEditorWrapper
+    data={jobDescription}
+    onChange={(data) => {
+      setJobDescription(data);
+    }}
+  />
+  {errors.jobDescription && <p className="text-red-400 text-sm mt-1">{errors.jobDescription}</p>}
+</div>
               <div>
                 <label htmlFor="employment-type" className="block text-lg font-medium mb-2 text-gray-200">
                   Employment Type
@@ -2150,233 +1821,43 @@ function AdminDashboard() {
             {jobs.length === 0 ? (
               <p className="text-gray-400">No jobs found.</p>
             ) : (
-
-<div className="grid grid-cols-1 gap-4 sm:gap-6">
-  {jobs.map((job) => (
-    <div
-      key={job._id}
-      className="bg-[#3d3d3f] p-4 sm:p-6 rounded-xl border border-gray-600 shadow-lg min-w-0"
-    >
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-lg sm:text-xl font-semibold text-gray-200 truncate">
-            {job.title}
-          </h3>
-          <p className="text-sm sm:text-base text-gray-400">Location: {job.location}</p>
-          <p className="text-sm sm:text-base text-gray-400">Type: {job.employmentType}</p>
-          <p className="text-sm sm:text-base text-gray-400">
-            Posted: {new Date(job.postedDate).toLocaleDateString()}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2 sm:gap-3">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => handleEditJob(job)}
-            className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] text-black font-semibold text-sm sm:text-base rounded-lg hover:bg-yellow-500 min-w-[80px] focus:outline-none focus:ring-2 focus:ring-[#f6ff7a]"
-          >
-            Edit
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowDeleteConfirm({ id: job._id, type: "job" })}
-            className="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-600 text-white font-semibold text-sm sm:text-base rounded-lg hover:bg-red-500 min-w-[80px] focus:outline-none focus:ring-2 focus:ring-[#f6ff7a]"
-          >
-            Delete
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setViewingApplicationsForJob(job._id)}
-            className="px-3 py-1.5 sm:px-4 sm:py-2 bg-transparent text-white border border-gray-600 font-semibold text-sm sm:text-base rounded-lg hover:bg-gray-600 hover:border-gray-600 min-w-[80px] focus:outline-none focus:ring-2 focus:ring-[#f6ff7a]"
-          >
-            View Applications
-          </motion.button>
-        </div>
-      </div>
-    </div>
-  ))}
-</div>
- )}
-  
-
-
-  <AnimatePresence>
-  {viewingApplicationsForJob && (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      className="fixed inset-0 bg-black bg-opacity-60 flex pt-[5em] items-center justify-center z-[50] px-4"
-    >
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.8, opacity: 0 }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
-        ref={scrollRef}
-        className="bg-[#3d3d3f]/80 backdrop-blur-md p-6 sm:p-8 rounded-xl w-[95%] sm:w-[90%] md:w-[80%] lg:w-[70%] max-h-[80vh] overflow-y-auto custom-scroll-content shadow-xl"
-      >
-        <div className="relative">
-          <h2
-            style={{ fontFamily: 'Poppins, sans-serif' }}
-            className="text-2xl sm:text-3xl font-semibold text-[#f6ff7a] mb-6"
-          >
-            Applications for{' '}
-            {jobs.find((job) => job._id === viewingApplicationsForJob)?.title}
-          </h2>
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={closeModal}
-            className="absolute top-4 right-4 bg-[#f6ff7a]/20 text-white p-2 rounded-full hover:bg-[#f6ff7a]/40 transition-colors"
-            aria-label="Close applications modal"
-          >
-            <FaTimes size={18} />
-          </motion.button>
-        </div>
-
-        {(() => {
-          const filteredApplications = applications.filter(
-            (app) => app.jobId === viewingApplicationsForJob
-          );
-          console.log('viewingApplicationsForJob:', viewingApplicationsForJob);
-          console.log('Filtered applications:', filteredApplications);
-          console.log('All applications:', applications);
-          return filteredApplications.length === 0 ? (
-            <p className="text-gray-400 text-center py-6">No applications found for this job.</p>
-          ) : (
-            <div className="space-y-4">
-              {filteredApplications.map((application, index) => (
-                <motion.div
-                  key={application._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.5) }} // Reduced delay for performance
-                  className="application-item bg-[#2d2d2f] p-5 rounded-xl border border-gray-600 hover:bg-[#404042] transition-all duration-300 shadow-md"
-                >
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
-                    <div className="space-y-1.5">
-                      <p className="text-gray-200 text-lg font-semibold">
-                        {application.firstName} {application.lastName}
-                      </p>
-                      <p className="text-gray-400">
-                        <strong>Email:</strong> {application.email}
-                      </p>
-                      <p className="text-gray-400">
-                        <strong>Phone:</strong> {application.phone}
-                      </p>
-                      <p className="text-gray-400">
-                        <strong>Country:</strong> {application.country}
-                      </p>
-                      {application.linkedIn && (
-                        <p className="text-gray-400">
-                          <strong>LinkedIn:</strong>{' '}
-                          <a
-                            href={application.linkedIn}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[#f6ff7a] hover:underline"
-                          >
-                            Profile
-                          </a>
+              <div className="grid grid-cols-1 gap-4 sm:gap-6">
+                {jobs.map((job) => (
+                  <div
+                    key={job._id}
+                    className="bg-[#3d3d3f] p-4 sm:p-6 rounded-xl border border-gray-600 shadow-lg min-w-0"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg sm:text-xl font-semibold text-gray-200 truncate">{job.title}</h3>
+                        <p className="text-sm sm:text-base text-gray-400">Location: {job.location}</p>
+                        <p className="text-sm sm:text-base text-gray-400">Type: {job.employmentType}</p>
+                        <p className="text-sm sm:text-base text-gray-400">
+                          Posted: {new Date(job.postedDate).toLocaleDateString()}
                         </p>
-                      )}
-                      {application.website && (
-                        <p className="text-gray-400">
-                          <strong>Website:</strong>{' '}
-                          <a
-                            href={application.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[#f6ff7a] hover:underline"
-                          >
-                            Link
-                          </a>
-                        </p>
-                      )}
-                      <p className="text-gray-400">
-                        <strong>Submitted:</strong>{' '}
-                        {new Date(application.submittedAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <div className="flex gap-2 mt-4 sm:mt-0">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => handleViewResume(application.resume)}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#f6ff7a] to-[#d4e04d] text-black font-semibold rounded-lg hover:from-[#e0e56b] hover:to-[#c0cc44] transition-all"
-                      >
-                        <FaEye size={16} />
-                        View Resume
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() =>
-                          setShowDeleteConfirm({ id: application._id, type: 'application' })
-                        }
-                        className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold rounded-lg hover:from-red-500 hover:to-red-600 transition-all"
-                      >
-                        <FaTrash size={16} />
-                        Delete
-                      </motion.button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          );
-        })()}
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
+                      </div>
+                      <div className="flex flex-wrap gap-2 sm:gap-3">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handleEditJob(job)}
+                          className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 text-sm sm:text-base"  >Edit  </motion.button>
 
 
 
+<motion.button
+whileHover={{ scale: 1.05 }}
+whileTap={{ scale: 0.95 }}
+onClick={() => setShowDeleteConfirm({ id: job._id, type: "job" })}
+className="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500 text-sm sm:text-base">
 
-{viewResumeUrl && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
-    <div className="bg-[#3d3d3f] p-6 rounded-lg w-[95%] max-w-5xl relative overflow-auto max-h-[90vh]">
-      <button
-        onClick={closeModal}
-        className="absolute top-4 right-4 text-gray-200 hover:text-gray-400 z-10"
-      >
-        Close
-      </button>
-      {errorMessage ? (
-        <div className="text-red-400">
-          <p>{errorMessage}</p>
-          <a
-            href={viewResumeUrl || "#"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[#f6ff7a] underline"
-          >
-            Open PDF in new tab
-          </a>
-        </div>
-      ) : (
-        <iframe
-          src={viewResumeUrl}
-          title="Resume"
-          className="w-full min-h-[80vh] rounded-lg"
-          allowFullScreen
-        />
-      )}
-    </div>
-  </div>
-)}
+Delete
+</motion.button>
+<motion.button
+whileHover={{ scale: 1.05 }}
+whileTap={{ scale: 0.95 }}
+onClick={() => setViewingApplicationsForJob(job._id)}
+className="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 text-sm sm:text-base flex items-center gap-2">
 
-
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
+<FaEye size={16} /> View Applications </motion.button> </div> </div> </div> ))} </div> )} {viewingApplicationsForJob && ( <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000]"> <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className="bg-[#3d3d3f] p-4 sm:p-6 rounded-xl w-full max-w-3xl max-h-[90vh] flex flex-col relative" > <button onClick={closeModal} className="absolute top-4 right-4 text-gray-200 hover:text-[#f6ff7a]" > <FaTimes size={24} /> </button> <h2 className="text-xl sm:text-2xl font-bold text-[#f6ff7a] mb-4 sm:mb-6"> Applications for {jobs.find((job) => job._id === viewingApplicationsForJob)?.title} </h2> <div ref={scrollRef} className="custom-scroll-content flex-1"> {applications .filter((app) => app.jobId === viewingApplicationsForJob) .length === 0 ? ( <p className="text-gray-400 text-base sm:text-lg">No applications found for this job.</p> ) : ( <div className="space-y-4"> {applications .filter((app) => app.jobId === viewingApplicationsForJob) .map((app) => ( <div key={app._id} className="application-item bg-[#2d2d2f] p-3 sm:p-4 rounded-lg border border-gray-600 hover:bg-[#353537] transition-colors" > <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"> <div className="flex-1"> <h3 className="text-base sm:text-lg font-semibold text-gray-200"> {app.firstName} {app.lastName} </h3> <p className="text-sm sm:text-base text-gray-400">Email: {app.email}</p> <p className="text-sm sm:text-base text-gray-400">Phone: {app.phone}</p> <p className="text-sm sm:text-base text-gray-400">Country: {app.country}</p> {(app.linkedIn || app.website) && ( <div className="text-sm sm:text-base text-gray-400"> {app.linkedIn && ( <a href={app.linkedIn} target="_blank" rel="noopener noreferrer" className="text-[#f6ff7a] hover:underline" > LinkedIn </a> )} {app.linkedIn && app.website && " | "} {app.website && ( <a href={app.website} target="_blank" rel="noopener noreferrer" className="text-[#f6ff7a] hover:underline" > Website </a> )} </div> )} <p className="text-sm sm:text-base text-gray-400"> Submitted: {new Date(app.submittedAt).toLocaleDateString()} </p> </div> <div className="flex gap-2 sm:gap-3"> <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => handleViewResume(app.resume)} className="px-2 py-1 sm:px-3 sm:py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 text-sm sm:text-base flex items-center gap-2" > <FaEye size={14} /> Resume </motion.button> <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setShowDeleteConfirm({ id: app._id, type: "application" }) } className="px-2 py-1 sm:px-3 sm:py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500 text-sm sm:text-base flex items-center gap-2" > <FaTrash size={14} /> Delete </motion.button> </div> </div> </div> ))} </div> )} </div> </motion.div> </div> )} </div> )} {activeTab === "Subscribers" && ( <div className="mt-6"> <h2 className="text-2xl sm:text-3xl font-bold text-[#f6ff7a] mb-6">Subscribers</h2> <Subscribers /> </div> )} {activeTab === "Projects" && ( <div className="mt-6"><Allprojectss /> </div> )} </div> </div> ); }
 export default AdminDashboard;

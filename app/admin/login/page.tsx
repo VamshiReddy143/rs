@@ -1,7 +1,8 @@
+
 'use client';
 
-import { useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -9,11 +10,16 @@ import 'react-toastify/dist/ReactToastify.css';
 function RedirectHandler({ onRedirect }: { onRedirect: (redirect: string) => void }) {
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/admin';
-  onRedirect(redirect); // Pass redirect to parent
+
+  useEffect(() => {
+    onRedirect(redirect); // Call onRedirect in useEffect
+  }, [redirect, onRedirect]);
+
   return null; // No UI needed
 }
 
 export default function AdminLoginPage() {
+  const router = useRouter();
   const [redirect, setRedirect] = useState('/admin'); // Default redirect
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -61,10 +67,12 @@ export default function AdminLoginPage() {
         draggable: true,
         theme: 'dark',
       });
+
+      // Reset loading state and redirect
+      setIsLoading(false);
       setTimeout(() => {
-        window.location.assign(redirect);
-        console.log('[AdminLoginPage] window.location.assign called');
-      }, 2000);
+        router.push(redirect);
+      }, 2000); // Delay to show toast
     } catch (err: any) {
       console.error('[AdminLoginPage] Error:', err.message);
       setError(err.message);

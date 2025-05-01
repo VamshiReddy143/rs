@@ -4,6 +4,7 @@ import Blog from "@/models/Blog";
 import connectToDatabase from "@/lib/connectDb";
 import { v2 as cloudinary } from "cloudinary";
 import { Readable } from "stream";
+import sanitizeHtml from "sanitize-html";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -21,6 +22,7 @@ export async function GET() {
   try {
     await connectToDatabase();
     const blogs = await Blog.find({}).lean();
+    console.log("Fetched blogs:", JSON.stringify(blogs, null, 2));
     return NextResponse.json(blogs, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching blogs:", error);
@@ -53,7 +55,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: "Invalid content format" }, { status: 400 });
     }
 
-    // Upload primary image if present
     let primaryImageUrl: string | undefined;
     if (primaryImage) {
       const arrayBuffer = await primaryImage.arrayBuffer();
@@ -71,7 +72,6 @@ export async function POST(request: NextRequest) {
       primaryImageUrl = (uploadResult as any).secure_url;
     }
 
-    // Process content
     const processedContent: ContentItem[] = [];
     for (const [index, item] of content.entries()) {
       if (!item.type || !item.value) {
@@ -108,6 +108,43 @@ export async function POST(request: NextRequest) {
             { status: 400 }
           );
         }
+      } else if (item.type === "paragraph") {
+        // Sanitize HTML to allow lists and iframes
+        processedItem.value = sanitizeHtml(item.value, {
+          allowedTags: [
+            "p",
+            "span",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "strong",
+            "em",
+            "ul",
+            "ol",
+            "li",
+            "a",
+            "img",
+            "table",
+            "tr",
+            "td",
+            "th",
+            "blockquote",
+            "code",
+            "pre",
+            "div",
+            "iframe",
+          ],
+          allowedAttributes: {
+            "*": ["style", "class"],
+            "a": ["href", "target"],
+            "img": ["src", "alt"],
+            "iframe": ["src", "frameborder", "allow", "allowfullscreen", "style"],
+          },
+          allowedIframeHostnames: ["www.youtube.com", "player.vimeo.com"],
+        });
       }
 
       processedContent.push(processedItem);
@@ -122,6 +159,7 @@ export async function POST(request: NextRequest) {
     });
 
     const savedBlog = await newBlog.save();
+    console.log("Saved blog content:", JSON.stringify(savedBlog.content, null, 2));
     return NextResponse.json(savedBlog, { status: 201 });
   } catch (error: any) {
     console.error("Error creating blog:", error);

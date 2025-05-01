@@ -14,7 +14,7 @@ const Page: React.FC = () => {
 
   return (
     <div className="bg-[#191a1b] pb-10">
-      <div className="lg:ml-[11%] px-3 md:mt-10 mt-0 py-1">
+      <div className="lg:ml-[11%] px-3 md:mt-10 mt-0 ">
         <Hero
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
