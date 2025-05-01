@@ -1,21 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 import connectToDatabase from '@/lib/connectDb';
 import Review from '@/models/Reviews';
 
-// DELETE /api/reviews/:id
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+// DELETE handler to delete a review by ID
+export async function DELETE(req: NextRequest, context: any) {
+  const { id } = context.params;
 
-
-
-  const { id } = params;
-
-  if (!id || typeof id !== 'string') {
+  // Validate ID
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) {
     return NextResponse.json({ error: 'Invalid review ID' }, { status: 400 });
   }
 
   try {
     await connectToDatabase();
-    const review = await Review.findByIdAndDelete(id);
+    const review = await Review.findByIdAndDelete(id).lean();
 
     if (!review) {
       return NextResponse.json({ error: 'Review not found' }, { status: 404 });
@@ -23,9 +22,11 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 
     console.log('Deleted review:', { reviewId: id });
     return NextResponse.json({ message: 'Review deleted successfully' }, { status: 200 });
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Error deleting review:', error);
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json({ error: `Failed to delete review: ${message}` }, { status: 500 });
+    return NextResponse.json(
+      { error: `Failed to delete review: ${error.message}` },
+      { status: 500 }
+    );
   }
 }

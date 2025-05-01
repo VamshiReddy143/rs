@@ -133,8 +133,16 @@ const ProjectsDashboard: React.FC = () => {
         const data = await res.json();
         const sortedData = data.sort((a: UnifiedProject, b: UnifiedProject) => a.order - b.order);
         setProjects(sortedData);
-        setFeaturedProjects(sortedData.filter((p) => p.isFeatured).sort((a, b) => a.order - b.order));
-        setAllProjects(sortedData.filter((p) => !p.isFeatured).sort((a, b) => a.order - b.order));
+        setFeaturedProjects(
+          sortedData
+            .filter((p: UnifiedProject) => p.isFeatured)
+            .sort((a: UnifiedProject, b: UnifiedProject) => a.order - b.order)
+        );
+        setAllProjects(
+          sortedData
+            .filter((p: UnifiedProject) => !p.isFeatured)
+            .sort((a: UnifiedProject, b: UnifiedProject) => a.order - b.order)
+        );
       } catch (err) {
         toast.error('Failed to load projects', { theme: 'dark' });
       } finally {
@@ -226,8 +234,6 @@ const ProjectsDashboard: React.FC = () => {
         );
         return updatedProjects;
       });
-
-      
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       toast.error(`Error: ${message}`, { theme: 'dark' });
@@ -253,14 +259,12 @@ const ProjectsDashboard: React.FC = () => {
       order: index,
     }));
 
-    // Update the section-specific state
     if (section === 'featured') {
       setFeaturedProjects(reorderedProjects);
     } else {
       setAllProjects(reorderedProjects);
     }
 
-    // Merge with the main projects state
     const updatedProjects = projects.map((p) => {
       const updatedProject = reorderedProjects.find((rp) => rp._id === p._id);
       return updatedProject || p;
@@ -278,12 +282,10 @@ const ProjectsDashboard: React.FC = () => {
         const errorText = await response.text();
         throw new Error(`Failed to save project order: ${errorText}`);
       }
-     
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       console.error('Reorder error:', message);
       toast.error(`Error: ${message}`, { theme: 'dark' });
-      // Revert state if the API call fails
       setFeaturedProjects(projects.filter((p) => p.isFeatured).sort((a, b) => a.order - b.order));
       setAllProjects(projects.filter((p) => !p.isFeatured).sort((a, b) => a.order - b.order));
     }
@@ -362,7 +364,6 @@ const ProjectsDashboard: React.FC = () => {
           </Link>
         </div>
 
-        {/* Featured Projects Section */}
         <div className="mb-6 sm:mb-8">
           <h3 className="text-base sm:text-lg font-semibold text-[#f6ff7a] mb-4">Featured Projects</h3>
           <DndContext
@@ -394,7 +395,6 @@ const ProjectsDashboard: React.FC = () => {
           </DndContext>
         </div>
 
-        {/* All Projects Section */}
         <div className="mb-6 sm:mb-8">
           <h3 className="text-base sm:text-lg font-semibold text-[#f6ff7a] mb-4">All Projects</h3>
           {loading ? (
