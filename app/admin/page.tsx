@@ -1434,36 +1434,7 @@ function AdminDashboard() {
               }}
               className={inputStyle}
             />
-            {item.imagePreview && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="mt-4"
-              >
-                <Image
-                  src={item.imagePreview}
-                  width={300}
-                  height={200}
-                  alt={`Content Image ${index + 1}`}
-                  style={{ maxWidth: '300px', height: '200px' }}
-                  className="max-w-xs mx-auto rounded-lg shadow-md object-cover"
-                  onError={(e) => {
-                    console.error(`Failed to load image preview for index ${index}:`, item.imagePreview);
-                    toast.error(`Failed to load image preview for content item ${index + 1}`);
-                    handleContentChange(index, 'value', null);
-                    e.currentTarget.style.display = 'none';
-                  }}
-                  onLoad={() => console.log(`Image loaded for index ${index}`)}
-                />
-                <button
-                  type="button"
-                  onClick={() => handleContentChange(index, 'value', null)}
-                  className="mt-2 text-red-400 hover:text-red-500 text-sm sm:text-base"
-                >
-                  Remove Image
-                </button>
-              </motion.div>
-            )}
+         
             {!item.imagePreview && (
               <p className="mt-4 text-gray-400 text-sm sm:text-base">No image selected</p>
             )}

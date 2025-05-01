@@ -14,71 +14,42 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({ data, onChange, index
   const [CKEditorComponent, setCKEditorComponent] = useState<any>(null);
   const [EditorBuild, setEditorBuild] = useState<any>(null);
   const editorRef = useRef<any>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const isMountedRef = useRef(true);
 
-  // Load CKEditor
   useEffect(() => {
     const loadEditor = async () => {
       try {
         const CKEditorModule = await import('@ckeditor/ckeditor5-react');
         const Editor = await import('@ckeditor/ckeditor5-build-classic');
 
-        if (isMountedRef.current) {
-          setCKEditorComponent(() => CKEditorModule.CKEditor);
-          setEditorBuild(() => Editor.default);
-          setEditorLoaded(true);
-        }
+        setCKEditorComponent(() => CKEditorModule.CKEditor);
+        setEditorBuild(() => Editor.default);
+        setEditorLoaded(true);
       } catch (error) {
         console.error(`Failed to load CKEditor for index ${index}:`, error);
-        if (isMountedRef.current) {
-          toast.error(`Failed to load editor for content item ${index !== undefined ? index + 1 : 'unknown'}`);
-        }
+        toast.error(`Failed to load editor for content item ${index !== undefined ? index + 1 : 'unknown'}`);
       }
     };
 
     loadEditor();
-
-    return () => {
-      isMountedRef.current = false;
-    };
   }, []);
 
-  // Cleanup editor on unmount
   useEffect(() => {
     return () => {
-      if (editorRef.current && containerRef.current) {
-        console.log(`Attempting to destroy CKEditor for index ${index}`);
-        try {
-          // Check if the editor is still attached to the DOM
-          if (containerRef.current.contains(editorRef.current.editing.view.document.getRoot()?.getDomRoot())) {
-            editorRef.current
-              .destroy()
-              .then(() => {
-                console.log(`CKEditor destroyed for index ${index}`);
-                editorRef.current = null;
-              })
-              .catch((error: any) => {
-                console.error(`Failed to destroy CKEditor for index ${index}:`, error);
-              });
-          } else {
-            console.warn(`CKEditor DOM root not found for index ${index}, skipping destroy`);
-            editorRef.current = null;
-          }
-        } catch (error) {
-          console.error(`Error during CKEditor cleanup for index ${index}:`, error);
-          editorRef.current = null;
-        }
+      if (editorRef.current) {
+        editorRef.current.destroy().catch((error: any) => {
+          console.error(`Failed to destroy CKEditor for index ${index}:`, error);
+        });
+        editorRef.current = null;
       }
     };
-  }, []);
+  }, [index]);
 
   if (!editorLoaded) {
     return <div>Loading editor...</div>;
   }
 
   return (
-    <div className="ck-editor-container" ref={containerRef}>
+    <div className="ck-editor-container">
       <CKEditorComponent
         editor={EditorBuild}
         data={data}
@@ -158,7 +129,7 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({ data, onChange, index
                   const id = match[2];
                   return (
                     '<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">' +
-                    `<iframe src="https://www.youtube.com Embed/${id}" ` +
+                    `<iframe src="https://www.youtube.com/embed/${id}" ` +
                     'style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" ' +
                     'frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>' +
                     '</div>'
