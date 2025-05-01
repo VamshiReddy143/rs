@@ -37,10 +37,14 @@ export async function GET(request: NextRequest) {
     console.log("Database connected:", mongoose.connection.readyState);
 
     // Fetch blogs with all required fields
-    const blogs = await Blog.find(
-      {},
-      { _id: 1, title: 1, category: 1, author: 1, primaryImage: 1, content: 1 }
-    ).lean() as unknown as LeanBlog[];
+   // Inside your GET handler
+const blogs = await Blog.find(
+  {},
+  { _id: 1, title: 1, category: 1, author: 1, primaryImage: 1, content: 1 }
+)
+.sort({ createdAt: -1 }) // ⬅️ Sort by newest first
+.lean() as unknown as LeanBlog[];
+
     console.log("Fetched blogs:", JSON.stringify(blogs, null, 2));
 
     // Transform blogs to match Card interface

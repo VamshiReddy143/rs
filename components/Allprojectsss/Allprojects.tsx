@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { motion } from "framer-motion";
-import { GrAddCircle, GrTrash, GrDrag } from "react-icons/gr";
-import { AiOutlineStar, AiFillStar, AiOutlineClose } from "react-icons/ai";
-import Link from "next/link";
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { motion } from 'framer-motion';
+import { GrAddCircle, GrTrash, GrDrag } from 'react-icons/gr';
+import { AiOutlineStar, AiFillStar, AiOutlineClose } from 'react-icons/ai';
+import Link from 'next/link';
 import {
   DndContext,
   closestCenter,
@@ -16,16 +16,16 @@ import {
   TouchSensor,
   useSensor,
   useSensors,
-} from "@dnd-kit/core";
-import { SortableContext, sortableKeyboardCoordinates, useSortable, arrayMove } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+} from '@dnd-kit/core';
+import { SortableContext, sortableKeyboardCoordinates, useSortable, arrayMove } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface UnifiedProject {
   _id: string;
   title: string;
   thumbnailText: string;
   image?: string | null;
-  model: "Project" | "Template3Project" | "CustomContent";
+  model: 'Project' | 'Template3Project' | 'CustomContent';
   isFeatured: boolean;
   order: number;
 }
@@ -35,7 +35,7 @@ const SortableProject: React.FC<{
   index: number;
   onDelete: (id: string, model: string) => void;
   onToggleFeatured: (id: string, model: string, isFeatured: boolean) => void;
-  section: "featured" | "all";
+  section: 'featured' | 'all';
 }> = ({ project, index, onDelete, onToggleFeatured, section }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: `${section}-${project.model}-${project._id}`,
@@ -46,8 +46,8 @@ const SortableProject: React.FC<{
     transition,
     opacity: isDragging ? 0.7 : 1,
     zIndex: isDragging ? 100 : 0,
-    boxShadow: isDragging ? "0 8px 16px rgba(0, 0, 0, 0.3)" : "0 4px 6px rgba(0, 0, 0, 0.1)",
-    border: isDragging ? "2px solid #f6ff7a" : "1px solid #3d3d3f",
+    boxShadow: isDragging ? '0 8px 16px rgba(0, 0, 0, 0.3)' : '0 4px 6px rgba(0, 0, 0, 0.1)',
+    border: isDragging ? '2px solid #f6ff7a' : '1px solid #3d3d3f',
   };
 
   return (
@@ -56,7 +56,7 @@ const SortableProject: React.FC<{
         <div className="flex flex-col gap-4">
           <div className="relative w-full h-32 sm:h-40">
             <Image
-              src={project.image || "/default-project-image.png"}
+              src={project.image || '/default-project-image.png'}
               alt={project.title}
               fill
               className="rounded-lg object-cover"
@@ -78,7 +78,7 @@ const SortableProject: React.FC<{
           onToggleFeatured(project._id, project.model, project.isFeatured);
         }}
         className={`absolute top-2 right-2 p-1 sm:p-2 bg-[#242425] rounded-lg ${
-          project.isFeatured ? "text-[#AAB418]" : "text-[#f6ff7a]"
+          project.isFeatured ? 'text-[#AAB418]' : 'text-[#f6ff7a]'
         }`}
         aria-label={project.isFeatured ? `Remove ${project.title} from featured` : `Add ${project.title} to featured`}
       >
@@ -112,8 +112,9 @@ const SortableProject: React.FC<{
 
 const ProjectsDashboard: React.FC = () => {
   const [projects, setProjects] = useState<UnifiedProject[]>([]);
-  const [filteredProjects, setFilteredProjects] = useState<UnifiedProject[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [featuredProjects, setFeaturedProjects] = useState<UnifiedProject[]>([]);
+  const [allProjects, setAllProjects] = useState<UnifiedProject[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<{ id: string; model: string } | null>(null);
 
@@ -127,14 +128,15 @@ const ProjectsDashboard: React.FC = () => {
     const fetchProjects = async () => {
       try {
         setLoading(true);
-        const res = await fetch("/api/projects/allprojects");
-        if (!res.ok) throw new Error("Failed to fetch projects");
+        const res = await fetch('/api/projects/allprojects');
+        if (!res.ok) throw new Error('Failed to fetch projects');
         const data = await res.json();
         const sortedData = data.sort((a: UnifiedProject, b: UnifiedProject) => a.order - b.order);
         setProjects(sortedData);
-        setFilteredProjects(sortedData);
+        setFeaturedProjects(sortedData.filter((p) => p.isFeatured).sort((a, b) => a.order - b.order));
+        setAllProjects(sortedData.filter((p) => !p.isFeatured).sort((a, b) => a.order - b.order));
       } catch (err) {
-        toast.error("Failed to load projects", { theme: "dark" });
+        toast.error('Failed to load projects', { theme: 'dark' });
       } finally {
         setLoading(false);
       }
@@ -143,12 +145,24 @@ const ProjectsDashboard: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const filtered = projects.filter(
-      (project) =>
-        project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.thumbnailText.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredProjects(filtered.sort((a, b) => a.order - b.order));
+    const filteredFeatured = projects
+      .filter((p) => p.isFeatured)
+      .filter(
+        (project) =>
+          project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          project.thumbnailText.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .sort((a, b) => a.order - b.order);
+    const filteredAll = projects
+      .filter((p) => !p.isFeatured)
+      .filter(
+        (project) =>
+          project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          project.thumbnailText.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .sort((a, b) => a.order - b.order);
+    setFeaturedProjects(filteredFeatured);
+    setAllProjects(filteredAll);
   }, [searchQuery, projects]);
 
   const handleDeleteProject = async (id: string, model: string) => {
@@ -156,29 +170,30 @@ const ProjectsDashboard: React.FC = () => {
     try {
       let endpoint: string;
       switch (model) {
-        case "Project":
+        case 'Project':
           endpoint = `/api/projects/template1/${id}`;
           break;
-        case "Template3Project":
+        case 'Template3Project':
           endpoint = `/api/projects/template3/${id}`;
           break;
-        case "CustomContent":
+        case 'CustomContent':
           endpoint = `/api/projects/custom/${id}`;
           break;
         default:
-          throw new Error("Invalid model type");
+          throw new Error('Invalid model type');
       }
 
-      const response = await fetch(endpoint, { method: "DELETE" });
+      const response = await fetch(endpoint, { method: 'DELETE' });
       if (!response.ok) throw new Error(`Failed to delete ${model}: ${await response.text()}`);
 
       setProjects((prev) => prev.filter((project) => project._id !== id));
-      setFilteredProjects((prev) => prev.filter((project) => project._id !== id));
-      toast.success(`${model} deleted successfully!`, { theme: "dark" });
+      setFeaturedProjects((prev) => prev.filter((project) => project._id !== id));
+      setAllProjects((prev) => prev.filter((project) => project._id !== id));
+      toast.success(`${model} deleted successfully!`, { theme: 'dark' });
       setShowDeleteConfirm(null);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unknown error";
-      toast.error(`Error: ${message}`, { theme: "dark" });
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Error: ${message}`, { theme: 'dark' });
     } finally {
       setLoading(false);
     }
@@ -186,51 +201,50 @@ const ProjectsDashboard: React.FC = () => {
 
   const handleToggleFeatured = async (id: string, model: string, isFeatured: boolean) => {
     try {
-      const response = await fetch("/api/projects/feature", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/projects/feature', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, model, isFeatured: !isFeatured }),
       });
       if (!response.ok) throw new Error(`Failed to update featured status: ${await response.text()}`);
 
-      setProjects((prev) =>
-        prev.map((project) =>
+      setProjects((prev) => {
+        const updatedProjects = prev.map((project) =>
           project._id === id
-            ? { ...project, isFeatured: !isFeatured, order: !isFeatured ? 0 : prev.filter((p) => !p.isFeatured).length }
+            ? {
+                ...project,
+                isFeatured: !isFeatured,
+                order: !isFeatured ? 0 : prev.filter((p) => !p.isFeatured).length,
+              }
             : project
-        )
-      );
-      setFilteredProjects((prev) =>
-        prev.map((project) =>
-          project._id === id
-            ? { ...project, isFeatured: !isFeatured, order: !isFeatured ? 0 : prev.filter((p) => !p.isFeatured).length }
-            : project
-        )
-      );
-      toast.success(
-        !isFeatured ? "Added to featured projects!" : "Removed from featured projects!",
-        { theme: "dark" }
-      );
+        );
+        setFeaturedProjects(
+          updatedProjects.filter((p) => p.isFeatured).sort((a, b) => a.order - b.order)
+        );
+        setAllProjects(
+          updatedProjects.filter((p) => !p.isFeatured).sort((a, b) => a.order - b.order)
+        );
+        return updatedProjects;
+      });
+
+      
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unknown error";
-      toast.error(`Error: ${message}`, { theme: "dark" });
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Error: ${message}`, { theme: 'dark' });
     }
   };
 
-     const handleDragEnd = async (event: any, section: "featured" | "all") => {
+  const handleDragEnd = async (event: any, section: 'featured' | 'all') => {
     const { active, over } = event;
 
     if (!over || active.id === over.id) return;
 
-    const projectsInSection =
-      section === "featured"
-        ? filteredProjects.filter((p) => p.isFeatured)
-        : filteredProjects.filter((p) => !p.isFeatured);
+    const projectsInSection = section === 'featured' ? featuredProjects : allProjects;
     const oldIndex = projectsInSection.findIndex((p) => `${section}-${p.model}-${p._id}` === active.id);
     const newIndex = projectsInSection.findIndex((p) => `${section}-${p.model}-${p._id}` === over.id);
 
     if (oldIndex === -1 || newIndex === -1) {
-      console.warn("Invalid drag indices:", { oldIndex, newIndex });
+      console.warn('Invalid drag indices:', { section, oldIndex, newIndex, activeId: active.id, overId: over.id });
       return;
     }
 
@@ -239,38 +253,45 @@ const ProjectsDashboard: React.FC = () => {
       order: index,
     }));
 
-    const updatedProjects = filteredProjects.map((p) => {
+    // Update the section-specific state
+    if (section === 'featured') {
+      setFeaturedProjects(reorderedProjects);
+    } else {
+      setAllProjects(reorderedProjects);
+    }
+
+    // Merge with the main projects state
+    const updatedProjects = projects.map((p) => {
       const updatedProject = reorderedProjects.find((rp) => rp._id === p._id);
       return updatedProject || p;
     });
 
-    setFilteredProjects(updatedProjects);
     setProjects(updatedProjects);
 
     try {
-      const response = await fetch("/api/projects/reorder", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/projects/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ projects: updatedProjects }),
       });
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Failed to save project order: ${errorText}`);
       }
-      toast.success("Project order updated!", { theme: "dark" });
+     
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unknown error";
-      console.error("Reorder error:", message);
-      toast.error(`Error: ${message}`, { theme: "dark" });
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Reorder error:', message);
+      toast.error(`Error: ${message}`, { theme: 'dark' });
+      // Revert state if the API call fails
+      setFeaturedProjects(projects.filter((p) => p.isFeatured).sort((a, b) => a.order - b.order));
+      setAllProjects(projects.filter((p) => !p.isFeatured).sort((a, b) => a.order - b.order));
     }
   };
 
-  const featuredProjects = filteredProjects.filter((project) => project.isFeatured);
-  const allProjects = filteredProjects.filter((project) => !project.isFeatured);
-
   return (
     <div
-      style={{ fontFamily: "Poppins, sans-serif" }}
+      style={{ fontFamily: 'Poppins, sans-serif' }}
       className="min-h-screen bg-[#191a1b] text-white px-4 sm:px-6 lg:px-4"
     >
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} closeOnClick theme="dark" />
@@ -295,7 +316,7 @@ const ProjectsDashboard: React.FC = () => {
                 disabled={loading}
                 className="flex-1 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-500 disabled:opacity-50 text-sm sm:text-base"
               >
-                {loading ? "Deleting..." : "Delete"}
+                {loading ? 'Deleting...' : 'Delete'}
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -320,12 +341,12 @@ const ProjectsDashboard: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full p-2 sm:p-3 bg-[#242425] text-white rounded-lg border border-[#3d3d3f] focus:outline-none focus:border-b-2 focus:border-b-[#f6ff7a] focus:border-t-transparent focus:border-l-transparent focus:border-r-transparent placeholder-gray-400 text-sm sm:text-base"
-              style={{ fontFamily: "Poppins, sans-serif" }}
+              style={{ fontFamily: 'Poppins, sans-serif' }}
               aria-label="Search projects"
             />
             {searchQuery && (
               <button
-                onClick={() => setSearchQuery("")}
+                onClick={() => setSearchQuery('')}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#f6ff7a]"
                 title="Clear search"
                 aria-label="Clear search"
@@ -344,12 +365,11 @@ const ProjectsDashboard: React.FC = () => {
         {/* Featured Projects Section */}
         <div className="mb-6 sm:mb-8">
           <h3 className="text-base sm:text-lg font-semibold text-[#f6ff7a] mb-4">Featured Projects</h3>
-       
           <DndContext
             id="featured"
             sensors={sensors}
             collisionDetection={closestCenter}
-            onDragEnd={(event) => handleDragEnd(event, "featured")}
+            onDragEnd={(event) => handleDragEnd(event, 'featured')}
           >
             <SortableContext items={featuredProjects.map((p) => `featured-${p.model}-${p._id}`)}>
               <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -396,7 +416,7 @@ const ProjectsDashboard: React.FC = () => {
               id="all"
               sensors={sensors}
               collisionDetection={closestCenter}
-              onDragEnd={(event) => handleDragEnd(event, "all")}
+              onDragEnd={(event) => handleDragEnd(event, 'all')}
             >
               <SortableContext items={allProjects.map((p) => `all-${p.model}-${p._id}`)}>
                 <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">

@@ -1213,3 +1213,9 @@ h3.apply-now:hover {
 .blog-content * {
   max-width: none !important;
 }
+
+
+
+button {
+  cursor: pointer;
+}

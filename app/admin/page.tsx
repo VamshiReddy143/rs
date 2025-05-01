@@ -349,11 +349,27 @@ function AdminDashboard() {
   };
 
   const removeContentItem = (index: number) => {
+    // Check if index is valid
+    if (index < 0 || index >= content.length) {
+      console.error(`Invalid index ${index} for content array of length ${content.length}`);
+      toast.error("Cannot remove content item: Invalid index");
+      return;
+    }
+  
     const updatedContent = [...content];
     const item = updatedContent[index];
-    if (item.type === "image" && item.imagePreview && item.imagePreview.startsWith("blob:")) {
-      URL.revokeObjectURL(item.imagePreview);
+  
+    // Check if item exists and has imagePreview
+    if (item && item.type === "image" && item.imagePreview && item.imagePreview.startsWith("blob:")) {
+      try {
+        URL.revokeObjectURL(item.imagePreview);
+        console.log(`Revoked blob URL for content item ${item.id}: ${item.imagePreview}`);
+      } catch (error) {
+        console.error(`Error revoking blob URL for item ${item.id}:`, error);
+      }
     }
+  
+    // Remove the item
     updatedContent.splice(index, 1);
     setContent(updatedContent);
   };
@@ -469,29 +485,73 @@ function AdminDashboard() {
     }
     setLoading(true);
     try {
-      if (!jobTitle || !jobLocation || !jobDescription) {
+      console.log("Submitting job:", { jobTitle, jobLocation, jobDescription, employmentType, editingJob }); // Debug log
+      // Only validate for new jobs, allow existing values for editing
+      if (!editingJob && (!jobTitle || !jobLocation || !jobDescription)) {
         throw new Error("Title, location, and description are required");
       }
-
+  
       const formData = new FormData();
       formData.append("title", jobTitle);
       formData.append("location", jobLocation);
-      formData.append("description", jobDescription); // CKEditor HTML
+      formData.append("description", jobDescription);
       formData.append("employmentType", employmentType);
-
+  
       const url = editingJob ? `/api/jobs/${editingJob._id}` : "/api/jobs";
       const method = editingJob ? "PUT" : "POST";
-
+  
       const response = await fetch(url, { method, body: formData });
       if (!response.ok) {
         throw new Error(`Failed to ${editingJob ? "update" : "create"} job: ${await response.text()}`);
       }
-
+  
+      const data = await response.json();
+      console.log("API response:", JSON.stringify(data, null, 2));
+  
+      if (!editingJob) {
+        const newJob = data.job || data;
+        if (!newJob || !newJob._id) {
+          throw new Error("Invalid API response: Job ID is missing");
+        }
+  
+        setJobs((prev) => [
+          {
+            _id: newJob._id,
+            title: newJob.title || jobTitle,
+            location: newJob.location || jobLocation,
+            description: newJob.description || jobDescription,
+            employmentType: newJob.employmentType || employmentType,
+            postedDate: newJob.postedDate || new Date().toISOString(),
+          },
+          ...prev,
+        ]);
+      } else {
+        setJobs((prev) =>
+          prev.map((job) =>
+            job._id === editingJob._id
+              ? {
+                  ...job,
+                  title: jobTitle,
+                  location: jobLocation,
+                  description: jobDescription,
+                  employmentType: employmentType,
+                }
+              : job
+          )
+        );
+      }
+  
       toast.success(`Job ${editingJob ? "updated" : "created"} successfully!`);
       resetJobForm();
       setActiveTab("jobs");
+      setTimeout(() => {
+        if (typeof window !== "undefined") {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }, 100);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
+      console.error("Error in handleJobSubmit:", message);
       toast.error(`Error: ${message}`);
     } finally {
       setLoading(false);
@@ -597,11 +657,12 @@ function AdminDashboard() {
     }
   };
   const handleEditJob = (job: Job) => {
+    console.log("Editing job:", job); // Debug log
     setEditingJob(job);
-    setJobTitle(job.title);
-    setJobLocation(job.location);
-    setJobDescription(job.description);
-    setEmploymentType(job.employmentType);
+    setJobTitle(job.title || ""); // Ensure non-empty string
+    setJobLocation(job.location || ""); // Ensure non-empty string
+    setJobDescription(job.description || ""); // Ensure non-empty string
+    setEmploymentType(job.employmentType || "Full-Time"); // Fallback to default
     setActiveTab("jobs");
     setTimeout(() => {
       if (typeof window !== "undefined") {
@@ -1286,7 +1347,7 @@ function AdminDashboard() {
               />
               <label
                 htmlFor="primary-image"
-                className="cursor-pointer inline-block px-6 py-3 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500"
+                className="cursor-pointer inline-block px-6 py-3 bg-[#f6ff7a] hover:bg-[#AAB418] text-black font-semibold rounded-lg "
               >
                 Select Image
               </label>
@@ -1463,7 +1524,7 @@ function AdminDashboard() {
                   type="button"
                   onClick={() => newContentType && addBlogContentItem(newContentType)}
                   disabled={!newContentType}
-                  className="px-6 py-3 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 disabled:opacity-50"
+                  className="px-6 py-3 bg-[#f6ff7a] hover:bg-[#AAB418] text-black font-semibold rounded-lg  disabled:opacity-50"
                 >
                   Add 
                 </motion.button>
@@ -1475,7 +1536,7 @@ function AdminDashboard() {
                 whileTap={{ scale: 0.95 }}
                 type="submit"
                 disabled={loading || Object.keys(errors).length > 0}
-                className="flex-1 py-4 bg-[#f6ff7a] text-black font-bold rounded-lg hover:bg-yellow-500 disabled:opacity-50"
+                className="flex-1 py-4  text-black font-bold rounded-lg bg-[#f6ff7a] hover:bg-[#AAB418] disabled:opacity-50"
               >
                 {loading ? (editingBlog ? "Updating..." : "Creating...") : editingBlog ? "Update Blog" : "Create Blog"}
               </motion.button>
@@ -1531,12 +1592,12 @@ function AdminDashboard() {
                         <p className="text-gray-400 text-sm sm:text-base">Author: {blog.author}</p>
                       </div>
                     </div>
-                    <div className="flex gap-2 mt-4 sm:mt-6 justify-end">
+                    <div className="flex gap-2 mt-4 sm:mt-6 justify-end lg:justify-start">
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleEditBlog(blog)}
-                        className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 text-sm sm:text-base"
+                        className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] hover:bg-[#AAB418] text-black font-semibold rounded-lg bg-[#f6ff7a] hover:bg-[#AAB418] text-sm sm:text-base"
                       >
                         Edit
                       </motion.button>
@@ -1575,7 +1636,7 @@ function AdminDashboard() {
                 />
                 <label
                   htmlFor="team-image"
-                  className="cursor-pointer inline-block px-4 py-2 sm:px-6 sm:py-3 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 text-sm sm:text-base"
+                  className="cursor-pointer inline-block px-4 py-2 sm:px-6 sm:py-3 bg-[#f6ff7a] hover:bg-[#AAB418] text-black font-semibold rounded-lg  text-sm sm:text-base"
                 >
                   Select Image
                 </label>
@@ -1658,7 +1719,7 @@ function AdminDashboard() {
                 <button
                   type="submit"
                   disabled={loading || Object.keys(errors).length > 0}
-                  className="flex-1 py-3 sm:py-4 bg-[#f6ff7a] text-black font-bold rounded-lg hover:bg-yellow-500 disabled:opacity-50 text-sm sm:text-base"
+                  className="flex-1 py-3 sm:py-4 bg-[#f6ff7a] hover:bg-[#AAB418] text-black font-bold rounded-lg  disabled:opacity-50 text-sm sm:text-base"
                 >
                   {loading
                     ? editingTeamMember
@@ -1714,7 +1775,7 @@ function AdminDashboard() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleEditTeamMember(member)}
-                        className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 text-sm sm:text-base"
+                        className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] hover:bg-[#AAB418] text-black font-semibold rounded-lg  text-sm sm:text-base"
                       >
                         Edit
                       </motion.button>
@@ -1802,7 +1863,7 @@ function AdminDashboard() {
                 <button
                   type="submit"
                   disabled={loading || Object.keys(errors).length > 0}
-                  className="flex-1 py-4 bg-[#f6ff7a] text-black font-bold rounded-lg hover:bg-yellow-500 disabled:opacity-50"
+                  className="flex-1 py-4 bg-[#f6ff7a] text-black font-bold rounded-lg hover:bg-[#AAB418] disabled:opacity-50"
                 >
                   {loading ? (editingJob ? "Updating..." : "Creating...") : editingJob ? "Update Job" : "Create Job"}
                 </button>
@@ -1841,7 +1902,7 @@ function AdminDashboard() {
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => handleEditJob(job)}
-                          className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] text-black font-semibold rounded-lg hover:bg-yellow-500 text-sm sm:text-base"  >Edit  </motion.button>
+                          className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] hover:bg-[#AAB418]  text-black font-semibold rounded-lg  text-sm sm:text-base"  >Edit  </motion.button>
 
 
 
@@ -1857,7 +1918,9 @@ Delete
 whileHover={{ scale: 1.05 }}
 whileTap={{ scale: 0.95 }}
 onClick={() => setViewingApplicationsForJob(job._id)}
-className="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 text-sm sm:text-base flex items-center gap-2">
+className="text-[16px] flex gap-6 items-center   cursor-pointer hover:border-[#bcbcc0] hover:text-[#bcbcc0] font-bold border border-gray-400 px-4 py-2 rounded-lg  transition-colors">
 
 <FaEye size={16} /> View Applications </motion.button> </div> </div> </div> ))} </div> )} {viewingApplicationsForJob && ( <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000]"> <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className="bg-[#3d3d3f] p-4 sm:p-6 rounded-xl w-full max-w-3xl max-h-[90vh] flex flex-col relative" > <button onClick={closeModal} className="absolute top-4 right-4 text-gray-200 hover:text-[#f6ff7a]" > <FaTimes size={24} /> </button> <h2 className="text-xl sm:text-2xl font-bold text-[#f6ff7a] mb-4 sm:mb-6"> Applications for {jobs.find((job) => job._id === viewingApplicationsForJob)?.title} </h2> <div ref={scrollRef} className="custom-scroll-content flex-1"> {applications .filter((app) => app.jobId === viewingApplicationsForJob) .length === 0 ? ( <p className="text-gray-400 text-base sm:text-lg">No applications found for this job.</p> ) : ( <div className="space-y-4"> {applications .filter((app) => app.jobId === viewingApplicationsForJob) .map((app) => ( <div key={app._id} className="application-item bg-[#2d2d2f] p-3 sm:p-4 rounded-lg border border-gray-600 hover:bg-[#353537] transition-colors" > <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"> <div className="flex-1"> <h3 className="text-base sm:text-lg font-semibold text-gray-200"> {app.firstName} {app.lastName} </h3> <p className="text-sm sm:text-base text-gray-400">Email: {app.email}</p> <p className="text-sm sm:text-base text-gray-400">Phone: {app.phone}</p> <p className="text-sm sm:text-base text-gray-400">Country: {app.country}</p> {(app.linkedIn || app.website) && ( <div className="text-sm sm:text-base text-gray-400"> {app.linkedIn && ( <a href={app.linkedIn} target="_blank" rel="noopener noreferrer" className="text-[#f6ff7a] hover:underline" > LinkedIn </a> )} {app.linkedIn && app.website && " | "} {app.website && ( <a href={app.website} target="_blank" rel="noopener noreferrer" className="text-[#f6ff7a] hover:underline" > Website </a> )} </div> )} <p className="text-sm sm:text-base text-gray-400"> Submitted: {new Date(app.submittedAt).toLocaleDateString()} </p> </div> <div className="flex gap-2 sm:gap-3"> <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => handleViewResume(app.resume)} className="px-2 py-1 sm:px-3 sm:py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 text-sm sm:text-base flex items-center gap-2" > <FaEye size={14} /> Resume </motion.button> <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setShowDeleteConfirm({ id: app._id, type: "application" }) } className="px-2 py-1 sm:px-3 sm:py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500 text-sm sm:text-base flex items-center gap-2" > <FaTrash size={14} /> Delete </motion.button> </div> </div> </div> ))} </div> )} </div> </motion.div> </div> )} </div> )} {activeTab === "Subscribers" && ( <div className="mt-6"> <h2 className="text-2xl sm:text-3xl font-bold text-[#f6ff7a] mb-6">Subscribers</h2> <Subscribers /> </div> )} {activeTab === "Projects" && ( <div className="mt-6"><Allprojectss /> </div> )} </div> </div> ); }
 export default AdminDashboard;
+
+
