@@ -14,56 +14,91 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({ data, onChange, index
   const [CKEditorComponent, setCKEditorComponent] = useState<any>(null);
   const [EditorBuild, setEditorBuild] = useState<any>(null);
   const editorRef = useRef<any>(null);
+  const isMounted = useRef(true);
+  const [editorInitialized, setEditorInitialized] = useState(false); // Track editor initialization
 
+  // Load CKEditor modules once
   useEffect(() => {
     const loadEditor = async () => {
       try {
         const CKEditorModule = await import('@ckeditor/ckeditor5-react');
         const Editor = await import('@ckeditor/ckeditor5-build-classic');
 
+        if (!isMounted.current) return;
+
         setCKEditorComponent(() => CKEditorModule.CKEditor);
-        setEditorBuild(() => Editor.default);
+        setEditorBuild(() => Editor.default || Editor);
         setEditorLoaded(true);
       } catch (error) {
         console.error(`Failed to load CKEditor for index ${index}:`, error);
-        toast.error(`Failed to load editor for content item ${index !== undefined ? index + 1 : 'unknown'}`);
+        if (isMounted.current) {
+          toast.error(`Failed to load editor for content item ${index !== undefined ? index + 1 : 'unknown'}`);
+        }
       }
     };
 
     loadEditor();
-  }, []);
 
+    return () => {
+      isMounted.current = false;
+    };
+  }, []); // Empty dependency array to load only once
+
+  // Cleanup editor on unmount
   useEffect(() => {
     return () => {
-      if (editorRef.current) {
-        editorRef.current.destroy().catch((error: any) => {
+      if (editorRef.current && editorInitialized && typeof editorRef.current.destroy === 'function') {
+        try {
+          editorRef.current.destroy();
+          console.log(`CKEditor destroyed for index ${index}`);
+        } catch (error) {
           console.error(`Failed to destroy CKEditor for index ${index}:`, error);
-        });
+        }
         editorRef.current = null;
+        setEditorInitialized(false); // Reset initialization state
       }
     };
-  }, [index]);
+  }, []); // Run only on unmount
 
   if (!editorLoaded) {
-    return <div>Loading editor...</div>;
+    return (
+      <div className="text-gray-400 text-sm text-center p-4 bg-gray-700 rounded-lg">
+        Loading editor...
+      </div>
+    );
+  }
+
+  if (!CKEditorComponent || !EditorBuild) {
+    return (
+      <div className="text-red-500 text-sm text-center p-4 bg-gray-700 rounded-lg">
+        Failed to load editor. Please try again.
+      </div>
+    );
   }
 
   return (
-    <div className="ck-editor-container">
+    <div className="ck-editor-container bg-gray-700 rounded-lg p-4">
       <CKEditorComponent
         editor={EditorBuild}
         data={data}
         onReady={(editor: any) => {
-          editorRef.current = editor;
-          console.log(`CKEditor initialized for index ${index}`);
+          if (isMounted.current) {
+            editorRef.current = editor;
+            setEditorInitialized(true); // Mark editor as initialized
+            console.log(`CKEditor initialized for index ${index}`);
+          }
         }}
         onChange={(event: any, editor: any) => {
           const newData = editor.getData();
           console.log(`CKEditor ${index} changed:`, newData);
           onChange(newData);
         }}
-        onError={(event: any, error: any) => {
+        onError={(error: any, { willEditorRestart }: { willEditorRestart: boolean }) => {
           console.error(`CKEditor error for index ${index}:`, error);
+          if (willEditorRestart) {
+            // Only clear ref if editor is restarting, but keep initialization state
+            editorRef.current = null;
+          }
           toast.error(`Editor error for content item ${index !== undefined ? index + 1 : 'unknown'}`);
         }}
         config={{
@@ -151,7 +186,7 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({ data, onChange, index
           link: {
             addTargetToExternalLinks: true,
           },
-          placeholder: index !== undefined ? `Enter your paragraph content here (Editor ${index})...` : 'Enter content here...',
+          placeholder: index !== undefined ? `Enter your paragraph content here (Editor ${index + 1})...` : 'Enter content here...',
         }}
       />
     </div>

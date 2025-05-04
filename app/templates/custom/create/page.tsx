@@ -1,15 +1,11 @@
-// components/templates/CreateCustomTemplate.tsx
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
-import { DragDropContext, Droppable, Draggable, DropResult, DraggableProvided, DroppableProvided } from 'react-beautiful-dnd';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-// Define types locally to match CustomContent schema
 interface ContentBlock {
   type: 'heading' | 'paragraph' | 'bullet' | 'image' | 'video';
   content: string;
@@ -27,22 +23,6 @@ interface ICustomContent {
   createdAt: Date;
   isFeatured?: boolean;
 }
-
-// Dynamically import react-beautiful-dnd with SSR disabled
-const DragDropContextDynamic = dynamic(
-  () => import('react-beautiful-dnd').then((mod) => mod.DragDropContext),
-  { ssr: false }
-) as typeof DragDropContext;
-
-const DroppableDynamic = dynamic(
-  () => import('react-beautiful-dnd').then((mod) => mod.Droppable),
-  { ssr: false }
-) as typeof Droppable;
-
-const DraggableDynamic = dynamic(
-  () => import('react-beautiful-dnd').then((mod) => mod.Draggable),
-  { ssr: false }
-) as typeof Draggable;
 
 interface NewBlock {
   type: ContentBlock['type'];
@@ -68,7 +48,6 @@ export default function CreateCustomTemplate() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [isThumbnailDraggingOver, setIsThumbnailDraggingOver] = useState(false);
-  const [isDragDropReady, setIsDragDropReady] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const projectTypeOptions = [
@@ -82,7 +61,6 @@ export default function CreateCustomTemplate() {
   ];
 
   useEffect(() => {
-    setIsDragDropReady(true);
     return () => {
       if (thumbnailFile) {
         URL.revokeObjectURL(URL.createObjectURL(thumbnailFile));
@@ -152,7 +130,7 @@ export default function CreateCustomTemplate() {
 
     const block: ContentBlock = {
       type: newBlock.type,
-      content: newBlock.type === 'image' || newBlock.type === 'video' ? '' : newBlock.content,
+      content: newBlock.type === 'image' || newBlock.type === 'video' ? (newBlock.file?.name || '') : newBlock.content,
       order: formData.content.length,
       file: newBlock.file,
     };
@@ -177,19 +155,6 @@ export default function CreateCustomTemplate() {
         ...block,
         order: idx,
       })),
-    });
-  };
-
-  const onDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-
-    const reorderedBlocks = Array.from(formData.content);
-    const [movedBlock] = reorderedBlocks.splice(result.source.index, 1);
-    reorderedBlocks.splice(result.destination.index, 0, movedBlock);
-
-    setFormData({
-      ...formData,
-      content: reorderedBlocks.map((block, idx) => ({ ...block, order: idx })),
     });
   };
 
@@ -240,11 +205,24 @@ export default function CreateCustomTemplate() {
       content: validateField('content', formData.content),
     };
 
+    // Validate each content block
+    formData.content.forEach((block, idx) => {
+      if (!block.type || !['heading', 'paragraph', 'bullet', 'image', 'video'].includes(block.type)) {
+        newErrors[`contentBlock${idx}`] = `Content block ${idx + 1}: Invalid type`;
+      }
+      if (!block.content && block.type !== 'image' && block.type !== 'video') {
+        newErrors[`contentBlock${idx}`] = `Content block ${idx + 1}: Content cannot be empty`;
+      }
+      if ((block.type === 'image' || block.type === 'video') && !block.file) {
+        newErrors[`contentBlock${idx}`] = `Content block ${idx + 1}: File is required`;
+      }
+    });
+
     setErrors(newErrors);
 
-    const errorMessages = Object.values(newErrors).filter(error => error);
+    const errorMessages = Object.values(newErrors).filter((error) => error);
     if (errorMessages.length > 0) {
-      errorMessages.forEach(error => toast.error(error));
+      errorMessages.forEach((error) => toast.error(error));
       return;
     }
 
@@ -254,7 +232,8 @@ export default function CreateCustomTemplate() {
       type: formData.type,
       thumbnailText: formData.thumbnailText,
       contentBlocks: formData.content.map((block) => ({
-        type: block.type,
+        type: block.type === 'image' || block.type === 'video' ? block.type : 'text',
+        subtype: block.type === 'image' || block.type === 'video' ? undefined : block.type,
         content: block.content,
         order: block.order,
       })),
@@ -269,6 +248,11 @@ export default function CreateCustomTemplate() {
     if (thumbnailFile) {
       data.append('thumbnailImage', thumbnailFile);
     }
+
+    // Log FormData for debugging
+    console.log('FormData JSON:', JSON.stringify(JSON.parse(data.get('data') as string), null, 2));
+    console.log('Files:', Array.from(data.entries()).filter(([key]) => key.startsWith('file-')).map(([key, file]) => ({ key, name: (file as File).name })));
+    console.log('Thumbnail File:', thumbnailFile ? thumbnailFile.name : null);
 
     try {
       setIsSubmitting(true);
@@ -356,7 +340,7 @@ export default function CreateCustomTemplate() {
               className="p-3 bg-[#3d3d3f] border-b-2 border-transparent rounded-t-lg focus:outline-none focus:border-[#f6ff7a] transition-all duration-300 text-white"
               required
               aria-invalid={!!errors.type}
-              aria-describedby={errors.type ? "type-error" : undefined}
+              aria-describedby={errors.type ? 'type-error' : undefined}
             >
               <option value="" disabled>
                 Select a project type
@@ -388,7 +372,7 @@ export default function CreateCustomTemplate() {
               className="p-3 bg-[#3d3d3f] border-b-2 border-transparent rounded-t-lg focus:outline-none focus:border-[#f6ff7a] transition-all duration-300 text-white"
               required
               aria-invalid={!!errors.title}
-              aria-describedby={errors.title ? "title-error" : undefined}
+              aria-describedby={errors.title ? 'title-error' : undefined}
             />
             {errors.title && (
               <span id="title-error" className="text-red-400 text-sm mt-1">{errors.title}</span>
@@ -410,7 +394,7 @@ export default function CreateCustomTemplate() {
               className="p-3 bg-[#3d3d3f] border-b-2 border-transparent rounded-t-lg focus:outline-none focus:border-[#f6ff7a] transition-all duration-300 text-white min-h-[100px]"
               required
               aria-invalid={!!errors.thumbnailText}
-              aria-describedby={errors.thumbnailText ? "thumbnailText-error" : undefined}
+              aria-describedby={errors.thumbnailText ? 'thumbnailText-error' : undefined}
             />
             {errors.thumbnailText && (
               <span id="thumbnailText-error" className="text-red-400 text-sm mt-1">{errors.thumbnailText}</span>
@@ -557,80 +541,53 @@ export default function CreateCustomTemplate() {
 
         {/* Content Blocks List */}
         {formData.content.length > 0 ? (
-          isDragDropReady ? (
-            <DragDropContextDynamic key="drag-context" onDragEnd={onDragEnd}>
-              <DroppableDynamic droppableId="contentBlocks" isDropDisabled={false}>
-                {(provided: DroppableProvided) => (
-                  <div {...provided.droppableProps} ref={provided.innerRef} className="flex flex-col gap-4">
-                    <AnimatePresence>
-                      {formData.content.map((block, index) => (
-                        <DraggableDynamic
-                          key={`block-${index}-${block.type}-${block.order}`}
-                          draggableId={`block-${index}-${block.type}-${block.order}`}
-                          index={index}
-                        >
-                          {(provided: DraggableProvided) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                              <motion.div
-                                className="flex items-center gap-2 bg-[#242425] p-4 rounded-lg"
-                                variants={blockVariants}
-                                initial="hidden"
-                                animate="visible"
-                                exit="exit"
-                              >
-                                <span className="text-gray-400 cursor-move">☰</span>
-                                <div className="flex-1">
-                                  <p className="font-semibold capitalize text-gray-200">{block.type}</p>
-                                  {block.type === 'image' || block.type === 'video' ? (
-                                    <div className="mt-2">
-                                      {block.file ? (
-                                        <div className="flex items-center gap-2">
-                                          <p className="text-gray-400">{block.file.name}</p>
-                                          {block.type === 'image' && (
-                                            <Image
-                                              src={URL.createObjectURL(block.file)}
-                                              alt="Preview"
-                                              width={100}
-                                              height={100}
-                                              className="max-w-[100px] rounded-lg"
-                                            />
-                                          )}
-                                        </div>
-                                      ) : (
-                                        <p className="text-gray-400">No file uploaded</p>
-                                      )}
-                                    </div>
-                                  ) : (
-                                    <p className="text-gray-400 truncate">{block.content}</p>
-                                  )}
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={() => removeBlock(index)}
-                                  className="text-red-400 hover:text-red-600"
-                                >
-                                  Remove
-                                </button>
-                              </motion.div>
-                            </div>
-                          )}
-                        </DraggableDynamic>
-                      ))}
-                    </AnimatePresence>
-                    {provided.placeholder}
+          <div className="flex flex-col gap-4 w-full">
+            <AnimatePresence>
+              {formData.content.map((block, index) => (
+                <motion.div
+                  key={`block-${index}-${block.type}-${block.order}`}
+                  className="flex items-center gap-2 bg-[#242425] p-4 rounded-lg max-w-full overflow-x-auto break-words"
+                  variants={blockVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <div className="flex-1">
+                    <p className="font-semibold capitalize text-gray-200">{block.type}</p>
+                    {block.type === 'image' || block.type === 'video' ? (
+                      <div className="mt-2">
+                        {block.file ? (
+                          <div className="flex items-center gap-2">
+                            <p className="text-gray-400">{block.file.name}</p>
+                            {block.type === 'image' && (
+                              <Image
+                                src={URL.createObjectURL(block.file)}
+                                alt="Preview"
+                                width={100}
+                                height={100}
+                                className="max-w-[100px] rounded-lg"
+                              />
+                            )}
+                          </div>
+                        ) : (
+                          <p className="text-gray-400">No file uploaded</p>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-gray-400">{block.content}</p>
+                    )}
                   </div>
-                )}
-              </DroppableDynamic>
-            </DragDropContextDynamic>
-          ) : (
-            <div className="text-gray-400 text-center py-4">
-              Loading drag-and-drop functionality, please wait...
-            </div>
-          )
+                  <button
+                    type="button"
+                    onClick={() => removeBlock(index)}
+                    className="text-red-400 hover:text-red-600"
+                  >
+                    Remove
+                  </button>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
         ) : null}
         {errors.content && (
           <span className="text-red-400 text-sm mt-1">{errors.content}</span>

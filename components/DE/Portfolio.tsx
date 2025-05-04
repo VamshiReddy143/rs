@@ -103,7 +103,7 @@ const Portfolio = () => {
           {/* Black overlay layer */}
           <div className="absolute inset-0 bg-black opacity-40 group-hover:opacity-75 transition-opacity duration-500 z-[1]"></div>
 
-          <div className="container text-white z-[2] relative flex flex-col gap-[0.5em]">
+          <div className=" text-white z-[2] relative flex flex-col gap-[0.5em]">
             <div className="h-fit w-full">
               <p className="text-[24px] font-semibold font-[Poppins]">
                 {project.title}

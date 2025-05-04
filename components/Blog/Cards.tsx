@@ -14,10 +14,10 @@ interface Card {
 
 interface CardsProps {
   searchTerm: string;
-  selectedCategory: string;
+  selectedCategories: string[]; // Updated to array
 }
 
-const Cards: React.FC<CardsProps> = ({ searchTerm, selectedCategory }) => {
+const Cards: React.FC<CardsProps> = ({ searchTerm, selectedCategories }) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -34,7 +34,11 @@ const Cards: React.FC<CardsProps> = ({ searchTerm, selectedCategory }) => {
           throw new Error("Failed to fetch blog posts");
         }
         const data = await response.json();
-        setCards(data);
+        // Validate and filter cards with valid categories
+        const validCards = data.filter(
+          (card: Card) => card && card._id && card.title && card.category && typeof card.category === "string"
+        );
+        setCards(validCards);
         setError(null);
       } catch (err) {
         setError("An error occurred while fetching blog posts.");
@@ -47,14 +51,29 @@ const Cards: React.FC<CardsProps> = ({ searchTerm, selectedCategory }) => {
     fetchCards();
   }, []);
 
-  // Filter cards based on search term and category
+  // Filter cards based on search term and categories
   const filteredCards = cards.filter((card) => {
+    // Validate card properties
+    if (!card.title || !card.category || typeof card.category !== "string") {
+      return false; // Skip cards with invalid title or category
+    }
+
     const normalizedSearch = searchTerm.replace(/\s+/g, "").toLowerCase();
     const normalizedTitle = card.title.replace(/\s+/g, "").toLowerCase();
     const matchesSearch = normalizedSearch === "" || normalizedTitle.includes(normalizedSearch);
+
+    // If no categories selected, include all valid cards
+    if (selectedCategories?.length === 0) {
+      return matchesSearch;
+    }
+
+    // Normalize card category
     const normalizedCategory = card.category.replace(/\s+/g, "").toLowerCase();
-    const normalizedSelected = selectedCategory.replace(/\s+/g, "").toLowerCase();
-    const matchesCategory = normalizedSelected === "" || normalizedCategory === normalizedSelected;
+
+    // Check if card matches any selected category
+    const matchesCategory = selectedCategories?.filter(cat => cat && typeof cat === "string") // Ensure valid categories
+      .some(cat => cat.replace(/\s+/g, "").toLowerCase() === normalizedCategory);
+
     return matchesSearch && matchesCategory;
   });
 
@@ -161,7 +180,7 @@ const Cards: React.FC<CardsProps> = ({ searchTerm, selectedCategory }) => {
                 className="h-[250px] w-full object-cover"
               />
               {/* Content Container */}
-              <div className="flex flex-col gap-4 ">
+              <div className="flex flex-col gap-4">
                 <div className="p-7 flex flex-col gap-4 flex-grow">
                   <p className="text-[#bcbcc0] text-[16px]">{card.category}</p>
                   <h2
@@ -185,7 +204,7 @@ const Cards: React.FC<CardsProps> = ({ searchTerm, selectedCategory }) => {
         ) : (
           <div
             style={{ fontFamily: "Poppins, sans-serif" }}
-            className="col-span-full   flex items-center justify-center text-center text-gray-600 lg:text-[5em] text-[2em] font-bold"
+            className="col-span-full flex items-center justify-center text-center text-gray-600 lg:text-[5em] text-[2em] font-bold"
           >
             No blog posts found.
           </div>

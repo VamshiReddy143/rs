@@ -23,14 +23,21 @@ const Clients = () => {
       try {
         const response = await fetch('/api/reviews');
         if (!response.ok) {
-          throw new Error('Failed to fetch reviews');
+          throw new Error(`Failed to fetch reviews: ${response.status}`);
         }
-        const data: Review[] = await response.json();
-        console.log('Fetched reviews data:', data.map(r => ({ _id: r._id, createdAt: r.createdAt })));
-        setReviews(data);
+        const data = await response.json();
+
+        // Extract reviews array from response
+        const reviewsArray = Array.isArray(data.reviews) ? data.reviews : [];
+        if (!Array.isArray(reviewsArray)) {
+          throw new Error('API response.reviews is not an array');
+        }
+
+        setReviews(reviewsArray);
       } catch (error) {
         console.error('Error fetching reviews:', error);
         setError('Failed to load reviews. Please try again later.');
+        setReviews([]); // Ensure reviews is an empty array on error
       }
     };
     fetchReviews();
@@ -49,11 +56,11 @@ const Clients = () => {
         <p className="text-red-400 text-center mt-10">{error}</p>
       ) : reviews.length === 0 ? (
         <div
-        style={{ fontFamily: "Poppins, sans-serif" }}
-        className="col-span-full text-center text-gray-600 py-[1em] lg:text-[5em] text-[2em] font-bold"
-      >
-        No Reviews found.
-      </div>
+          style={{ fontFamily: "Poppins, sans-serif" }}
+          className="col-span-full text-center text-gray-600 py-[1em] lg:text-[5em] text-[2em] font-bold"
+        >
+          No Reviews found.
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10 gap-3">
           {reviews.map((review) => (

@@ -110,6 +110,91 @@ const SortableProject: React.FC<{
   );
 };
 
+const Pagination: React.FC<{
+  currentPage: number;
+  totalItems: number;
+  itemsPerPage: number;
+  onPageChange: (page: number) => void;
+}> = ({ currentPage, totalItems, itemsPerPage, onPageChange }) => {
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const maxPageButtons = 5;
+
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
+    let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
+
+    if (endPage - startPage + 1 < maxPageButtons) {
+      startPage = Math.max(1, endPage - maxPageButtons + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    if (startPage > 1) {
+      pages.unshift('...');
+      pages.unshift(1);
+    }
+    if (endPage < totalPages) {
+      pages.push('...');
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
+  if (totalPages <= 1) return null;
+
+  return (
+    <div className="flex justify-center items-center gap-2 mt-4">
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className={`px-3 py-1 rounded-lg text-sm sm:text-base ${
+          currentPage === 1 ? 'bg-[#3d3d3f] text-gray-400 cursor-not-allowed' : 'bg-[#3d3d3f] text-[#f6ff7a] hover:bg-[#4a4a4c]'
+        }`}
+        aria-label="Previous page"
+      >
+        Prev
+      </motion.button>
+      {getPageNumbers().map((page, index) => (
+        <motion.button
+          key={index}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => typeof page === 'number' && onPageChange(page)}
+          className={`px-3 py-1 rounded-lg text-sm sm:text-base ${
+            page === currentPage
+              ? 'bg-[#f6ff7a] text-black font-semibold'
+              : typeof page === 'number'
+              ? 'bg-[#3d3d3f] text-[#f6ff7a] hover:bg-[#4a4a4c]'
+              : 'bg-[#242425] text-gray-400 cursor-default'
+          }`}
+          disabled={typeof page !== 'number'}
+          aria-label={typeof page === 'number' ? `Page ${page}` : 'Ellipsis'}
+        >
+          {page}
+        </motion.button>
+      ))}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className={`px-3 py-1 rounded-lg text-sm sm:text-base ${
+          currentPage === totalPages ? 'bg-[#3d3d3f] text-gray-400 cursor-not-allowed' : 'bg-[#3d3d3f] text-[#f6ff7a] hover:bg-[#4a4a4c]'
+        }`}
+        aria-label="Next page"
+      >
+        Next
+      </motion.button>
+    </div>
+  );
+};
+
 const ProjectsDashboard: React.FC = () => {
   const [projects, setProjects] = useState<UnifiedProject[]>([]);
   const [featuredProjects, setFeaturedProjects] = useState<UnifiedProject[]>([]);
@@ -117,6 +202,9 @@ const ProjectsDashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<{ id: string; model: string } | null>(null);
+  const [featuredPage, setFeaturedPage] = useState(1);
+  const [allPage, setAllPage] = useState(1);
+  const itemsPerPage = 6;
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -171,6 +259,8 @@ const ProjectsDashboard: React.FC = () => {
       .sort((a, b) => a.order - b.order);
     setFeaturedProjects(filteredFeatured);
     setAllProjects(filteredAll);
+    setFeaturedPage(1);
+    setAllPage(1);
   }, [searchQuery, projects]);
 
   const handleDeleteProject = async (id: string, model: string) => {
@@ -291,6 +381,11 @@ const ProjectsDashboard: React.FC = () => {
     }
   };
 
+  const getPaginatedItems = (items: UnifiedProject[], page: number) => {
+    const startIndex = (page - 1) * itemsPerPage;
+    return items.slice(startIndex, startIndex + itemsPerPage);
+  };
+
   return (
     <div
       style={{ fontFamily: 'Poppins, sans-serif' }}
@@ -353,7 +448,7 @@ const ProjectsDashboard: React.FC = () => {
                 title="Clear search"
                 aria-label="Clear search"
               >
-                <AiOutlineClose size={14} className="sm:size-16" />
+                <AiOutlineClose size={14} className="" />
               </button>
             )}
           </div>
@@ -372,14 +467,14 @@ const ProjectsDashboard: React.FC = () => {
             collisionDetection={closestCenter}
             onDragEnd={(event) => handleDragEnd(event, 'featured')}
           >
-            <SortableContext items={featuredProjects.map((p) => `featured-${p.model}-${p._id}`)}>
+            <SortableContext items={getPaginatedItems(featuredProjects, featuredPage).map((p) => `featured-${p.model}-${p._id}`)}>
               <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                {featuredProjects.length === 0 ? (
+                {getPaginatedItems(featuredProjects, featuredPage).length === 0 ? (
                   <div className="bg-[#242425] p-4 sm:p-6 rounded-xl text-gray-400 text-xs sm:text-sm text-center shadow-lg border border-[#3d3d3f] col-span-full">
                     No featured projects. Star a project to showcase it here.
                   </div>
                 ) : (
-                  featuredProjects.map((project, index) => (
+                  getPaginatedItems(featuredProjects, featuredPage).map((project, index) => (
                     <SortableProject
                       key={`featured-${project.model}-${project._id}`}
                       project={project}
@@ -393,6 +488,12 @@ const ProjectsDashboard: React.FC = () => {
               </div>
             </SortableContext>
           </DndContext>
+          <Pagination
+            currentPage={featuredPage}
+            totalItems={featuredProjects.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setFeaturedPage}
+          />
         </div>
 
         <div className="mb-6 sm:mb-8">
@@ -418,9 +519,9 @@ const ProjectsDashboard: React.FC = () => {
               collisionDetection={closestCenter}
               onDragEnd={(event) => handleDragEnd(event, 'all')}
             >
-              <SortableContext items={allProjects.map((p) => `all-${p.model}-${p._id}`)}>
+              <SortableContext items={getPaginatedItems(allProjects, allPage).map((p) => `all-${p.model}-${p._id}`)}>
                 <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                  {allProjects.map((project, index) => (
+                  {getPaginatedItems(allProjects, allPage).map((project, index) => (
                     <SortableProject
                       key={`all-${project.model}-${project._id}`}
                       project={project}
@@ -434,6 +535,12 @@ const ProjectsDashboard: React.FC = () => {
               </SortableContext>
             </DndContext>
           )}
+          <Pagination
+            currentPage={allPage}
+            totalItems={allProjects.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setAllPage}
+          />
         </div>
       </div>
     </div>

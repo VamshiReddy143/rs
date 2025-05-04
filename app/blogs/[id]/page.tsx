@@ -101,7 +101,8 @@ export default async function BlogPage({ params }: { params: any }) {
               )}
               {item.type === "paragraph" && (
                 <div
-                  className="blog-content text-[#FFFFFF]"
+                  className="blog-content prose prose-invert text-[#FFFFFF]"
+                  style={{ whiteSpace: "pre-wrap" }}
                   dangerouslySetInnerHTML={{ __html: item.value }}
                 />
               )}
@@ -136,7 +137,7 @@ export default async function BlogPage({ params }: { params: any }) {
           </div>
 
           {/* Random 3 Blog Cards */}
-          <div  style={{ fontFamily: "Poppins, sans-serif" }} className="py-[5em]">
+          <div style={{ fontFamily: "Poppins, sans-serif" }} className="py-[5em]">
             <h2 className="text-[36px] font-semibold mb-15">Featured articles</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {randomBlogs.length > 0 ? (

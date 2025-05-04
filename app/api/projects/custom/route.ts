@@ -23,6 +23,13 @@ export async function POST(req: NextRequest) {
     const files = Array.from(formData.entries()).filter(([key]) => key.startsWith('file-'));
     const thumbnailFile = formData.get('thumbnailImage') as File | null;
 
+    // Log raw FormData for debugging
+    console.log('Raw FormData:', {
+      data: dataString,
+      files: files.map(([key, file]) => ({ key, name: (file as File).name })),
+      thumbnail: thumbnailFile ? thumbnailFile.name : null,
+    });
+
     // Validate data
     if (!dataString) {
       console.error('Missing data field in formData');
@@ -32,6 +39,7 @@ export async function POST(req: NextRequest) {
     let data: any;
     try {
       data = JSON.parse(dataString);
+      console.log('Parsed data.contentBlocks:', JSON.stringify(data.contentBlocks, null, 2));
     } catch (error) {
       console.error('Invalid JSON in data field:', error);
       return NextResponse.json({ error: 'Invalid JSON in data field' }, { status: 400 });
@@ -51,6 +59,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Validate contentBlocks
+    if (!Array.isArray(data.contentBlocks) || data.contentBlocks.length === 0) {
+      console.error('contentBlocks must be a non-empty array');
+      return NextResponse.json({ error: 'contentBlocks must be a non-empty array' }, { status: 400 });
+    }
+
     // Upload thumbnail image
     let thumbnailImageUrl: string | null = null;
     if (thumbnailFile && thumbnailFile.size > 0) {
@@ -67,40 +81,79 @@ export async function POST(req: NextRequest) {
         stream.end(buffer);
       });
       thumbnailImageUrl = (uploadResult as any).secure_url;
+      console.log('Thumbnail uploaded:', thumbnailImageUrl);
     }
 
-    // Upload content block files
+    // Process content blocks
     const contentBlocks = await Promise.all(
       data.contentBlocks.map(async (block: any, index: number) => {
-        if (block.type === 'image' || block.type === 'video') {
-          const fileEntry = files.find(([key]) => key === `file-${index}`);
-          if (fileEntry) {
-            const file = fileEntry[1] as File;
-            const arrayBuffer = await file.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
+        // Log block for debugging
+        console.log(`Processing block at index ${index}:`, {
+          type: block.type,
+          content: block.content,
+          order: block.order,
+          subtype: block.subtype,
+        });
 
-            const uploadResult = await new Promise((resolve, reject) => {
-              const stream = cloudinary.uploader.upload_stream(
-                { resource_type: block.type === 'video' ? 'video' : 'image', folder: 'projects' },
-                (error, result) => {
-                  if (error) reject(error);
-                  else resolve(result);
-                }
-              );
-              stream.end(buffer);
-            });
-
-            return { ...block, content: (uploadResult as any).secure_url };
-          }
+        // Validate block
+        if (!block.type || !block.content || block.order == null) {
+          console.error(`Invalid block at index ${index}:`, {
+            type: block.type,
+            content: block.content,
+            order: block.order,
+            subtype: block.subtype,
+          });
+          throw new Error(`Invalid block at index ${index}: missing type, content, or order`);
         }
-        return block;
+
+        // Transform type and subtype to match CustomContentSchema
+        const blockType =
+          block.type === 'text' && block.subtype ? block.subtype : block.type;
+        if (!['heading', 'paragraph', 'bullet', 'image', 'video'].includes(blockType)) {
+          throw new Error(`Invalid block type at index ${index}: ${blockType}`);
+        }
+
+        let content = block.content;
+        if (blockType === 'image' || blockType === 'video') {
+          const fileEntry = files.find(([key]) => key === `file-${index}`);
+          if (!fileEntry) {
+            console.error(`Missing file for ${blockType} block at index ${index}`);
+            throw new Error(`Missing file for ${blockType} block at index ${index}`);
+          }
+          const file = fileEntry[1] as File;
+          const arrayBuffer = await file.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+
+          const uploadResult = await new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              { resource_type: blockType === 'video' ? 'video' : 'image', folder: 'projects' },
+              (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+              }
+            );
+            stream.end(buffer);
+          });
+
+          content = (uploadResult as any).secure_url;
+          console.log(`${blockType} uploaded at index ${index}:`, content);
+        }
+
+        return {
+          type: blockType,
+          content,
+          order: block.order,
+        };
       })
     );
+
+    // Log contentBlocks for debugging
+    console.log('Processed contentBlocks:', contentBlocks);
 
     // Create new CustomContent document
     const project = await CustomContent.create({
       title: data.title,
-      type: data.type, // Added
+      type: data.type,
       thumbnailText: data.thumbnailText,
       thumbnailImage: thumbnailImageUrl,
       contentBlocks,

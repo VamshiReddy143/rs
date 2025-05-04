@@ -32,7 +32,12 @@ interface IProject {
   challenges?: string[]; // template3project
   actions?: string[]; // template3project
   results?: string[]; // template3project
-  content?: Array<{ type: 'text' | 'image' | 'video'; value: string; description?: string }>; // custom
+  content?: Array<{
+    type: 'text' | 'image' | 'video';
+    subtype?: 'heading' | 'paragraph' | 'bullet'; // For text type
+    value: string;
+    description?: string;
+  }>; // custom
   thumbnailImage: string | null;
   thumbnailText: string;
 }
@@ -60,6 +65,7 @@ export default function ProjectPage() {
           throw new Error(res.status === 404 ? 'Project not found' : 'Failed to fetch project');
         }
         const data = await res.json();
+        console.log('API Response:', JSON.stringify(data, null, 2)); // Pretty-print API response
         setProject(data);
         setLoading(false);
       } catch (err: any) {
@@ -69,6 +75,23 @@ export default function ProjectPage() {
     };
     if (id) fetchProject();
   }, [id]);
+
+  // Log project content for debugging
+  useEffect(() => {
+    if (project?.type === 'custom') {
+      console.log('Custom Project Content:', JSON.stringify(project.content, null, 2)); // Pretty-print content
+      if (project.content) {
+        project.content.forEach((block, idx) => {
+          console.log(`Content Block ${idx}:`, {
+            type: block.type,
+            subtype: block.subtype,
+            value: block.value,
+            description: block.description,
+          });
+        });
+      }
+    }
+  }, [project]);
 
   // Initialize Lenis and sync with ScrollTrigger (for project and custom types)
   useEffect(() => {
@@ -143,100 +166,99 @@ export default function ProjectPage() {
     };
   }, [project]);
 
-// GSAP animations for custom type
-useLayoutEffect(() => {
-  if (project?.type !== 'custom') return;
+  // GSAP animations for custom type
+  useLayoutEffect(() => {
+    if (project?.type !== 'custom') return;
 
-  ScrollTrigger.refresh();
+    ScrollTrigger.refresh();
 
-  const ctx = gsap.context(() => {
-    // Hero section animations
-    gsap.fromTo(
-      '.custom-hero-title',
-      { y: 100, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1.5,
-        ease: 'power4.out',
-        scrollTrigger: {
-          trigger: '.custom-hero',
-          start: 'top 80%',
-          toggleActions: 'play none none reverse',
-        },
-      }
-    );
-
-    gsap.fromTo(
-      '.custom-hero-text',
-      { y: 50, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1.5,
-        delay: 0.3,
-        ease: 'power4.out',
-        scrollTrigger: {
-          trigger: '.custom-hero',
-          start: 'top 80%',
-          toggleActions: 'play none none reverse',
-        },
-      }
-    );
-
-    gsap.fromTo(
-      '.custom-hero-image',
-      { scale: 1.2, opacity: 0 },
-      {
-        scale: 1,
-        opacity: 1,
-        duration: 2,
-        ease: 'power4.out',
-        scrollTrigger: {
-          trigger: '.custom-hero',
-          start: 'top 80%',
-          toggleActions: 'play none none reverse',
-        },
-      }
-    );
-
-    // Content block animations
-    gsap.utils.toArray<HTMLElement>('.custom-content-block').forEach((block, index) => {
+    const ctx = gsap.context(() => {
+      // Hero section animations
       gsap.fromTo(
-        block,
-        { y: 50, opacity: 0 },
+        '.custom-hero-title',
+        { y: 100, opacity: 0 },
         {
           y: 0,
           opacity: 1,
-          duration: 1,
-          ease: 'power3.out',
+          duration: 1.5,
+          ease: 'power4.out',
           scrollTrigger: {
-            trigger: block,
-            start: 'top 85%',
+            trigger: '.custom-hero',
+            start: 'top 80%',
             toggleActions: 'play none none reverse',
           },
         }
       );
 
-      // Parallax effect for images and videos
-      if (block.querySelector('.custom-media')) {
-        gsap.to(block.querySelector('.custom-media'), {
-          y: () => window.innerHeight * 0.15,
-          ease: 'none',
+      gsap.fromTo(
+        '.custom-hero-text',
+        { y: 50, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1.5,
+          delay: 0.3,
+          ease: 'power4.out',
           scrollTrigger: {
-            trigger: block,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true,
+            trigger: '.custom-hero',
+            start: 'top 80%',
+            toggleActions: 'play none none reverse',
           },
-        });
-      }
-    });
-  }, sectionRef);
+        }
+      );
 
-  return () => ctx.revert();
-}, [project]);
+      gsap.fromTo(
+        '.custom-hero-image',
+        { scale: 1.2, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 2,
+          ease: 'power4.out',
+          scrollTrigger: {
+            trigger: '.custom-hero',
+            start: 'top 80%',
+            toggleActions: 'play none none reverse',
+          },
+        }
+      );
 
+      // Content block animations
+      gsap.utils.toArray<HTMLElement>('.custom-content-block').forEach((block, index) => {
+        gsap.fromTo(
+          block,
+          { y: 50, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: block,
+              start: 'top 85%',
+              toggleActions: 'play none none reverse',
+            },
+          }
+        );
+
+        // Parallax effect for images and videos
+        if (block.querySelector('.custom-media')) {
+          gsap.to(block.querySelector('.custom-media'), {
+            y: () => window.innerHeight * 0.15,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: block,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true,
+            },
+          });
+        }
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [project]);
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center text-white">Loading...</div>;
@@ -361,7 +383,7 @@ useLayoutEffect(() => {
               </h1>
               <div className="lg:mt-[4em] mt-[2em]">
                 <p className="lg:text-[28px] leading-[42px] font-medium text-[1em]">{project.quote.author}</p>
-                <p className="lg:text-[28px] leading-[42px] font-medium text-[1.2em] text-red-700">
+                <p className="lg:text-[28px] leading-[42px] font-medium text-[1em] text-red-700">
                   {project.quote.position}
                 </p>
               </div>
@@ -371,31 +393,28 @@ useLayoutEffect(() => {
 
         {/* Project Motive Section */}
         <div>
-          
-        <div className="min-h-screen bg-[#212121] pb-[8em]  text-white">
-          <div className="lg:px-[10em] pb-[5までにem] lg:pt-[2em] pt-[5em] px-3 mx-auto flex flex-col gap-10">
-            <div className="pt-[3em] pb-[1em] lg:text-[64px] text-[60px] font-medium">
-              {project.projectMotive ? (
-                <>
-                  Helping <span className="inline bg-gradient-to-t from-red-500 to-red-500 bg-[length:100%_0.3em] bg-no-repeat bg-bottom">{project.name}</span> build new
-                  <span className="block">features and achieve goals</span>
-                </>
-              ) : (
-                <>
-                  Driving Success for <span className="inline bg-gradient-to-t from-red-500 to-red-500 bg-[length:100%_0.3em] bg-no-repeat bg-bottom">{project.name}</span>
-                  <span className="block">with Innovative Solutions</span>
-                </>
-              )}
+          <div className="min-h-screen bg-[#212121] pb-[8em] text-white">
+            <div className="lg:px-[10em] pb-[5em] lg:pt-[2em] pt-[5em] px-3 mx-auto flex flex-col gap-10">
+              <div className="pt-[3em] pb-[1em] lg:text-[64px] text-[60px] font-medium">
+                {project.projectMotive ? (
+                  <>
+                    Helping <span className="inline bg-gradient-to-t from-red-500 to-red-500 bg-[length:100%_0.3em] bg-no-repeat bg-bottom">{project.name}</span> build new
+                    <span className="block">features and achieve goals</span>
+                  </>
+                ) : (
+                  <>
+                    Driving Success for <span className="inline bg-gradient-to-t from-red-500 to-red-500 bg-[length:100%_0.3em] bg-no-repeat bg-bottom">{project.name}</span>
+                    <span className="block">with Innovative Solutions</span>
+                  </>
+                )}
+              </div>
+              {project.companyDetails && project.companyDetails.map((detail, idx) => (
+                <p key={idx} className="lg:text-[32px] text-[#D6D5D1] text-[2em] lg:leading-[48px] font-extralight lg:w-[70%]">
+                  {detail}
+                </p>
+              ))}
             </div>
-            {project.companyDetails && project.companyDetails.map((detail, idx) => (
-              <p key={idx} className="lg:text-[32px] text-[#D6D5D1] text-[2em] lg:leading-[48px]  font-extralight lg:w-[70%]">
-                {detail}
-              </p>
-            ))}
           </div>
-
-        
-        </div>
 
           {/* Capabilities */}
           {project.capabilities && (
@@ -621,45 +640,61 @@ useLayoutEffect(() => {
 
       {/* Content Sections */}
       <section className="px-3 lg:px-[4em] lg:max-w-[90em] mx-auto pb-[10em]">
-        {project.content?.map((item, idx) => (
-          <div
-            key={idx}
-            className="custom-content-block my-10 p-6 rounded-xl"
-          >
-            {item.type === 'text' && (
-              <p className="lg:text-[24px] text-[18px] leading-relaxed max-w-[80%] mx-auto text-center">
-                {item.value}
-              </p>
-            )}
-            {item.type === 'image' && (
-              <div className="relative overflow-hidden rounded-xl">
-                <Image
-                  src={item.value}
-                  alt={item.description || 'Content image'}
-                  width={1200}
-                  height={800}
-                  className="custom-media w-full object-cover rounded-xl"
-                />
-              </div>
-            )}
-            {item.type === 'video' && (
-              <div className="relative overflow-hidden rounded-xl">
-                <video
-                  controls
-                  className="custom-media w-full max-w-[1200px] rounded-xl"
-                >
-                  <source src={item.value} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-            )}
-            {item.description && (
-              <p className="lg:text-[20px] text-[16px] mt-4 text-gray-300 text-center">
-                {item.description}
-              </p>
-            )}
-          </div>
-        ))}
+        {project.content && project.content.length > 0 ? (
+          project.content.map((item, idx) => (
+            <div
+              key={idx}
+              className="custom-content-block my-10 p-6 rounded-xl"
+            >
+              {item.type === 'text' && item.subtype === 'heading' && (
+                <h3 className="lg:text-[36px] text-[24px] font-bold leading-relaxed max-w-[80%] mx-auto text-center">
+                  {item.value}
+                </h3>
+              )}
+              {item.type === 'text' && item.subtype === 'paragraph' && (
+                <p className="lg:text-[24px] text-[18px] leading-relaxed max-w-[80%] mx-auto text-center">
+                  {item.value}
+                </p>
+              )}
+              {item.type === 'text' && item.subtype === 'bullet' && (
+                <ul className="list-disc list-inside lg:text-[24px] text-[18px] leading-relaxed max-w-[80%] mx-auto">
+                  <li>{item.value}</li>
+                </ul>
+              )}
+              {item.type === 'image' && (
+                <div className="relative overflow-hidden rounded-xl">
+                  <Image
+                    src={item.value}
+                    alt={item.description || 'Content image'}
+                    width={1200}
+                    height={800}
+                    className="custom-media w-full object-cover rounded-xl"
+                  />
+                </div>
+              )}
+              {item.type === 'video' && (
+                <div className="relative overflow-hidden rounded-xl">
+                  <video
+                    controls
+                    className="custom-media w-full max-w-[1200px] rounded-xl"
+                  >
+                    <source src={item.value} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              )}
+              {item.description && (
+                <p className="lg:text-[20px] text-[16px] mt-4 text-gray-300 text-center">
+                  {item.description}
+                </p>
+              )}
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-[18px] text-gray-400">
+            No content blocks available for this project.
+          </p>
+        )}
       </section>
 
       <Projects />

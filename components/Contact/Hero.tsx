@@ -3,10 +3,10 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
-import emailjs from "@emailjs/browser";
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Hero: React.FC = () => {
-  const todayRef = useRef(new Date("2025-04-24"));
+  const todayRef = useRef(new Date());
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   // Form states
@@ -15,20 +15,51 @@ const Hero: React.FC = () => {
   const [company, setCompany] = useState("");
   const [message, setMessage] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
   const [timezone, setTimezone] = useState("EST");
   const [loading, setLoading] = useState(false);
   const [formStatus, setFormStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   // Date selector states
-  const [currentWeek, setCurrentWeek] = useState<number>(0);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [availableDates, setAvailableDates] = useState<{ day: string; date: string }[]>([]);
-  const [dateCount, setDateCount] = useState(5);
-  const dateContainerRef = useRef<HTMLDivElement>(null); // Ref for smooth scrolling
+  const dateContainerRef = useRef<HTMLDivElement>(null);
+  const [dateCount, setDateCount] = useState(3); // Default to 3 for small screens
+  const velocityRef = useRef(0);
+  const lastTouchXRef = useRef(0);
+  const isDraggingRef = useRef(false);
 
   const router = useRouter();
 
+  // Time slots
+  const timeSlots = [
+    "11:30 AM - 12:00 PM",
+    "12:00 PM - 12:30 PM",
+    "12:30 PM - 01:00 PM",
+    "01:00 PM - 01:30 PM",
+    "02:00 PM - 02:30 PM",
+    "02:30 PM - 03:00 PM",
+    "03:00 PM - 03:30 PM",
+    "03:30 PM - 04:00 PM",
+    "04:00 PM - 04:30 PM",
+    "04:30 PM - 05:00 PM",
+  ];
+
+  // Update dateCount based on screen size
   useEffect(() => {
-    emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "");
+    const updateDateCount = () => {
+      if (window.innerWidth >= 1024) {
+        setDateCount(6); // lg screens
+      } else if (window.innerWidth >= 768) {
+        setDateCount(5); // md screens
+      } else {
+        setDateCount(3); // small screens
+      }
+    };
+
+    updateDateCount();
+    window.addEventListener("resize", updateDateCount);
+    return () => window.removeEventListener("resize", updateDateCount);
   }, []);
 
   useEffect(() => {
@@ -43,14 +74,15 @@ const Hero: React.FC = () => {
 
   const getFutureWeekdays = () => {
     const dates: { day: string; date: string }[] = [];
-    const currentDate = new Date(todayRef.current);
+    const currentDate = new Date();
+    todayRef.current = new Date();
 
     for (let i = 0; i < 84; i++) {
       const nextDate = new Date(currentDate);
       nextDate.setDate(currentDate.getDate() + i);
 
       if (
-        nextDate >= todayRef.current &&
+        nextDate >= new Date(currentDate.setHours(0, 0, 0, 0)) &&
         nextDate.getDay() !== 0 &&
         nextDate.getDay() !== 6
       ) {
@@ -64,43 +96,100 @@ const Hero: React.FC = () => {
   };
 
   useEffect(() => {
-    setAvailableDates(getFutureWeekdays());
-    const handleResize = () => {
-      if (typeof window !== "undefined") {
-        if (window.innerWidth < 768) setDateCount(3);
-        else if (window.innerWidth < 1024) setDateCount(4);
-        else setDateCount(5);
+    const updateDates = () => {
+      const newDates = getFutureWeekdays();
+      setAvailableDates(newDates);
+      if (currentIndex >= newDates.length - dateCount) {
+        setCurrentIndex(Math.max(0, newDates.length - dateCount));
       }
     };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
-  // Smooth scroll to the current week's dates
+    updateDates();
+
+    const interval = setInterval(() => {
+      const today = new Date();
+      if (today.getDate() !== todayRef.current.getDate()) {
+        updateDates();
+      }
+    }, 1000 * 60 * 60);
+
+    return () => clearInterval(interval);
+  }, [currentIndex, dateCount]);
+
   useEffect(() => {
     if (dateContainerRef.current) {
-      const scrollAmount = currentWeek * (dateContainerRef.current.offsetWidth / dateCount);
-      dateContainerRef.current.scrollTo({
-        left: scrollAmount,
-        behavior: "smooth",
-      });
+      const itemWidth = dateContainerRef.current.querySelector("button")?.clientWidth || 0;
+      const gapWidth = 16; // 4rem in pixels
+      const translateAmount = currentIndex * (itemWidth + gapWidth);
+      dateContainerRef.current.style.transform = `translateX(-${translateAmount}px)`;
     }
-  }, [currentWeek, dateCount]);
+  }, [currentIndex, dateCount]);
 
-  const prevWeek = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent default behavior
-    if (currentWeek > 0) setCurrentWeek(currentWeek - 1);
+  const prevDate = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
   };
 
-  const nextWeek = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent default behavior
-    if (currentWeek < availableDates.length - dateCount) setCurrentWeek(currentWeek + 1);
+  const nextDate = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (currentIndex < availableDates.length - dateCount) setCurrentIndex(currentIndex + 1);
   };
 
   const handleDateSelect = (e: React.MouseEvent, date: string) => {
-    e.preventDefault(); // Prevent default behavior
+    e.preventDefault();
     setSelectedDate(date);
+    setSelectedTime(timeSlots[0]); // Automatically select the first time slot
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    isDraggingRef.current = true;
+    lastTouchXRef.current = e.touches[0].clientX;
+    velocityRef.current = 0;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDraggingRef.current) return;
+    const currentX = e.touches[0].clientX;
+    const deltaX = currentX - lastTouchXRef.current;
+    velocityRef.current = deltaX;
+    lastTouchXRef.current = currentX;
+
+    if (dateContainerRef.current) {
+      const itemWidth = dateContainerRef.current.querySelector("button")?.clientWidth || 0;
+      const gapWidth = 16;
+      const maxIndex = Math.max(0, availableDates.length - dateCount);
+      const currentTranslate = currentIndex * (itemWidth + gapWidth);
+      const newTranslate = currentTranslate - deltaX;
+      const newIndex = Math.round(newTranslate / (itemWidth + gapWidth));
+      if (newIndex >= 0 && newIndex <= maxIndex) {
+        dateContainerRef.current.style.transform = `translateX(-${newTranslate}px)`;
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+
+    if (dateContainerRef.current) {
+      const itemWidth = dateContainerRef.current.querySelector("button")?.clientWidth || 0;
+      const gapWidth = 16;
+      const maxIndex = Math.max(0, availableDates.length - dateCount);
+      const momentum = velocityRef.current * 0.1;
+      const currentTranslate = currentIndex * (itemWidth + gapWidth) - momentum;
+      let newIndex = Math.round(currentTranslate / (itemWidth + gapWidth));
+      newIndex = Math.max(0, Math.min(newIndex, maxIndex));
+      setCurrentIndex(newIndex);
+    }
+  };
+
+  const handleTimeSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    if (value === "") {
+      setSelectedTime("");
+    } else {
+      setSelectedTime(value);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -108,37 +197,56 @@ const Hero: React.FC = () => {
     setLoading(true);
     setFormStatus(null);
 
-    if (!name || !email || !company || !message) {
-      setFormStatus({ type: "error", message: "Please fill all required fields." });
+    const missingFields: string[] = [];
+    if (!name) missingFields.push("Name");
+    if (!email) missingFields.push("Email");
+    if (!company) missingFields.push("Company");
+    if (!message) missingFields.push("Message");
+    if (selectedDate && !selectedTime) missingFields.push("Time slot");
+
+    if (missingFields.length > 0) {
+      const formattedMessage =
+        missingFields.length === 1
+          ? `${missingFields[0]} is required.`
+          : `${missingFields.slice(0, -1).join(", ")} and ${missingFields[missingFields.length - 1]} are required.`;
+      setFormStatus({ type: "error", message: formattedMessage });
       setLoading(false);
       return;
     }
 
     try {
-      const templateParams = {
-        name,
-        email,
-        company,
-        message,
-        date: selectedDate || "Not selected",
-        timezone,
-      };
+      const response = await fetch("/api/send-contactmail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          company,
+          message,
+          date: selectedDate || "Not selected",
+          time: selectedTime || "Not selected",
+          timezone,
+        }),
+      });
 
-      await emailjs.send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "",
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "",
-        templateParams
-      );
+      const result = await response.json();
 
-      setFormStatus({ type: "success", message: "Message sent successfully!" });
-      setName("");
-      setEmail("");
-      setCompany("");
-      setMessage("");
-      setSelectedDate("");
-      setTimezone("EST");
+      if (response.ok) {
+        setFormStatus({ type: "success", message: "Message sent successfully!" });
+        setName("");
+        setEmail("");
+        setCompany("");
+        setMessage("");
+        setSelectedDate("");
+        setSelectedTime("");
+        setTimezone("EST");
+      } else {
+        throw new Error(result.message || "Failed to send message.");
+      }
     } catch (error: any) {
-      setFormStatus({ type: "error", message: "Failed to send message." });
+      setFormStatus({ type: "error", message: error.message || "Failed to send message." });
     } finally {
       setLoading(false);
     }
@@ -197,59 +305,91 @@ const Hero: React.FC = () => {
                     <span className="text-[#969699]">30 min meeting</span>
                   </div>
                 </div>
-                <div className="flex items-center justify-between mt-3">
+                <div className="flex items-center justify-between mt-7">
                   <button
                     type="button"
-                    onClick={prevWeek}
-                    className="text-gray-400 hover:text-white focus:outline-none cursor-pointer"
-                    disabled={currentWeek === 0}
+                    onClick={prevDate}
+                    className="text-gray-400 bg-[#242425] lg:px-4 hover:text-white focus:outline-none cursor-pointer"
+                    disabled={currentIndex === 0}
                   >
-                    {"◁"}
+                    <ChevronLeft size={20} />
                   </button>
                   <div
-                    ref={dateContainerRef}
-                    className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory"
-                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                    className="overflow-hidden flex-1 touch-pan-y relative"
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
                   >
-                    {availableDates.length === 0 ? (
-                      <p className="text-[#969699] text-sm">No available dates.</p>
-                    ) : (
-                      availableDates.slice(currentWeek, currentWeek + dateCount).map((day, index) => (
-                        <button
-                          key={index}
-                          type="button"
-                          className={`bg-[#242425] px-3 py-2 rounded-lg text-sm text-[#969699] border-1 snap-center flex-shrink-0 ${
-                            selectedDate === `${day.day}, ${day.date}`
-                              ? "border-[#f6ff7a]"
-                              : "border-[#969699]"
-                          }`}
-                          onClick={(e) => handleDateSelect(e, `${day.day}, ${day.date}`)}
-                        >
-                          <span className="text-[18px] leading-[32px] font-medium">{day.day}</span> <br /> {day.date}
-                        </button>
-                      ))
-                    )}
+                    <div
+                      ref={dateContainerRef}
+                      className="flex gap-4 date-container"
+                      style={{ transition: "transform 0.4s ease-out" }}
+                    >
+                      {availableDates.length === 0 ? (
+                        <p className="text-[#969699]  text-sm">No available dates.</p>
+                      ) : (
+                        availableDates.map((day, index) => (
+                          <button
+                            key={`${day.day}-${day.date}-${index}`}
+                            type="button"
+                            className={`bg-[#242425] rounded-lg text-[14px] border-1 py-1  flex-shrink-0 snap-center w-[calc((100%-32px)/3)] md:w-[calc((100%-64px)/5)] lg:w-[calc((100%-80px)/6)] ${
+                              selectedDate === `${day.day}, ${day.date}`
+                                ? "bg-[#BCBCC0] text-[#3D3D3F]"
+                                : "border-[#969699] text-[#969699]"
+                            }`}
+                            onClick={(e) => handleDateSelect(e, `${day.day}, ${day.date}`)}
+                          >
+                            <span className="text-[14px] leading-[24px] font-bold md:text-[16px] md:leading-[28px]">{day.day}</span>
+                            <br />
+                            <span className="text-[12px] leading-[20px] md:text-[14px] md:leading-[22px]">{day.date}</span>
+                          </button>
+                        ))
+                      )}
+                    </div>
                   </div>
                   <button
                     type="button"
-                    onClick={nextWeek}
-                    className="text-gray-400 hover:text-white focus:outline-none cursor-pointer"
-                    disabled={currentWeek >= availableDates.length - dateCount}
+                    onClick={nextDate}
+                    className="text-gray-400 bg-[#242425] lg:px-4 hover:text-white focus:outline-none cursor-pointer"
+                    disabled={currentIndex >= availableDates.length - dateCount}
                   >
-                    {"▷"}
+                    <ChevronRight size={20} />
                   </button>
                 </div>
-                <div className="flex items-center justify-between mt-5 text-sm">
+                <div className="md:flex md:items-center gap-[3em] mt-5 text-sm">
                   <div className="flex items-center">
-                   <p>Timezone-</p>
-                   <select
-                      className=" rounded-lg outline-none font-bold text-[#f6ff7a]"
+                    <p style={{ fontFamily: "Poppins, sans-serif" }} className="text-[#969699]">Timezone-</p>
+                    <select
+                      className="rounded-lg outline-none font-bold text-[#f6ff7a]"
                       value={timezone}
                       onChange={(e) => setTimezone(e.target.value)}
                     >
                       <option>EST</option>
                       <option>PST</option>
                       <option>GMT</option>
+                    </select>
+                  </div>
+                  <div
+                    style={{ fontFamily: "Poppins, sans-serif" }}
+                    className="rounded-lg mt-5 md:mt-0 text-left outline-none text-sm text-[#969699]"
+                  >
+                    <select
+                      className="rounded-lg outline-none w-fit text-[#969699] p-1"
+                      value={selectedTime}
+                      onChange={handleTimeSelect}
+                      required={!!selectedDate}
+                    >
+                      {!selectedDate && (
+                        <option value="" className="placeholder-option">
+                          Schedule Meeting
+                        </option>
+                      )}
+                      {selectedDate &&
+                        timeSlots.map((slot, index) => (
+                          <option key={index} value={slot} className="text-gray-500 w-[50%]">
+                            {slot}
+                          </option>
+                        ))}
                     </select>
                   </div>
                 </div>
@@ -313,10 +453,32 @@ const Hero: React.FC = () => {
         </div>
       </div>
 
-      {/* Inline CSS for hiding scrollbar */}
       <style jsx>{`
+        .date-container {
+          display: flex;
+          transition: transform 0.4s ease-out;
+          scroll-snap-type: x mandatory;
+          overscroll-behavior-x: contain;
+          touch-action: pan-x;
+        }
+        .date-container > button {
+          scroll-snap-align: start;
+          flex: 0 0 auto;
+          box-sizing: border-box;
+          text-align: center;
+          min-width: 0;
+        }
         .date-container::-webkit-scrollbar {
           display: none;
+        }
+        .placeholder-option {
+          color: #ffffff !important;
+          background-color: #3b82f6 !important;
+        }
+        .touch-pan-y {
+          position: relative;
+          overflow: hidden;
+          max-width: calc(100% - 64px); /* Adjust for arrow buttons */
         }
       `}</style>
     </div>

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { FaSearch, FaSyncAlt, FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
 
 interface Subscriber {
   _id: string;
@@ -15,13 +16,13 @@ interface Subscriber {
 
 export default function Subscribers() {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
-
-
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [subscriberToDelete, setSubscriberToDelete] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // Fetch subscribers
   const fetchSubscribers = async (query: string = "") => {
@@ -34,6 +35,7 @@ export default function Subscribers() {
       }
       const data = await response.json();
       setSubscribers(data.subscribers);
+      setCurrentPage(1); // Reset to first page on new search
     } catch (err: any) {
       setError(err.message);
       toast.error(`Error: ${err.message}`, { theme: "dark" });
@@ -85,6 +87,98 @@ export default function Subscribers() {
 
   // Handle error dismissal
   const dismissError = () => setError(null);
+
+  // Pagination helper
+  const getPaginatedItems = (items: Subscriber[]) => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return items.slice(startIndex, startIndex + itemsPerPage);
+  };
+
+  // Pagination component
+  const Pagination = () => {
+    const totalItems = subscribers.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const maxPageButtons = 5;
+
+    const getPageNumbers = () => {
+      const pages: (number | string)[] = [];
+      let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
+      let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
+
+      if (endPage - startPage + 1 < maxPageButtons) {
+        startPage = Math.max(1, endPage - maxPageButtons + 1);
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+
+      if (startPage > 1) {
+        pages.unshift("...");
+        pages.unshift(1);
+      }
+      if (endPage < totalPages) {
+        pages.push("...");
+        pages.push(totalPages);
+      }
+
+      return pages;
+    };
+
+    if (totalPages <= 1) return null;
+
+    return (
+      <div className="flex justify-center items-center gap-2 mt-4">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`px-3 py-1 rounded-lg text-sm sm:text-base ${
+            currentPage === 1
+              ? "bg-[#3d3d3f] text-gray-400 cursor-not-allowed"
+              : "bg-[#3d3d3f] text-[#f6ff7a] hover:bg-[#4a4a4c]"
+          }`}
+          aria-label="Previous page"
+        >
+          Prev
+        </motion.button>
+        {getPageNumbers().map((page, index) => (
+          <motion.button
+            key={index}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => typeof page === "number" && setCurrentPage(page)}
+            className={`px-3 py-1 rounded-lg text-sm sm:text-base ${
+              page === currentPage
+                ? "bg-[#f6ff7a] text-black font-semibold"
+                : typeof page === "number"
+                ? "bg-[#3d3d3f] text-[#f6ff7a] hover:bg-[#4a4a4c]"
+                : "bg-[#242425] text-gray-400 cursor-default"
+            }`}
+            disabled={typeof page !== "number"}
+            aria-label={typeof page === "number" ? `Page ${page}` : "Ellipsis"}
+          >
+            {page}
+          </motion.button>
+        ))}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`px-3 py-1 rounded-lg text-sm sm:text-base ${
+            currentPage === totalPages
+              ? "bg-[#3d3d3f] text-gray-400 cursor-not-allowed"
+              : "bg-[#3d3d3f] text-[#f6ff7a] hover:bg-[#4a4a4c]"
+          }`}
+          aria-label="Next page"
+        >
+          Next
+        </motion.button>
+      </div>
+    );
+  };
 
   return (
     <div className="font-poppins bg-[#191a1b] text-white">
@@ -228,7 +322,7 @@ export default function Subscribers() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-600">
-                {subscribers.map((subscriber, index) => (
+                {getPaginatedItems(subscribers).map((subscriber, index) => (
                   <tr
                     key={subscriber._id}
                     className={`transition-colors ${
@@ -277,33 +371,36 @@ export default function Subscribers() {
             </table>
           </div>
         )}
-      </div>
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3 className="text-xl font-semibold text-[#f6ff7a] mb-4">Confirm Deletion</h3>
-            <p className="text-gray-200 mb-6">
-              Are you sure you want to delete this subscriber? This action cannot be undone.
-            </p>
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={closeDeleteModal}
-                className="px-4 py-2 bg-gray-600 text-gray-200 rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-              >
-                Delete
-              </button>
+        {/* Pagination */}
+        <Pagination />
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3 className="text-xl font-semibold text-[#f6ff7a] mb-4">Confirm Deletion</h3>
+              <p className="text-gray-200 mb-6">
+                Are you sure you want to delete this subscriber? This action cannot be undone.
+              </p>
+              <div className="flex justify-center gap-4">
+                <button
+                  onClick={closeDeleteModal}
+                  className="px-4 py-2 bg-gray-600 text-gray-200 rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

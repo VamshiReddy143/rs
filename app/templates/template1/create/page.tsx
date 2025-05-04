@@ -625,7 +625,7 @@ export default function CreateTemplate1() {
           <label className="flex flex-col gap-1">
             <span className="text-[1.2em] font-semibold text-gray-200">Technologies</span>
             <div className="flex flex-col gap-2 bg-[#242425] p-4 rounded-lg">
-              <div className="flex gap-2">
+              <div className="lg:flex  gap-2">
                 <input
                   type="text"
                   value={newTechnology.title}
@@ -642,7 +642,7 @@ export default function CreateTemplate1() {
                     setNewTechnology({ ...newTechnology, description: e.target.value })
                   }
                   placeholder="e.g., Native Android, Native iOS"
-                  className="p-3 bg-[#3d3d3f] border-b-2 border-transparent rounded-t-lg focus:outline-none focus:border-[#f6ff7a] transition-all duration-300 text-white flex-1"
+                  className="p-3 mt-3 lg:mt-0 md:mt-0 bg-[#3d3d3f] border-b-2 border-transparent rounded-t-lg focus:outline-none focus:border-[#f6ff7a] transition-all duration-300 text-white flex-1"
                 />
                 <button
                   type="button"
@@ -652,10 +652,11 @@ export default function CreateTemplate1() {
                         ...formData,
                         technologies: [...formData.technologies, newTechnology],
                       });
+                      
                       setNewTechnology({ title: '', description: '' });
                     }
                   }}
-                  className="bg-[#f6ff7a] hover:bg-[#AAB418] text-black px-4 py-2 rounded-lg"
+                  className="bg-[#f6ff7a] ml-4 lg:ml-0 md:ml-0 hover:bg-[#AAB418] text-black px-4 py-2 rounded-lg"
                 >
                   Add
                 </button>

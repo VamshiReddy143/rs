@@ -108,9 +108,9 @@ const Portfolio = () => {
           {/* Black overlay layer */}
           <div className="absolute inset-0 bg-black opacity-40 group-hover:opacity-75 transition-opacity duration-500 z-[1]"></div>
 
-          <div className="container text-white z-[2] relative flex flex-col gap-[0.5em]">
+          <div className="text-white z-[2] relative flex flex-col gap-[0.5em]">
             <div className="h-fit w-full">
-              <p className="text-[24px] font-semibold font-[Poppins]">
+              <p className="text-[24px] font-semibold bg-transparent  font-[Poppins]">
                 {project.title}
               </p>
             </div>
@@ -126,13 +126,13 @@ const Portfolio = () => {
                 className="h-17 w-17"
               />
             ) : (
-              <h2 className="font-bold text-white text-[24px]">{companyInfo[index].name}</h2>
+              <h2 className="font-bold text-white  text-[24px]">{companyInfo[index].name}</h2>
             )}
           </div>
 
           <div className="absolute bottom-0 left-0 w-full h-[3em] bg-gradient-to-t from-black via-black/70 to-transparent z-10" />
           <div className="relative overflow-hidden h-[0em] group-hover:h-[9em] transition-all duration-500 z-[2]">
-            <p className="text-[#bcbcc0] font-light leading-[1.2em]">
+            <p className="text-[#bcbcc0]  font-light   leading-[1.2em]">
               {project.thumbnailText}
             </p>
             <Link href={`/projects/${project._id}`}>

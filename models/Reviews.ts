@@ -6,6 +6,7 @@ interface IReview extends Document {
   position: string;
   userId: string;
   image?: string;
+  stars: number; // Add stars field
   createdAt: Date;
 }
 
@@ -15,6 +16,7 @@ const ReviewSchema: Schema = new Schema({
   position: { type: String, required: true },
   userId: { type: String, required: true },
   image: { type: String },
+  stars: { type: Number, required: true, min: 1, max: 5 }, // Required, 1–5
   createdAt: { type: Date, default: Date.now },
 });
 

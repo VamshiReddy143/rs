@@ -5,7 +5,7 @@ import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
-import { FaTrash } from 'react-icons/fa';
+import { FaTrash, FaStar } from 'react-icons/fa';
 
 interface Review {
   _id: string;
@@ -14,6 +14,7 @@ interface Review {
   position: string;
   userId: string;
   image?: string;
+  stars: number;
   createdAt: string;
 }
 
@@ -30,12 +31,15 @@ const AdminReviews = () => {
     const fetchReviews = async () => {
       setLoading(true);
       try {
-        const response = await fetch('/api/reviews');
+        const response = await fetch('/api/reviews?page=1&limit=100');
         if (!response.ok) throw new Error('Failed to fetch reviews');
-        const data: Review[] = await response.json();
-        setReviews(data);
-      } catch (err) {
-        setError('Failed to load reviews.');
+        const data = await response.json();
+        if (!data.reviews || !Array.isArray(data.reviews)) {
+          throw new Error('Invalid reviews data');
+        }
+        setReviews(data.reviews);
+      } catch (err: any) {
+        setError('Failed to load reviews: ' + err.message);
         toast.error('Failed to load reviews.', { style: { background: '#2d2d2f', color: '#fff' } });
       } finally {
         setLoading(false);
@@ -84,12 +88,27 @@ const AdminReviews = () => {
     setSelectedReviewId(null);
   };
 
+  // Render star rating with FaStar icons
+  const renderStars = (stars: number) => {
+    return (
+      <div className="flex items-center gap-1">
+        {[...Array(5)].map((_, index) => (
+          <FaStar
+            key={index}
+            size={14}
+            className={index < stars ? 'text-[#f6ff7a]' : 'text-[#bcbcc0]'}
+          />
+        ))}
+      </div>
+    );
+  };
+
   if (status === 'loading') {
     return <div className="min-h-screen bg-[#191a1b] text-white flex items-center justify-center">Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen p-4 sm:p-8  bg-[#191a1b] text-white font-poppins">
+    <div className="min-h-screen p-4 sm:p-8 bg-[#191a1b] text-white font-poppins">
       <Toaster position="top-right" />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -135,7 +154,10 @@ const AdminReviews = () => {
                   >
                     <FaTrash size={16} />
                   </motion.button>
-                  <p className="text-[#bcbcc0] text-sm italic line-clamp-7 mb-4">“{review.text}”</p>
+                  <div>
+                    {renderStars(review.stars)}
+                    <p className="text-[#bcbcc0] text-sm italic line-clamp-7 mb-4 mt-2">“{review.text}”</p>
+                  </div>
                   <div className="flex items-center gap-3">
                     <Image
                       src={review.image || '/h1c44.png'}
