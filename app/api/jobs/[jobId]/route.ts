@@ -1,8 +1,6 @@
-
 import { NextRequest, NextResponse } from "next/server";
 import connectToDatabase from "@/lib/connectDb";
 import { Job } from "@/models/Jobs";
-
 
 export async function GET(req: NextRequest, context: any) {
   const { jobId } = context.params;
@@ -17,7 +15,6 @@ export async function GET(req: NextRequest, context: any) {
   }
 }
 
-// @ts-ignore: Temporary workaround for Next.js type generation issue
 export async function PUT(req: NextRequest, context: any) {
   const { jobId } = context.params;
 
@@ -28,10 +25,11 @@ export async function PUT(req: NextRequest, context: any) {
     const location = formData.get("location") as string;
     const description = formData.get("description") as string;
     const employmentType = formData.get("employmentType") as string;
+    const department = formData.get("department") as string; // Add department
 
     const job = await Job.findByIdAndUpdate(
       jobId,
-      { title, location, description, employmentType },
+      { title, location, description, employmentType, department }, // Include department
       { new: true }
     );
     if (!job) return NextResponse.json({ error: "Job not found" }, { status: 404 });
@@ -42,7 +40,6 @@ export async function PUT(req: NextRequest, context: any) {
   }
 }
 
-// @ts-ignore: Temporary workaround for Next.js type generation issue
 export async function DELETE(req: NextRequest, context: any) {
   const { jobId } = context.params;
 

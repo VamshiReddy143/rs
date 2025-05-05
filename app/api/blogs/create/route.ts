@@ -1,3 +1,4 @@
+// app/api/blogs/create/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import Blog from "@/models/Blog";
@@ -13,23 +14,21 @@ cloudinary.config({
 });
 
 interface ContentItem {
-  type: "heading" | "paragraph" | "image" | "code";
+  type: "paragraph" | "image" | "code";
   value: string;
   language?: string;
+  imageUrls?: string[];
 }
 
 export async function GET() {
   try {
     await connectToDatabase();
-    const blogs = await Blog.find({}).lean();
+    const blogs = await Blog.find({}, "_id title category author primaryImage content createdAt").lean();
     console.log("Fetched blogs:", JSON.stringify(blogs, null, 2));
     return NextResponse.json(blogs, { status: 200 });
   } catch (error: any) {
-    console.error("Error fetching blogs:", error);
-    return NextResponse.json(
-      { message: `Internal server error: ${error.message}` },
-      { status: 500 }
-    );
+    console.error("Error fetching blogs:", error.message, error.stack);
+    return NextResponse.json({ message: `Error: ${error.message}` }, { status: 500 });
   }
 }
 
@@ -109,7 +108,6 @@ export async function POST(request: NextRequest) {
           );
         }
       } else if (item.type === "paragraph") {
-        // Sanitize HTML to allow lists and iframes
         processedItem.value = sanitizeHtml(item.value, {
           allowedTags: [
             "p",
@@ -139,12 +137,21 @@ export async function POST(request: NextRequest) {
           ],
           allowedAttributes: {
             "*": ["style", "class"],
-            "a": ["href", "target"],
-            "img": ["src", "alt"],
+            "a": ["href", "target", "rel"],
+            "img": ["src", "alt", "width", "height", "style"],
             "iframe": ["src", "frameborder", "allow", "allowfullscreen", "style"],
           },
           allowedIframeHostnames: ["www.youtube.com", "player.vimeo.com"],
+          allowedSchemes: ["http", "https"],
+          allowedSchemesByTag: { img: ["https"] },
         });
+
+        if (item.imageUrls) {
+          processedItem.imageUrls = item.imageUrls.filter((url) => url.includes("cloudinary.com"));
+          if (processedItem.imageUrls.length === 0) {
+            delete processedItem.imageUrls;
+          }
+        }
       }
 
       processedContent.push(processedItem);
@@ -159,10 +166,10 @@ export async function POST(request: NextRequest) {
     });
 
     const savedBlog = await newBlog.save();
-    console.log("Saved blog content:", JSON.stringify(savedBlog.content, null, 2));
+    console.log("Saved blog:", JSON.stringify(savedBlog, null, 2));
     return NextResponse.json(savedBlog, { status: 201 });
   } catch (error: any) {
-    console.error("Error creating blog:", error);
+    console.error("Error creating blog:", error.message, error.stack);
     return NextResponse.json({ message: `Error: ${error.message}` }, { status: 500 });
   }
 }

@@ -1,9 +1,11 @@
+// src/models/Blog.ts
 import mongoose, { Schema, Document } from "mongoose";
 
 interface IContent {
-  type: "heading" | "paragraph" | "image" | "code";
+  type: "paragraph" | "image" | "code";
   value: string;
   language?: string;
+  imageUrls?: string[];
 }
 
 interface IBlog extends Document {
@@ -12,6 +14,8 @@ interface IBlog extends Document {
   author: string;
   primaryImage?: string;
   content: IContent[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const BlogSchema: Schema = new Schema(
@@ -22,9 +26,10 @@ const BlogSchema: Schema = new Schema(
     primaryImage: { type: String, required: false },
     content: [
       {
-        type: { type: String, enum: ["heading", "paragraph", "image", "code"], required: true },
+        type: { type: String, enum: ["paragraph", "image", "code"], required: true },
         value: { type: String, required: true },
         language: { type: String, required: false },
+        imageUrls: [{ type: String, required: false }],
       },
     ],
   },

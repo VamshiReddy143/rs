@@ -165,7 +165,7 @@ const Cards: React.FC<CardsProps> = ({ searchTerm, selectedCategories }) => {
   return (
     <div className="mt-[5em]">
       {/* Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
         {currentCards.length > 0 ? (
           currentCards.map((card, index) => (
             <div
@@ -174,10 +174,10 @@ const Cards: React.FC<CardsProps> = ({ searchTerm, selectedCategories }) => {
             >
               <Image
                 src={card.image}
-                width={900}
-                height={900}
+                width={800}
+                height={700}
                 alt={card.title}
-                className="h-[250px] w-full object-cover"
+                className="h-[270px] w-full  object-center"
               />
               {/* Content Container */}
               <div className="flex flex-col gap-4">

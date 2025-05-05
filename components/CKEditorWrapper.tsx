@@ -1,7 +1,9 @@
+// src/components/CKEditorWrapper.tsx
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
 import { toast } from 'react-toastify';
+import { UploadAdapterPlugin } from '@/lib/UploadAdapter'; // Adjust path as needed
 
 interface CKEditorWrapperProps {
   data: string;
@@ -15,9 +17,8 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({ data, onChange, index
   const [EditorBuild, setEditorBuild] = useState<any>(null);
   const editorRef = useRef<any>(null);
   const isMounted = useRef(true);
-  const [editorInitialized, setEditorInitialized] = useState(false); // Track editor initialization
+  const [editorInitialized, setEditorInitialized] = useState(false);
 
-  // Load CKEditor modules once
   useEffect(() => {
     const loadEditor = async () => {
       try {
@@ -42,9 +43,8 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({ data, onChange, index
     return () => {
       isMounted.current = false;
     };
-  }, []); // Empty dependency array to load only once
+  }, []);
 
-  // Cleanup editor on unmount
   useEffect(() => {
     return () => {
       if (editorRef.current && editorInitialized && typeof editorRef.current.destroy === 'function') {
@@ -55,10 +55,10 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({ data, onChange, index
           console.error(`Failed to destroy CKEditor for index ${index}:`, error);
         }
         editorRef.current = null;
-        setEditorInitialized(false); // Reset initialization state
+        setEditorInitialized(false);
       }
     };
-  }, []); // Run only on unmount
+  }, []);
 
   if (!editorLoaded) {
     return (
@@ -84,7 +84,7 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({ data, onChange, index
         onReady={(editor: any) => {
           if (isMounted.current) {
             editorRef.current = editor;
-            setEditorInitialized(true); // Mark editor as initialized
+            setEditorInitialized(true);
             console.log(`CKEditor initialized for index ${index}`);
           }
         }}
@@ -96,12 +96,12 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({ data, onChange, index
         onError={(error: any, { willEditorRestart }: { willEditorRestart: boolean }) => {
           console.error(`CKEditor error for index ${index}:`, error);
           if (willEditorRestart) {
-            // Only clear ref if editor is restarting, but keep initialization state
             editorRef.current = null;
           }
           toast.error(`Editor error for content item ${index !== undefined ? index + 1 : 'unknown'}`);
         }}
         config={{
+          extraPlugins: [UploadAdapterPlugin],
           toolbar: [
             'heading',
             '|',
@@ -124,6 +124,7 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({ data, onChange, index
             'indent',
             'outdent',
             '|',
+            'imageUpload', // Enable image upload
             'insertTable',
             'mediaEmbed',
             '|',
@@ -139,6 +140,16 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({ data, onChange, index
             'superscript',
             'underline',
           ],
+          image: {
+            toolbar: [
+              'imageStyle:inline',
+              'imageStyle:block',
+              'imageStyle:side',
+              '|',
+              'toggleImageCaption',
+              'imageTextAlternative',
+            ],
+          },
           fontSize: {
             options: [10, 12, 14, 'default', 18, 20, 24, 30, 36],
             supportAllValues: true,

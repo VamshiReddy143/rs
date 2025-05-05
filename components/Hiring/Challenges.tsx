@@ -31,7 +31,7 @@ const Challenges: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ fontFamily: "Poppins, sans-serif" }} className="lg:p-[10%] p-5 lg:min-h-screen flex flex-col lg:flex-row justify-between px-2 bg-gray-100 pt-[7em] text-black">
+    <div id="jobs" style={{ fontFamily: "Poppins, sans-serif" }} className="lg:p-[10%] p-5 lg:min-h-screen flex flex-col lg:flex-row justify-between px-2 bg-gray-100 pt-[7em] text-black">
       <div className="w-full lg:w-[40%] mb-6 lg:mb-0">
         <h2 className="lg:text-[1.5rem] text-[21px] md:text-[32px] font-medium lg:leading-[38px]">Are you up for these</h2>
         <h1 className="lg:text-[2rem] text-[42px] md:text-[64px] font-semibold lg:leading-[77px]">challenges?</h1>

@@ -1,10 +1,10 @@
-
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import Blog from "@/models/Blog";
 import connectToDatabase from "@/lib/connectDb";
 import { v2 as cloudinary } from "cloudinary";
 import { Readable } from "stream";
+import sanitizeHtml from "sanitize-html";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -13,14 +13,50 @@ cloudinary.config({
 });
 
 interface ContentItem {
-  type: "heading" | "paragraph" | "image" | "code";
+  type: "paragraph" | "image" | "code";
   value: string;
   language?: string;
+  imageUrls?: string[];
 }
 
+export async function GET(request: NextRequest, context: any) {
+  try {
+    await connectToDatabase();
+    const id = context.params?.id;
+    console.log("GET: Context received:", JSON.stringify(context, null, 2));
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      console.error("Invalid blog ID:", id);
+      return NextResponse.json({ message: "Invalid blog ID" }, { status: 400 });
+    }
+
+    console.log("Fetching blog with ID:", id);
+    const blog = await Blog.findById(id).lean();
+    if (!blog) {
+      console.warn("Blog not found for ID:", id);
+      const allBlogs = await Blog.find({}, "_id title").lean();
+      console.log("All blog IDs in database:", allBlogs.map((b) => ({ id: b._id.toString(), title: b.title })));
+      return NextResponse.json({ message: "Blog not found" }, { status: 404 });
+    }
+
+    const randomBlogs = await Blog.aggregate([
+      { $match: { _id: { $ne: new mongoose.Types.ObjectId(id) } } },
+      { $sample: { size: 3 } },
+      { $project: { _id: 1, title: 1, category: 1, primaryImage: 1 } },
+    ]).exec();
+
+    console.log("Fetched blog:", JSON.stringify(blog, null, 2));
+    console.log("Fetched random blogs:", JSON.stringify(randomBlogs, null, 2));
+
+    return NextResponse.json({ blog, randomBlogs }, { status: 200 });
+  } catch (error: any) {
+    console.error("Error fetching blog:", error.message, error.stack);
+    return NextResponse.json({ message: `Error: ${error.message}` }, { status: 500 });
+  }
+}
 
 export async function PUT(request: NextRequest, context: any) {
-  const { id: blogId } = context.params;
+  const blogId = context.params?.id;
 
   try {
     await connectToDatabase();
@@ -52,7 +88,6 @@ export async function PUT(request: NextRequest, context: any) {
       return NextResponse.json({ message: "Invalid content format" }, { status: 400 });
     }
 
-    // Upload new primary image if present and delete old one
     let primaryImageUrl: string | undefined = existingBlog.primaryImage;
     if (primaryImage) {
       if (existingBlog.primaryImage) {
@@ -76,11 +111,15 @@ export async function PUT(request: NextRequest, context: any) {
       primaryImageUrl = (uploadResult as any).secure_url;
     }
 
-    // Process content and handle image updates
     const processedContent: ContentItem[] = [];
-    const oldImageUrls: string[] = existingBlog.content
-      .filter((item: ContentItem) => item.type === "image")
-      .map((item: ContentItem) => item.value);
+    const oldImageUrls: string[] = [
+      ...existingBlog.content
+        .filter((item: ContentItem) => item.type === "image")
+        .map((item: ContentItem) => item.value),
+      ...(existingBlog.content
+        .filter((item: ContentItem) => item.type === "paragraph" && item.imageUrls)
+        .flatMap((item: ContentItem) => item.imageUrls || [])),
+    ];
 
     for (const [index, item] of content.entries()) {
       if (!item.type || !item.value) {
@@ -112,21 +151,70 @@ export async function PUT(request: NextRequest, context: any) {
           });
           processedItem.value = (uploadResult as any).secure_url;
         } else {
-          // Retain existing image URL if no new file is uploaded
           processedItem.value =
             existingBlog.content[index]?.type === "image"
               ? existingBlog.content[index].value
               : "";
+        }
+      } else if (item.type === "paragraph") {
+        processedItem.value = sanitizeHtml(item.value, {
+          allowedTags: [
+            "p",
+            "span",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "strong",
+            "em",
+            "ul",
+            "ol",
+            "li",
+            "a",
+            "img",
+            "table",
+            "tr",
+            "td",
+            "th",
+            "blockquote",
+            "code",
+            "pre",
+            "div",
+            "iframe",
+          ],
+          allowedAttributes: {
+            "*": ["style", "class"],
+            "a": ["href", "target", "rel"],
+            "img": ["src", "alt", "width", "height", "style"],
+            "iframe": ["src", "frameborder", "allow", "allowfullscreen", "style"],
+          },
+          allowedIframeHostnames: ["www.youtube.com", "player.vimeo.com"],
+          allowedSchemes: ["http", "https"],
+          allowedSchemesByTag: { img: ["https"] },
+        });
+
+        if (item.imageUrls) {
+          processedItem.imageUrls = item.imageUrls.filter((url) => url.includes("cloudinary.com"));
+          if (processedItem.imageUrls.length === 0) {
+            delete processedItem.imageUrls;
+          }
         }
       }
 
       processedContent.push(processedItem);
     }
 
-    // Delete old images that are no longer used
-    const newImageUrls = processedContent
-      .filter((item) => item.type === "image")
-      .map((item) => item.value);
+    const newImageUrls: string[] = [
+      ...processedContent
+        .filter((item) => item.type === "image")
+        .map((item) => item.value),
+      ...processedContent
+        .filter((item) => item.type === "paragraph" && item.imageUrls)
+        .flatMap((item) => item.imageUrls || []),
+    ];
+
     const imagesToDelete = oldImageUrls.filter((url) => !newImageUrls.includes(url));
     for (const url of imagesToDelete) {
       const publicId = url.split("/").pop()?.split(".")[0];
@@ -135,24 +223,24 @@ export async function PUT(request: NextRequest, context: any) {
       }
     }
 
-    // Update blog
     existingBlog.title = title;
     existingBlog.category = category;
     existingBlog.author = author;
     existingBlog.primaryImage = primaryImageUrl;
     existingBlog.content = processedContent;
+    existingBlog.updatedAt = new Date();
 
     const updatedBlog = await existingBlog.save();
+    console.log("Updated blog:", JSON.stringify(updatedBlog, null, 2));
     return NextResponse.json(updatedBlog, { status: 200 });
   } catch (error: any) {
-    console.error("Error updating blog:", error);
+    console.error("Error updating blog:", error.message, error.stack);
     return NextResponse.json({ message: `Error: ${error.message}` }, { status: 500 });
   }
 }
 
-// @ts-ignore: Temporary workaround for Next.js type generation issue
-export async function DELETE(req: NextRequest, context: any) {
-  const { id: blogId } = context.params;
+export async function DELETE(request: NextRequest, context: any) {
+  const blogId = context.params?.id;
 
   try {
     await connectToDatabase();
@@ -166,7 +254,6 @@ export async function DELETE(req: NextRequest, context: any) {
       return NextResponse.json({ message: "Blog not found" }, { status: 404 });
     }
 
-    // Delete primary image from Cloudinary
     if (blog.primaryImage) {
       const publicId = blog.primaryImage.split("/").pop()?.split(".")[0];
       if (publicId) {
@@ -174,20 +261,27 @@ export async function DELETE(req: NextRequest, context: any) {
       }
     }
 
-    // Delete content images from Cloudinary
-    const imageItems = blog.content.filter((item: ContentItem) => item.type === "image");
-    for (const item of imageItems) {
-      const publicId = item.value.split("/").pop()?.split(".")[0];
+    const imageUrls: string[] = [
+      ...blog.content
+        .filter((item: ContentItem) => item.type === "image")
+        .map((item: ContentItem) => item.value),
+      ...blog.content
+        .filter((item: ContentItem) => item.type === "paragraph" && item.imageUrls)
+        .flatMap((item: ContentItem) => item.imageUrls || []),
+    ];
+
+    for (const url of imageUrls) {
+      const publicId = url.split("/").pop()?.split(".")[0];
       if (publicId) {
         await cloudinary.uploader.destroy(`blog_images/${publicId}`);
       }
     }
 
-    // Delete blog from database
     await Blog.findByIdAndDelete(blogId);
+    console.log("Deleted blog ID:", blogId);
     return NextResponse.json({ message: "Blog deleted successfully" }, { status: 200 });
   } catch (error: any) {
-    console.error("Error deleting blog:", error);
+    console.error("Error deleting blog:", error.message, error.stack);
     return NextResponse.json({ message: `Error: ${error.message}` }, { status: 500 });
   }
 }

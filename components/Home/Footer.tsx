@@ -8,7 +8,8 @@ import { FaXTwitter } from "react-icons/fa6";
 import { FaInstagram } from "react-icons/fa6";
 import arrow from "@/public/pr.png";
 import { LuLinkedin } from 'react-icons/lu';
-import { div } from 'framer-motion/client';
+import Link from 'next/link';
+
 
 const Footer = () => {
   const [email1, setEmail1] = useState('');
@@ -149,7 +150,9 @@ const Footer = () => {
 
       <div className='lg:flex items-center justify-between mt-20'>
         <p className='text-[#BCBCC0] text-[14px]'>2025 © Rootstrap, Inc. All Rights Reserved.</p>
-        <p className='text-[#BCBCC0] text-[14px]'>Privacy Policy</p>
+      <Link href={"/PrivacyPolicy"}>
+      <p className='text-[#BCBCC0] text-[14px]'>Privacy Policy</p>
+      </Link>
       </div>
     </div>
   );

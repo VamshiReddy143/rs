@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import Team from "@/models/Team";
@@ -12,11 +11,30 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// GET: Fetch a specific team member by ID
+export async function GET(request: NextRequest, context: any) {
+  const { id: teamId } = context.params;
 
+  try {
+    await connectToDatabase();
 
+    if (!mongoose.Types.ObjectId.isValid(teamId)) {
+      return NextResponse.json({ message: "Invalid team member ID" }, { status: 400 });
+    }
 
+    const teamMember = await Team.findById(teamId);
+    if (!teamMember) {
+      return NextResponse.json({ message: "Team member not found" }, { status: 404 });
+    }
 
+    return NextResponse.json(teamMember, { status: 200 });
+  } catch (error: any) {
+    console.error("Error fetching team member:", error);
+    return NextResponse.json({ message: `Error: ${error.message}` }, { status: 500 });
+  }
+}
 
+// PUT: Update a specific team member
 export async function PUT(request: NextRequest, context: any) {
   const { id: teamId } = context.params;
 
@@ -80,7 +98,7 @@ export async function PUT(request: NextRequest, context: any) {
   }
 }
 
-// @ts-ignore: Temporary workaround for Next.js type generation issue
+// DELETE: Delete a specific team member
 export async function DELETE(request: NextRequest, context: any) {
   const { id: teamId } = context.params;
 

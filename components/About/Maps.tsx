@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from "react";
@@ -174,67 +173,78 @@ const CountryMap = () => {
       </div>
 
       <div className="flex-1 w-full h-[50vh] pt-10 sm:h-[60vh] lg:h-screen">
-        <ComposableMap
-          projection="geoMercator"
-          projectionConfig={{ scale: 120, center: [0, 20] }}
-          style={{ width: "100%", height: "100%" }}
-        >
-          <defs>
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
-              <feMerge>
-                <feMergeNode in="coloredBlur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
+        <style jsx>{`
+          .map-container :global(svg path) {
+            outline: none !important;
+            outline-offset: none !important;
+          }
+          .map-container :global(svg path:focus),
+          .map-container :global(svg path:active) {
+            outline: none !important;
+            box-shadow: none !important;
+          }
+        `}</style>
+        <div className="map-container">
+          <ComposableMap
+            projection="geoMercator"
+            projectionConfig={{ scale: 120, center: [0, 20] }}
+            style={{ width: "100%", height: "100%" }}
+          >
+            <defs>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
 
-          <Geographies geography="https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json">
-            {({ geographies }) =>
-              geographies.map((geo) => {
-                const geoId = geo.id ? geo.id.toString() : null;
-                const isSelected =
-                  geoId &&
-                  ((hoveredCountry === "ALL" || selectedCountry === "ALL")
-                    ? countriesWithLocations.includes(idMapping[geoId])
-                    : idMapping[geoId] === selectedCountry || idMapping[geoId] === hoveredCountry);
-                return (
-                  <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    fill={isSelected ? "#444444" : "#222222"}
-                    stroke="#333333"
-                    strokeWidth={0.5}
+            <Geographies geography="https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json">
+              {({ geographies }) =>
+                geographies.map((geo) => {
+                  const geoId = geo.id ? geo.id.toString() : null;
+                  const isSelected =
+                    geoId &&
+                    ((hoveredCountry === "ALL" || selectedCountry === "ALL")
+                      ? countriesWithLocations.includes(idMapping[geoId])
+                      : idMapping[geoId] === selectedCountry || idMapping[geoId] === hoveredCountry);
+                  return (
+                    <Geography
+                      key={geo.rsmKey}
+                      geography={geo}
+                      fill={isSelected ? "#444444" : "#222222"}
+                      stroke="#333333"
+                      strokeWidth={0.5}
+                    />
+                  );
+                })
+              }
+            </Geographies>
+
+            {/* Default markers for specified countries when no interaction */}
+            {!selectedCountry && !hoveredCountry && defaultCountries.map((countryId) =>
+              companyLocations[countryId]?.map((location, index) => (
+                <Marker key={`default-${countryId}-${index}`} coordinates={[location.lng, location.lat]}>
+                  <circle
+                    r={1}
+                    fill="#FFB800"
+                    stroke="#FFB800"
+                    strokeWidth={1}
+                    filter="url(#glow)"
+                    className="animate-pulse"
                   />
-                );
-              })
-            }
-          </Geographies>
+                </Marker>
+              ))
+            )}
 
-          {/* Default markers for specified countries when no interaction */}
-          {!selectedCountry && !hoveredCountry && defaultCountries.map((countryId) =>
-            companyLocations[countryId]?.map((location, index) => (
-              <Marker key={`default-${countryId}-${index}`} coordinates={[location.lng, location.lat]}>
-                <circle
-                  r={1}
-                  fill="#FFB800"
-                  stroke="#FFB800"
-                  strokeWidth={1}
-                  filter="url(#glow)"
-                  className="animate-pulse"
-                />
-              </Marker>
-            ))
-          )}
-
-          {/* Markers for hovered or selected country */}
-          {(hoveredCountry || selectedCountry) && (
-            (hoveredCountry === "ALL" || selectedCountry === "ALL" ? (
-              Object.values(companyLocations)
-                .flat()
-                .map((location, index) => (
-                  <React.Fragment key={`all-${index}`}>
-                    <Marker coordinates={[location.lng, location.lat]}>
+            {/* Markers for hovered or selected country */}
+            {(hoveredCountry || selectedCountry) && (
+              (hoveredCountry === "ALL" || selectedCountry === "ALL" ? (
+                Object.values(companyLocations)
+                  .flat()
+                  .map((location, index) => (
+                    <Marker key={`all-${index}`} coordinates={[location.lng, location.lat]}>
                       <circle
                         r={1}
                         fill="#FFB800"
@@ -244,23 +254,10 @@ const CountryMap = () => {
                         className="animate-pulse"
                       />
                     </Marker>
-                    <Marker coordinates={[location.lng, 90]}>
-                      <line
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="-180"
-                        stroke="rgba(255, 184, 0, 0.2)"
-                        strokeWidth={1}
-                        transform={`translate(0, -90)`}
-                      />
-                    </Marker>
-                  </React.Fragment>
-                ))
-            ) : (
-              companyLocations[(hoveredCountry || selectedCountry) as string]?.map((location, index) => (
-                <React.Fragment key={`marker-${index}`}>
-                  <Marker coordinates={[location.lng, location.lat]}>
+                  ))
+              ) : (
+                companyLocations[(hoveredCountry || selectedCountry) as string]?.map((location, index) => (
+                  <Marker key={`marker-${index}`} coordinates={[location.lng, location.lat]}>
                     <circle
                       r={1}
                       fill="#FFB800"
@@ -270,41 +267,11 @@ const CountryMap = () => {
                       className="animate-pulse"
                     />
                   </Marker>
-                  <Marker coordinates={[location.lng, 90]}>
-                    <line
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="-180"
-                      stroke="rgba(255, 184, 0, 0.2)"
-                      strokeWidth={1}
-                      transform={`translate(0, -90)`}
-                    />
-                  </Marker>
-                </React.Fragment>
+                ))
               ))
-            ))
-          )}
-
-          {/* Hover/Select effect lines */}
-          {(hoveredCountry || selectedCountry) &&
-            companyLocations[(hoveredCountry || selectedCountry) as string]?.map((location, index) => (
-              <Marker
-                key={`line-${index}`}
-                coordinates={[location.lng, 90]}
-              >
-                <line
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="-180"
-                  stroke="rgba(255, 255, 255, 0.5)"
-                  strokeWidth={0.9}
-                  transform={`translate(0, -90)`}
-                />
-              </Marker>
-            ))}
-        </ComposableMap>
+            )}
+          </ComposableMap>
+        </div>
       </div>
     </div>
   );

@@ -1,9 +1,11 @@
+
+
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import SessionWrapper from "@/components/SessionWrapper";
+import NavbarWrapper from "@/components/NavbarWrapper";
 
 const interFont = Inter({
   variable: "--font-inter",
@@ -31,7 +33,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body className={`${interFont.variable} ${poppins.variable} antialiased bg-[#1a1a1a] text-white`}>
         <SessionWrapper>
           <div className="text-white lg:max-w-[90em] lg:px-[6em] lg:mx-auto px-3">
-            <Navbar />
+            <NavbarWrapper />
           </div>
           <main>
             <SmoothScrollProvider>{children}</SmoothScrollProvider>

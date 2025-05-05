@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -9,7 +10,6 @@ import { getSession, signIn } from "next-auth/react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// Declare gapi and google types
 declare global {
   interface Window {
     gapi: {
@@ -53,6 +53,377 @@ interface Job {
   postedDate: string;
 }
 
+const CKEditorStyles = `
+  .ck-content {
+    line-height: 1.6;
+    color: #374151; /* text-gray-700 */
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+  }
+  .ck-content p {
+    margin: 1em 0;
+    padding: 0;
+  }
+  .ck-content h1, .ck-content h2, .ck-content h3,
+  .ck-content h4, .ck-content h5, .ck-content h6 {
+    margin: 1.2em 0 0.6em;
+    line-height: 1.3;
+    font-weight: 600;
+  }
+  .ck-content h1 { font-size: 2em; }
+  .ck-content h2 { font-size: 1.75em; }
+  .ck-content h3 { font-size: 1.5em; }
+  .ck-content h4 { font-size: 1.25em; }
+  .ck-content h5 { font-size: 1.1em; }
+  .ck-content h6 { font-size: 1em; }
+  .ck-content ul, .ck-content ol {
+    margin: 1em 0;
+    padding-left: 2em;
+  }
+  .ck-content ul {
+    list-style: disc;
+  }
+  .ck-content ol {
+    list-style: decimal;
+  }
+  .ck-content li {
+    margin-bottom: 0.5em;
+  }
+  .ck-content img {
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 1em 0;
+    display: block;
+    border-radius: 8px;
+  }
+  .ck-content img.align-left, .ck-content img.image-style-align-left {
+    float: left;
+    margin-right: 1em;
+    margin-bottom: 1em;
+  }
+  .ck-content img.align-right, .ck-content img.image-style-align-right, .ck-content img.image-style-side {
+    float: right;
+    margin-left: 1em;
+    margin-bottom: 1em;
+  }
+  .ck-content img.align-center, .ck-content img.image-style-align-center {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .ck-content figure.image {
+    margin: 1em 0;
+    text-align: center;
+    max-width: 100%;
+  }
+  .ck-content figcaption {
+    font-size: 0.9em;
+    color: #6b7280; /* text-gray-500 */
+    margin-top: 0.5em;
+  }
+  .ck-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+  }
+  .ck-content th, .ck-content td {
+    border: 1px solid #d1d5db; /* border-gray-300 */
+    padding: 0.5em;
+    text-align: left;
+  }
+  .ck-content blockquote {
+    border-left: 4px solid #d1d5db; /* border-gray-300 */
+    padding-left: 1em;
+    margin: 1em 0;
+    color: #6b7280; /* text-gray-500 */
+    font-style: italic;
+  }
+  .ck-content pre {
+    background: #f3f4f6; /* bg-gray-100 */
+    padding: 1em;
+    border-radius: 4px;
+    overflow-x: auto;
+  }
+  .ck-content code {
+    background: #f3f4f6; /* bg-gray-100 */
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+  }
+  .ck-content a {
+    color: #2563eb; /* text-blue-600 */
+    text-decoration: underline;
+  }
+  .ck-content a:hover {
+    color: #1e40af; /* text-blue-800 */
+  }
+  .ck-content iframe {
+    max-width: 100%;
+    border: none;
+    margin: 1em 0;
+  }
+  .ck-content .ck-content {
+    white-space: normal;
+  }
+  .ck-content img[style*="width"], .ck-content img[style*="height"] {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+  }
+`;
+
+// Comprehensive list of countries (ISO 3166-1 standard)
+const countries = [
+  "Afghanistan",
+  "Åland Islands",
+  "Albania",
+  "Algeria",
+  "American Samoa",
+  "Andorra",
+  "Angola",
+  "Anguilla",
+  "Antarctica",
+  "Antigua and Barbuda",
+  "Argentina",
+  "Armenia",
+  "Aruba",
+  "Australia",
+  "Austria",
+  "Azerbaijan",
+  "Bahamas",
+  "Bahrain",
+  "Bangladesh",
+  "Barbados",
+  "Belarus",
+  "Belgium",
+  "Belize",
+  "Benin",
+  "Bermuda",
+  "Bhutan",
+  "Bolivia",
+  "Bonaire, Sint Eustatius and Saba",
+  "Bosnia and Herzegovina",
+  "Botswana",
+  "Bouvet Island",
+  "Brazil",
+  "British Indian Ocean Territory",
+  "Brunei Darussalam",
+  "Bulgaria",
+  "Burkina Faso",
+  "Burundi",
+  "Cabo Verde",
+  "Cambodia",
+  "Cameroon",
+  "Canada",
+  "Cayman Islands",
+  "Central African Republic",
+  "Chad",
+  "Chile",
+  "China",
+  "Christmas Island",
+  "Cocos (Keeling) Islands",
+  "Colombia",
+  "Comoros",
+  "Congo",
+  "Congo, Democratic Republic of the",
+  "Cook Islands",
+  "Costa Rica",
+  "Côte d'Ivoire",
+  "Croatia",
+  "Cuba",
+  "Curaçao",
+  "Cyprus",
+  "Czechia",
+  "Denmark",
+  "Djibouti",
+  "Dominica",
+  "Dominican Republic",
+  "Ecuador",
+  "Egypt",
+  "El Salvador",
+  "Equatorial Guinea",
+  "Eritrea",
+  "Estonia",
+  "Eswatini",
+  "Ethiopia",
+  "Falkland Islands (Malvinas)",
+  "Faroe Islands",
+  "Fiji",
+  "Finland",
+  "France",
+  "French Guiana",
+  "French Polynesia",
+  "French Southern Territories",
+  "Gabon",
+  "Gambia",
+  "Georgia",
+  "Germany",
+  "Ghana",
+  "Gibraltar",
+  "Greece",
+  "Greenland",
+  "Grenada",
+  "Guadeloupe",
+  "Guam",
+  "Guatemala",
+  "Guernsey",
+  "Guinea",
+  "Guinea-Bissau",
+  "Guyana",
+  "Haiti",
+  "Heard Island and McDonald Islands",
+  "Holy See",
+  "Honduras",
+  "Hong Kong",
+  "Hungary",
+  "Iceland",
+  "India",
+  "Indonesia",
+  "Iran, Islamic Republic of",
+  "Iraq",
+  "Ireland",
+  "Isle of Man",
+  "Israel",
+  "Italy",
+  "Jamaica",
+  "Japan",
+  "Jersey",
+  "Jordan",
+  "Kazakhstan",
+  "Kenya",
+  "Kiribati",
+  "Korea, Democratic People's Republic of",
+  "Korea, Republic of",
+  "Kuwait",
+  "Kyrgyzstan",
+  "Lao People's Democratic Republic",
+  "Latvia",
+  "Lebanon",
+  "Lesotho",
+  "Liberia",
+  "Libya",
+  "Liechtenstein",
+  "Lithuania",
+  "Luxembourg",
+  "Macao",
+  "Madagascar",
+  "Malawi",
+  "Malaysia",
+  "Maldives",
+  "Mali",
+  "Malta",
+  "Marshall Islands",
+  "Martinique",
+  "Mauritania",
+  "Mauritius",
+  "Mayotte",
+  "Mexico",
+  "Micronesia, Federated States of",
+  "Moldova, Republic of",
+  "Monaco",
+  "Mongolia",
+  "Montenegro",
+  "Montserrat",
+  "Morocco",
+  "Mozambique",
+  "Myanmar",
+  "Namibia",
+  "Nauru",
+  "Nepal",
+  "Netherlands",
+  "New Caledonia",
+  "New Zealand",
+  "Nicaragua",
+  "Niger",
+  "Nigeria",
+  "Niue",
+  "Norfolk Island",
+  "North Macedonia",
+  "Northern Mariana Islands",
+  "Norway",
+  "Oman",
+  "Pakistan",
+  "Palau",
+  "Palestine, State of",
+  "Panama",
+  "Papua New Guinea",
+  "Paraguay",
+  "Peru",
+  "Philippines",
+  "Pitcairn",
+  "Poland",
+  "Portugal",
+  "Puerto Rico",
+  "Qatar",
+  "Réunion",
+  "Romania",
+  "Russian Federation",
+  "Rwanda",
+  "Saint Barthélemy",
+  "Saint Helena, Ascension and Tristan da Cunha",
+  "Saint Kitts and Nevis",
+  "Saint Lucia",
+  "Saint Martin (French part)",
+  "Saint Pierre and Miquelon",
+  "Saint Vincent and the Grenadines",
+  "Samoa",
+  "San Marino",
+  "Sao Tome and Principe",
+  "Saudi Arabia",
+  "Senegal",
+  "Serbia",
+  "Seychelles",
+  "Sierra Leone",
+  "Singapore",
+  "Sint Maarten (Dutch part)",
+  "Slovakia",
+  "Slovenia",
+  "Solomon Islands",
+  "Somalia",
+  "South Africa",
+  "South Georgia and the South Sandwich Islands",
+  "South Sudan",
+  "Spain",
+  "Sri Lanka",
+  "Sudan",
+  "Suriname",
+  "Svalbard and Jan Mayen",
+  "Sweden",
+  "Switzerland",
+  "Syrian Arab Republic",
+  "Taiwan, Province of China",
+  "Tajikistan",
+  "Tanzania, United Republic of",
+  "Thailand",
+  "Timor-Leste",
+  "Togo",
+  "Tokelau",
+  "Tonga",
+  "Trinidad and Tobago",
+  "Tunisia",
+  "Turkey",
+  "Turkmenistan",
+  "Turks and Caicos Islands",
+  "Tuvalu",
+  "Uganda",
+  "Ukraine",
+  "United Arab Emirates",
+  "United Kingdom of Great Britain and Northern Ireland",
+  "United States of America",
+  "United States Minor Outlying Islands",
+  "Uruguay",
+  "Uzbekistan",
+  "Vanuatu",
+  "Venezuela, Bolivarian Republic of",
+  "Viet Nam",
+  "Virgin Islands (British)",
+  "Virgin Islands (U.S.)",
+  "Wallis and Futuna",
+  "Western Sahara",
+  "Yemen",
+  "Zambia",
+  "Zimbabwe"
+];
+
 const JobApplication: React.FC = () => {
   const [job, setJob] = useState<Job | null>(null);
   const [jobLoading, setJobLoading] = useState(true);
@@ -95,7 +466,6 @@ const JobApplication: React.FC = () => {
 
     if (typeof window !== "undefined") {
       const loadApis = () => {
-        // Load Google API script
         const gapiScript = document.createElement("script");
         gapiScript.src = "https://apis.google.com/js/api.js";
         gapiScript.async = true;
@@ -117,7 +487,6 @@ const JobApplication: React.FC = () => {
         };
         document.head.appendChild(gapiScript);
 
-        // Load Google Identity Services script
         const gisScript = document.createElement("script");
         gisScript.src = "https://accounts.google.com/gsi/client";
         gisScript.async = true;
@@ -125,7 +494,6 @@ const JobApplication: React.FC = () => {
         gisScript.onerror = () => console.error("Failed to load Google Identity Services script");
         document.head.appendChild(gisScript);
 
-        // Load Dropbox SDK
         const dropboxScript = document.createElement("script");
         dropboxScript.src = "https://www.dropbox.com/static/api/2/dropins.js";
         dropboxScript.async = true;
@@ -141,7 +509,6 @@ const JobApplication: React.FC = () => {
         };
         document.head.appendChild(dropboxScript);
 
-        // Cleanup
         return () => {
           if (document.head.contains(gapiScript)) document.head.removeChild(gapiScript);
           if (document.head.contains(gisScript)) document.head.removeChild(gisScript);
@@ -199,9 +566,9 @@ const JobApplication: React.FC = () => {
       toast.error("Dropbox SDK is not loaded. Please try again.");
       return;
     }
-  
+
     setUploadLoading(true);
-  
+
     window.Dropbox.choose({
       success: async (files: any[]) => {
         if (!files || files.length === 0) {
@@ -209,16 +576,16 @@ const JobApplication: React.FC = () => {
           setUploadLoading(false);
           return;
         }
-  
+
         try {
           const fileUrl = files[0].link;
           const response = await fetch(fileUrl);
-  
+
           if (!response.ok) throw new Error("Failed to fetch Dropbox file");
-  
+
           const blob = await response.blob();
           const file = new File([blob], files[0].name, { type: blob.type });
-  
+
           setResumeFile(file);
           setShowManualEntry(false);
           toast.success("Dropbox file selected successfully!");
@@ -238,7 +605,6 @@ const JobApplication: React.FC = () => {
       extensions: [".pdf", ".doc", ".docx", ".txt"],
     });
   };
-  
 
   const handleGoogleDriveUpload = async () => {
     if (!isGoogleApiLoaded) {
@@ -351,7 +717,6 @@ const JobApplication: React.FC = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Validate required fields
     const missingFields = [];
     if (!firstName.trim()) missingFields.push("First Name");
     if (!lastName.trim()) missingFields.push("Last Name");
@@ -370,7 +735,6 @@ const JobApplication: React.FC = () => {
       return;
     }
 
-    // Validate formats
     if (!validateEmail(email)) {
       toast.error("Please enter a valid email address.");
       setLoading(false);
@@ -393,11 +757,9 @@ const JobApplication: React.FC = () => {
     }
 
     try {
-      // Upload resume
       if (!resumeFile) throw new Error("Resume file is missing");
       const resume = await handleResumeUpload(resumeFile);
 
-      // Prepare application data
       const applicationData = {
         jobId,
         firstName: firstName.trim(),
@@ -415,7 +777,6 @@ const JobApplication: React.FC = () => {
 
       console.log("Submitting to /api/applications:", applicationData);
 
-      // Submit application
       const applicationResponse = await fetch("/api/applications", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -433,7 +794,6 @@ const JobApplication: React.FC = () => {
         throw new Error(errorData.error || `Failed to submit application: ${applicationResponse.status}`);
       }
 
-      // Send email
       const emailResponse = await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -468,7 +828,8 @@ const JobApplication: React.FC = () => {
   };
 
   return (
-    <div style={{ fontFamily: "Poppins, sans-serif" }} className="min-h-screen bg-white p-4 pt-[7em] sm:p-6 lg:pt-24 text-black">
+    <div style={{ fontFamily: "Poppins, sans-serif" }} className="min-h-screen md:pt-[7em] bg-white p-4 pt-[7em] sm:p-6 lg:pt-24 text-black">
+      <style jsx global>{CKEditorStyles}</style>
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} closeOnClick pauseOnHover />
       <div className="max-w-full sm:max-w-3xl md:max-w-4xl mx-auto">
         {jobLoading ? (
@@ -502,10 +863,12 @@ const JobApplication: React.FC = () => {
                   Apply
                 </button>
               </div>
-              <div
-                className="prose prose-sm text-gray-700 pt-4 sm:pt-6"
-                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.description) }}
-              />
+              <div className="job-description pt-4 sm:pt-6">
+                <div
+                  className="ck-content"
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.description) }}
+                />
+              </div>
             </div>
             <h2 className="text-lg sm:text-xl md:text-2xl font-normal mb-2">Apply for this job</h2>
             <p className="text-xs sm:text-sm font-normal mb-4 sm:mb-6">
@@ -668,11 +1031,11 @@ const JobApplication: React.FC = () => {
                   className="p-1.5 sm:p-2 w-full min-w-0 border focus:border-b-2 focus:outline-none focus:border-b-[#FFC83F] border-gray-400 rounded text-sm sm:text-base transition-all duration-300 placeholder-gray-500 disabled:opacity-50"
                 >
                   <option value="">Select...</option>
-                  <option value="Argentina">Argentina</option>
-                  <option value="Colombia">Colombia</option>
-                  <option value="Uruguay">Uruguay</option>
-                  <option value="United States">United States</option>
-                  <option value="Other">Other</option>
+                  {countries.map((country) => (
+                    <option key={country} value={country}>
+                      {country}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="w-full sm:w-3/4 md:w-2/3">
