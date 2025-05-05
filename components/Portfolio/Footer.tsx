@@ -30,7 +30,9 @@ const Footer = () => {
           <ul  style={{ fontFamily: 'Poppins, sans-serif' }}>
             <li  className=' text-[20px] font-normal'>info@rootstrap.com</li>
             <li  className=' text-[20px] font-normal'>2025 © Rootstrap. All Rights Reserved.</li>
+            <Link href={"/PrivacyPolicy/#cookies"}>
             <li className=' text-[20px] font-normal'>Privacy Policy</li>
+            </Link>
           </ul>
         </div>
        

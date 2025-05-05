@@ -10,6 +10,7 @@ interface Card {
   image: string;
   category: string;
   title: string;
+  primaryImage?: string;
 }
 
 interface CardsProps {
@@ -33,12 +34,15 @@ const Cards: React.FC<CardsProps> = ({ searchTerm, selectedCategories }) => {
         if (!response.ok) {
           throw new Error("Failed to fetch blog posts");
         }
+       
         const data = await response.json();
         // Validate and filter cards with valid categories
         const validCards = data.filter(
           (card: Card) => card && card._id && card.title && card.category && typeof card.category === "string"
         );
         setCards(validCards);
+        
+     
         setError(null);
       } catch (err) {
         setError("An error occurred while fetching blog posts.");
@@ -173,7 +177,7 @@ const Cards: React.FC<CardsProps> = ({ searchTerm, selectedCategories }) => {
               className="flex flex-col min-h-[500px] bg-[#242425] rounded-xl overflow-hidden relative"
             >
               <Image
-                src={card.image}
+                src={card.primaryImage || ""}
                 width={800}
                 height={700}
                 alt={card.title}

@@ -105,7 +105,7 @@ const CreateTeamPage: React.FC = () => {
       if (!response.ok) throw new Error(`Failed to ${isEditing ? "update" : "create"} team member`);
 
       toast.success(`Team member ${isEditing ? "updated" : "created"} successfully!`);
-      router.push("/admin");
+      router.push("/admin?tab=team");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
       toast.error(`Error: ${message}`);
@@ -218,7 +218,7 @@ const CreateTeamPage: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               type="button"
-              onClick={() => router.push("/admin")}
+              onClick={() => router.push("/admin?tab=team")}
               className="flex-1 py-3 sm:py-4 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-500 text-sm sm:text-base"
             >
               Cancel

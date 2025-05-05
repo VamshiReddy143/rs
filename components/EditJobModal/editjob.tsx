@@ -6,15 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
 import CKEditorWrapper from "@/components/CKEditorWrapper";
 
-interface Job {
-  _id: string;
-  title: string;
-  location: string;
-  description: string;
-  employmentType: string;
-  postedDate: string;
-  department: string;
-}
+import { Job } from "@/types/job";
 
 interface Errors {
   [key: string]: string;

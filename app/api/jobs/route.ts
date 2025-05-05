@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectToDatabase from "@/lib/connectDb";
 import { Job } from "@/models/Jobs";
+import mongoose from "mongoose";
 
 export async function POST(req: NextRequest) {
   try {

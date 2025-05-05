@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -56,7 +55,7 @@ interface Job {
 const CKEditorStyles = `
   .ck-content {
     line-height: 1.6;
-    color: #374151; /* text-gray-700 */
+    color: #374151;
     font-family: 'Poppins', sans-serif;
     font-size: 16px;
   }
@@ -117,7 +116,7 @@ const CKEditorStyles = `
   }
   .ck-content figcaption {
     font-size: 0.9em;
-    color: #6b7280; /* text-gray-500 */
+    color: #6b7280;
     margin-top: 0.5em;
   }
   .ck-content table {
@@ -126,35 +125,35 @@ const CKEditorStyles = `
     margin: 1em 0;
   }
   .ck-content th, .ck-content td {
-    border: 1px solid #d1d5db; /* border-gray-300 */
+    border: 1px solid #d1d5db;
     padding: 0.5em;
     text-align: left;
   }
   .ck-content blockquote {
-    border-left: 4px solid #d1d5db; /* border-gray-300 */
+    border-left: 4px solid #d1d5db;
     padding-left: 1em;
     margin: 1em 0;
-    color: #6b7280; /* text-gray-500 */
+    color: #6b7280;
     font-style: italic;
   }
   .ck-content pre {
-    background: #f3f4f6; /* bg-gray-100 */
+    background: #f3f4f6;
     padding: 1em;
     border-radius: 4px;
     overflow-x: auto;
   }
   .ck-content code {
-    background: #f3f4f6; /* bg-gray-100 */
+    background: #f3f4f6;
     padding: 0.2em 0.4em;
     border-radius: 4px;
     font-family: 'Courier New', monospace;
   }
   .ck-content a {
-    color: #2563eb; /* text-blue-600 */
+    color: #2563eb;
     text-decoration: underline;
   }
   .ck-content a:hover {
-    color: #1e40af; /* text-blue-800 */
+    color: #1e40af;
   }
   .ck-content iframe {
     max-width: 100%;
@@ -830,7 +829,14 @@ const JobApplication: React.FC = () => {
   return (
     <div style={{ fontFamily: "Poppins, sans-serif" }} className="min-h-screen md:pt-[7em] bg-white p-4 pt-[7em] sm:p-6 lg:pt-24 text-black">
       <style jsx global>{CKEditorStyles}</style>
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} closeOnClick pauseOnHover />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        theme="colored"
+      />
       <div className="max-w-full sm:max-w-3xl md:max-w-4xl mx-auto">
         {jobLoading ? (
           <p className="text-gray-500 text-sm sm:text-base">Loading job details...</p>
@@ -943,10 +949,21 @@ const JobApplication: React.FC = () => {
                     <input
                       id="resume-upload"
                       type="file"
-                      accept=".pdf,.doc,.docx,.txt"
+                      accept=".pdf"
                       onChange={(e) => {
-                        setResumeFile(e.target.files?.[0] || null);
-                        setShowManualEntry(false);
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          console.log("Selected file:", { name: file.name, type: file.type }); // Debug log
+                          if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
+                            setResumeFile(file);
+                            setShowManualEntry(false);
+                          } else {
+                            toast.warn("Only PDF files are allowed for local upload.", {
+                              style: { background: "#FFC107", color: "#000" },
+                            });
+                            e.target.value = ""; // Reset input
+                          }
+                        }
                       }}
                       className="hidden"
                       disabled={uploadLoading || loading}
@@ -997,7 +1014,9 @@ const JobApplication: React.FC = () => {
                   </div>
                 )}
                 {resumeFile && <p className="text-xs sm:text-sm text-gray-500">Selected file: {resumeFile.name}</p>}
-                <p className="text-xs sm:text-sm text-gray-500">Accepted file types: pdf, doc, docx, txt</p>
+                <p className="text-xs sm:text-sm text-gray-500">
+                  Accepted file types: PDF (for Attach), PDF/DOC/DOCX/TXT (for Dropbox, Google Drive, Manual Entry)
+                </p>
               </div>
               <div className="w-full sm:w-3/4 md:w-2/3">
                 <label className="block text-xs sm:text-sm font-medium mb-1">LinkedIn Profile</label>

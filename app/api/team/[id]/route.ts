@@ -22,7 +22,7 @@ export async function GET(request: NextRequest, context: any) {
       return NextResponse.json({ message: "Invalid team member ID" }, { status: 400 });
     }
 
-    const teamMember = await Team.findById(teamId);
+    const teamMember = await Team.findById(teamId).sort({ createdAt: -1 }).lean();
     if (!teamMember) {
       return NextResponse.json({ message: "Team member not found" }, { status: 404 });
     }

@@ -1,3 +1,4 @@
+import { Link } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
 
@@ -14,7 +15,9 @@ const Footer = () => {
           <ul>
             <li className='font-normal lg:text-[20px] text-[16px] lg:leading-[30px] leading-[24px]'>info@rootstrap.com</li>
             <li className='font-normal lg:text-[20px] text-[16px] lg:leading-[30px] leading-[24px]'>2025 © Rootstrap. All Rights Reserved.</li>
+          <Link href={"/PrivacyPolicy/#cookies"}>
             <li className='font-normal lg:text-[20px] text-[16px] lg:leading-[30px] leading-[24px]'>Privacy Policy</li>
+          </Link>
           </ul>
         </div>
        

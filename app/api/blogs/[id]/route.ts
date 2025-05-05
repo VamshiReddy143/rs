@@ -1,3 +1,4 @@
+// app/api/blogs/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import Blog from "@/models/Blog";
@@ -5,6 +6,7 @@ import connectToDatabase from "@/lib/connectDb";
 import { v2 as cloudinary } from "cloudinary";
 import { Readable } from "stream";
 import sanitizeHtml from "sanitize-html";
+import { Blog as BlogType, IBlog } from "@/types/blog";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -12,60 +14,81 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-interface ContentItem {
-  type: "paragraph" | "image" | "code";
-  value: string;
-  language?: string;
-  imageUrls?: string[];
+interface ApiResponse {
+  blog: BlogType | null;
+  randomBlogs: Pick<BlogType, "_id" | "title" | "category" | "primaryImage">[];
 }
 
-export async function GET(request: NextRequest, context: any) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase();
-    const id = context.params?.id;
-    console.log("GET: Context received:", JSON.stringify(context, null, 2));
+    const { id } = await params;
+    console.log("GET: Fetching blog with ID:", id);
 
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       console.error("Invalid blog ID:", id);
       return NextResponse.json({ message: "Invalid blog ID" }, { status: 400 });
     }
 
-    console.log("Fetching blog with ID:", id);
-    const blog = await Blog.findById(id).lean();
+    // Type the blog object from findById
+    const blog = await Blog.findById(id).lean<IBlog>();
     if (!blog) {
       console.warn("Blog not found for ID:", id);
-      const allBlogs = await Blog.find({}, "_id title").lean();
-      console.log("All blog IDs in database:", allBlogs.map((b) => ({ id: b._id.toString(), title: b.title })));
       return NextResponse.json({ message: "Blog not found" }, { status: 404 });
     }
 
-    const randomBlogs = await Blog.aggregate([
+    // Type the randomBlogs array
+    const randomBlogs = await Blog.aggregate<
+      Pick<IBlog, "_id" | "title" | "category" | "primaryImage">
+    >([
       { $match: { _id: { $ne: new mongoose.Types.ObjectId(id) } } },
       { $sample: { size: 3 } },
       { $project: { _id: 1, title: 1, category: 1, primaryImage: 1 } },
     ]).exec();
 
-    console.log("Fetched blog:", JSON.stringify(blog, null, 2));
-    console.log("Fetched random blogs:", JSON.stringify(randomBlogs, null, 2));
+    const formattedBlog: BlogType = {
+      _id: blog._id.toString(),
+      title: blog.title || "",
+      category: blog.category || "Uncategorized",
+      primaryImage: blog.primaryImage || "/default-image.jpg",
+      author: blog.author || "",
+      content: Array.isArray(blog.content) ? blog.content : [],
+      createdAt: blog.createdAt ? new Date(blog.createdAt).toISOString() : undefined,
+      updatedAt: blog.updatedAt ? new Date(blog.updatedAt).toISOString() : undefined,
+    };
 
-    return NextResponse.json({ blog, randomBlogs }, { status: 200 });
+    const formattedRandomBlogs = randomBlogs.map((b) => ({
+      _id: b._id.toString(),
+      title: b.title || "",
+      category: b.category || "Uncategorized",
+      primaryImage: b.primaryImage || "/default-image.jpg",
+    }));
+
+    const response: ApiResponse = {
+      blog: formattedBlog,
+      randomBlogs: formattedRandomBlogs,
+    };
+
+    console.log("Fetched blog:", JSON.stringify(formattedBlog, null, 2));
+    console.log("Fetched random blogs:", JSON.stringify(formattedRandomBlogs, null, 2));
+
+    return NextResponse.json(response, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching blog:", error.message, error.stack);
     return NextResponse.json({ message: `Error: ${error.message}` }, { status: 500 });
   }
 }
 
-export async function PUT(request: NextRequest, context: any) {
-  const blogId = context.params?.id;
-
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase();
+    const { id: blogId } = await params;
 
     if (!mongoose.Types.ObjectId.isValid(blogId)) {
       return NextResponse.json({ message: "Invalid blog ID" }, { status: 400 });
     }
 
-    const existingBlog = await Blog.findById(blogId);
+    const existingBlog = await Blog.findById(blogId) as mongoose.Document & IBlog;
     if (!existingBlog) {
       return NextResponse.json({ message: "Blog not found" }, { status: 404 });
     }
@@ -81,9 +104,9 @@ export async function PUT(request: NextRequest, context: any) {
       return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
     }
 
-    let content: ContentItem[];
+    let content: BlogType["content"];
     try {
-      content = JSON.parse(contentRaw) as ContentItem[];
+      content = JSON.parse(contentRaw) as BlogType["content"];
     } catch (error) {
       return NextResponse.json({ message: "Invalid content format" }, { status: 400 });
     }
@@ -111,14 +134,14 @@ export async function PUT(request: NextRequest, context: any) {
       primaryImageUrl = (uploadResult as any).secure_url;
     }
 
-    const processedContent: ContentItem[] = [];
+    const processedContent: BlogType["content"] = [];
     const oldImageUrls: string[] = [
       ...existingBlog.content
-        .filter((item: ContentItem) => item.type === "image")
-        .map((item: ContentItem) => item.value),
-      ...(existingBlog.content
-        .filter((item: ContentItem) => item.type === "paragraph" && item.imageUrls)
-        .flatMap((item: ContentItem) => item.imageUrls || [])),
+        .filter((item) => item.type === "image")
+        .map((item) => item.value),
+      ...existingBlog.content
+        .filter((item) => item.type === "paragraph" && item.imageUrls)
+        .flatMap((item) => item.imageUrls || []),
     ];
 
     for (const [index, item] of content.entries()) {
@@ -129,7 +152,7 @@ export async function PUT(request: NextRequest, context: any) {
         );
       }
 
-      const processedItem: ContentItem = { type: item.type, value: item.value };
+      const processedItem: BlogType["content"][number] = { type: item.type, value: item.value };
       if (item.language) {
         processedItem.language = item.language;
       }
@@ -231,25 +254,35 @@ export async function PUT(request: NextRequest, context: any) {
     existingBlog.updatedAt = new Date();
 
     const updatedBlog = await existingBlog.save();
-    console.log("Updated blog:", JSON.stringify(updatedBlog, null, 2));
-    return NextResponse.json(updatedBlog, { status: 200 });
+    const formattedUpdatedBlog: BlogType = {
+      _id: updatedBlog._id.toString(),
+      title: updatedBlog.title || "",
+      category: updatedBlog.category || "Uncategorized",
+      primaryImage: updatedBlog.primaryImage || "/default-image.jpg",
+      author: updatedBlog.author || "",
+      content: Array.isArray(updatedBlog.content) ? updatedBlog.content : [],
+      createdAt: updatedBlog.createdAt ? new Date(updatedBlog.createdAt).toISOString() : undefined,
+      updatedAt: updatedBlog.updatedAt ? new Date(updatedBlog.updatedAt).toISOString() : undefined,
+    };
+
+    console.log("Updated blog:", JSON.stringify(formattedUpdatedBlog, null, 2));
+    return NextResponse.json(formattedUpdatedBlog, { status: 200 });
   } catch (error: any) {
     console.error("Error updating blog:", error.message, error.stack);
     return NextResponse.json({ message: `Error: ${error.message}` }, { status: 500 });
   }
 }
 
-export async function DELETE(request: NextRequest, context: any) {
-  const blogId = context.params?.id;
-
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase();
+    const { id: blogId } = await params;
 
     if (!mongoose.Types.ObjectId.isValid(blogId)) {
       return NextResponse.json({ message: "Invalid blog ID" }, { status: 400 });
     }
 
-    const blog = await Blog.findById(blogId);
+    const blog = await Blog.findById(blogId) as mongoose.Document & IBlog;
     if (!blog) {
       return NextResponse.json({ message: "Blog not found" }, { status: 404 });
     }
@@ -263,11 +296,11 @@ export async function DELETE(request: NextRequest, context: any) {
 
     const imageUrls: string[] = [
       ...blog.content
-        .filter((item: ContentItem) => item.type === "image")
-        .map((item: ContentItem) => item.value),
+        .filter((item) => item.type === "image")
+        .map((item) => item.value),
       ...blog.content
-        .filter((item: ContentItem) => item.type === "paragraph" && item.imageUrls)
-        .flatMap((item: ContentItem) => item.imageUrls || []),
+        .filter((item) => item.type === "paragraph" && item.imageUrls)
+        .flatMap((item) => item.imageUrls || []),
     ];
 
     for (const url of imageUrls) {

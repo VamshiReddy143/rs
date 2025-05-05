@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { FaXTwitter, FaInstagram } from "react-icons/fa6";
 import arrow from "@/public/pr.png";
 import { LuLinkedin } from 'react-icons/lu';
+import Link from 'next/link';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
@@ -98,7 +99,9 @@ const Footer = () => {
 
       <div className='lg:flex items-center justify-between mt-20'>
         <p className='text-[#969699] text-[14px]'>2025 © Rootstrap, Inc. All Rights Reserved.</p>
+        <Link href={"/PrivacyPolicy/#cookies"}>
         <p className='text-[#969699] text-[14px]'>Privacy Policy</p>
+        </Link>
       </div>
     </div>
   );

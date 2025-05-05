@@ -1,3 +1,4 @@
+// components/BlogForm.tsx
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -12,26 +13,25 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { v4 as uuidv4 } from "uuid";
 import { motion } from "framer-motion";
+import { Blog } from "@/types/blog";
 
 interface ContentItem {
   id: string;
-  type: string;
+  type: "paragraph" | "image" | "code";
   value: string | File | null;
   language?: string;
   imagePreview?: string;
 }
 
-interface Errors {
-  [key: string]: string;
+interface BlogContentItem {
+  type: "paragraph" | "image" | "code";
+  value: string;
+  language?: string;
+  imageUrls?: string[];
 }
 
-interface Blog {
-  _id: string;
-  title: string;
-  author: string;
-  primaryImage: string;
-  category: string;
-  content: any[];
+interface Errors {
+  [key: string]: string;
 }
 
 interface BlogFormProps {
@@ -44,78 +44,87 @@ const inputStyle =
   "bg-[#3d3d3f] p-4 w-full rounded-lg border border-gray-600 focus:outline-none focus:border-[#f6ff7a] transition-all duration-300 text-white placeholder-gray-400 text-sm sm:text-base";
 
 const BlogForm: React.FC<BlogFormProps> = ({ blogData, onUpdate, onCancel }) => {
-  const [title, setTitle] = useState(blogData?.title || "");
-  const [category, setCategory] = useState(blogData?.category || "");
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
   const [customCategory, setCustomCategory] = useState("");
-  const [author, setAuthor] = useState(blogData?.author || "");
+  const [author, setAuthor] = useState("");
   const [primaryImage, setPrimaryImage] = useState<File | null>(null);
-  const [primaryImagePreview, setPrimaryImagePreview] = useState(blogData?.primaryImage || "");
+  const [primaryImagePreview, setPrimaryImagePreview] = useState("");
   const [content, setContent] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [newContentType, setNewContentType] = useState("");
+  const [newContentType, setNewContentType] = useState<ContentItem["type"] | "">("");
   const [errors, setErrors] = useState<Errors>({});
   const router = useRouter();
   const isEditing = !!blogData;
 
   useEffect(() => {
     if (isEditing && blogData) {
-      console.log("BlogForm received blogData:", JSON.stringify(blogData, null, 2));
-      setTitle(blogData.title || "");
-      setCategory(blogData.category || "");
-      setCustomCategory(
+      console.log("BlogForm: Received blogData:", JSON.stringify(blogData, null, 2));
+      const newTitle = blogData.title || "";
+      const newCategory = blogData.category || "";
+      const newCustomCategory =
         blogData.category &&
-          ![
-            "AI / Machine Learning",
-            "Agile",
-            "Blockchain",
-            "Data Services",
-            "DevOps",
-            "Development",
-            "Marketing",
-            "Product Design",
-            "QA / Testing",
-            "Security",
-            "Soft Skills",
-            "Software Architecture",
-          ].includes(blogData.category)
+        ![
+          "AI / Machine Learning",
+          "Agile",
+          "Blockchain",
+          "Data Services",
+          "DevOps",
+          "Development",
+          "Marketing",
+          "Product Design",
+          "QA / Testing",
+          "Security",
+          "Soft Skills",
+          "Software Architecture",
+        ].includes(blogData.category)
           ? blogData.category
-          : ""
-      );
-      setAuthor(blogData.author || "");
-      setPrimaryImagePreview(blogData.primaryImage || "");
+          : "";
+      const newAuthor = blogData.author || "";
+      const newPrimaryImagePreview = blogData.primaryImage || "";
       const blogContent = Array.isArray(blogData.content)
-        ? blogData.content.map((item: any) => {
+        ? blogData.content.map((item: BlogContentItem) => {
             const contentItem: ContentItem = {
               id: uuidv4(),
               type: item.type || "paragraph",
-              value: typeof item.value === "string" ? item.value : "",
+              value: item.value || "",
               language: item.language || (item.type === "code" ? "javascript" : undefined),
             };
             if (item.type === "image") {
-              contentItem.imagePreview =
-                item.image || item.value || item.imagePreview || (Array.isArray(item.imageUrls) ? item.imageUrls[0] : "") || "";
-              contentItem.value = null; // Image files need to be re-uploaded
+              contentItem.imagePreview = item.value || (item.imageUrls?.[0] || "");
+              contentItem.value = null;
             }
             return contentItem;
           })
         : [];
+
+      setTitle(newTitle);
+      setCategory(newCategory);
+      setCustomCategory(newCustomCategory);
+      setAuthor(newAuthor);
+      setPrimaryImagePreview(newPrimaryImagePreview);
       setContent(blogContent);
-      console.log("Initialized form state:", {
-        title: blogData.title,
-        category: blogData.category,
-        customCategory,
-        author: blogData.author,
-        primaryImagePreview: blogData.primaryImage,
+
+      console.log("BlogForm: Initialized state:", {
+        title: newTitle,
+        category: newCategory,
+        customCategory: newCustomCategory,
+        author: newAuthor,
+        primaryImagePreview: newPrimaryImagePreview,
         content: blogContent,
       });
-      if (!blogData.author) {
-        toast.warn("Author field is missing for this blog.");
-      }
-      if (!blogData.content || blogData.content.length === 0) {
-        toast.warn("No content found for this blog. Add new content as needed.");
-      }
+
+      if (!newAuthor) toast.warn("Author field is missing.");
+      if (!blogContent.length) toast.warn("No content found. Add new content as needed.");
     } else {
-      console.log("BlogForm in create mode, no blogData provided");
+      console.log("BlogForm: Create mode, no blogData");
+      setTitle("");
+      setCategory("");
+      setCustomCategory("");
+      setAuthor("");
+      setPrimaryImage(null);
+      setPrimaryImagePreview("");
+      setContent([]);
     }
   }, [isEditing, blogData]);
 
@@ -233,12 +242,12 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData, onUpdate, onCancel }) => 
       formData.append("author", author);
       if (primaryImage) formData.append("primaryImage", primaryImage);
 
-      const processedContent = content.map((item, index) => {
+      const processedContent: BlogContentItem[] = content.map((item, index) => {
         if (item.type === "image" && item.value instanceof File) {
           return {
             type: item.type,
             value: `image-${index}`,
-            imagePreview: item.imagePreview,
+            imageUrls: [],
           };
         } else if (item.type === "paragraph" && typeof item.value === "string") {
           const parser = new DOMParser();
@@ -257,7 +266,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData, onUpdate, onCancel }) => 
         }
         return {
           type: item.type,
-          value: item.value,
+          value: typeof item.value === "string" ? item.value : "",
           language: item.language,
         };
       });
@@ -272,7 +281,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData, onUpdate, onCancel }) => 
       const url = isEditing ? `/api/blogs/${blogData?._id}` : "/api/blogs/create";
       const method = isEditing ? "PUT" : "POST";
 
-      console.log(`Submitting to ${url} with method ${method}`, {
+      console.log(`BlogForm: Submitting to ${url} with method ${method}`, {
         title,
         category: effectiveCategory,
         author,
@@ -287,15 +296,9 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData, onUpdate, onCancel }) => 
       }
 
       const updatedBlog = await response.json();
+
       if (isEditing && onUpdate) {
-        onUpdate({
-          _id: blogData!._id,
-          title,
-          category: effectiveCategory,
-          author,
-          primaryImage: primaryImagePreview || blogData!.primaryImage,
-          content: processedContent,
-        });
+        onUpdate(updatedBlog);
       } else {
         toast.success(`Blog ${isEditing ? "updated" : "created"} successfully!`);
         router.push("/admin");
@@ -303,7 +306,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData, onUpdate, onCancel }) => 
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
       toast.error(`Error: ${message}`);
-      console.error("Submission error:", message);
+      console.error("BlogForm: Submission error:", message);
     } finally {
       setLoading(false);
     }
@@ -561,6 +564,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData, onUpdate, onCancel }) => 
                       )}
                     </div>
                   )}
+                  {item.type === "image" && <ImageDropzone index={index} />}
                 </div>
               ))
             ) : (
@@ -569,22 +573,23 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData, onUpdate, onCancel }) => 
             <div className="flex flex-col sm:flex-row gap-4">
               <select
                 value={newContentType}
-                onChange={(e) => setNewContentType(e.target.value)}
+                onChange={(e) => setNewContentType(e.target.value as ContentItem["type"] | "")}
                 className={inputStyle}
               >
                 <option value="">Select content to add</option>
                 <option value="paragraph">Add Paragraph</option>
                 <option value="code">Add Code</option>
+               
               </select>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 type="button"
                 onClick={() => {
-                  if (newContentType) {
-                    addBlogContentItem(newContentType);
+                  if (newContentType && ["paragraph", "image", "code"].includes(newContentType)) {
+                    addBlogContentItem(newContentType as ContentItem["type"]);
                   } else {
-                    toast.error("Please select a content type");
+                    toast.error("Please select a valid content type");
                   }
                 }}
                 disabled={!newContentType}
@@ -608,7 +613,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData, onUpdate, onCancel }) => 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               type="button"
-              onClick={() => (isEditing && onCancel ? onCancel() : router.push("/admin"))}
+              onClick={onCancel || (() => router.push("/admin"))}
               className="flex-1 py-4 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-500"
             >
               Cancel

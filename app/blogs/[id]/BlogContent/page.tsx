@@ -1,4 +1,5 @@
-
+// app/blogs/[id]/BlogContent/page.tsx
+"use client";
 
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -6,23 +7,17 @@ import { ScrollProgress } from "@/components/magicui/scroll-progress";
 import { User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { Blog } from "@/types/blog";
 import Footer from "@/components/Home/Footer";
 
-interface ContentItem {
-    type: "paragraph" | "image" | "code";
-    value: string;
-    language?: string;
-    imageUrls?: string[];
-}
-
-interface BlogDocument {
+interface BlogContentProps {
+  blog: Blog | null;
+  randomBlogs: {
     _id: string;
     title: string;
     category: string;
-    author: string;
     primaryImage?: string;
-    content: ContentItem[];
-    createdAt: string;
+  }[];
 }
 
 const CKEditorStyles = `
@@ -160,200 +155,161 @@ const CKEditorStyles = `
   }
 `;
 
-// Example fetch functions (replace with your actual data-fetching logic)
-async function fetchBlogById(id: string): Promise<BlogDocument | null> {
-    try {
-        // Replace with your actual database/API call
-        const response = await fetch(`https://your-api/blogs/${id}`);
-        if (!response.ok) return null;
-        const blog: BlogDocument = await response.json();
-        return blog;
-    } catch (error) {
-        console.error("Error fetching blog:", error);
-        return null;
-    }
-}
-
-async function fetchRandomBlogs(): Promise<
-    Pick<BlogDocument, "_id" | "title" | "category" | "primaryImage">[]
-> {
-    try {
-        // Replace with your actual database/API call
-        const response = await fetch(`https://your-api/blogs/random?limit=3`);
-        if (!response.ok) return [];
-        const blogs: Pick<
-            BlogDocument,
-            "_id" | "title" | "category" | "primaryImage"
-        >[] = await response.json();
-        return blogs;
-    } catch (error) {
-        console.error("Error fetching random blogs:", error);
-        return [];
-    }
-}
-
-interface BlogContentPageProps {
-    params: { id: string };
-    searchParams?: { [key: string]: string | string[] | undefined };
-}
-
-export default async function BlogContent({ params }: BlogContentPageProps) {
-    const blog = await fetchBlogById(params.id);
-    const randomBlogs = await fetchRandomBlogs();
-
-    if (!blog) {
-        return (
-            <div className="min-h-screen p-8 bg-gray-900 text-white flex items-center justify-center">
-                <div className="text-center">
-                    <h2 className="text-2xl font-bold mb-4">Blog Not Found</h2>
-                    <p className="text-lg text-gray-400">
-                        The requested blog post could not be found.
-                    </p>
-                </div>
-            </div>
-        );
-    }
-
+export default function BlogContent({ blog, randomBlogs }: BlogContentProps) {
+  if (!blog) {
     return (
-        <div className="min-h-screen p-8 bg-[#191A1B] text-[#FFFFFF]">
-            <style jsx global>{CKEditorStyles}</style>
-            <ScrollProgress className="md:top-[76px] lg:top-[80px]" />
-            <div className="max-w-[80em] mx-auto pt-[5em]">
-                <div className="flex gap-4 lg:text-[16px] lg:leading-[32px] font-normal text-gray-400 mb-4">
-                    <span>{blog.category || "Uncategorized"}</span>
-                    <span>-</span>
-                    <span>
-                        {new Date(blog.createdAt).toLocaleDateString("en-US", {
-                            month: "long",
-                            day: "numeric",
-                            year: "numeric",
-                        })}
-                    </span>
-                </div>
-                <div>
-                    <h1 className="lg:text-[36px] text-[36px] leading-[43px] lg:leading-[43px] font-semibold">
-                        {blog.title}
-                    </h1>
-                </div>
-                <div className="flex gap-2 lg:text-[16px] lg:leading-[32px] text-gray-400 font-normal mb-8 mt-4">
-                    <User />
-                    <span>{blog.author || "Unknown Author"}</span>
-                </div>
-                {blog.primaryImage && (
-                    <div className="relative rounded-lg">
-                        <Image
-                            src={blog.primaryImage}
-                            alt={blog.title}
-                            height={900}
-                            width={900}
-                            className="w-[100vw] h-[800px] rounded-xl"
-                        />
-                    </div>
-                )}
-                {blog.content?.
-map((item, index) => (
-                    <div
-                        key={index}
-                        className="mb-8 pt-[4em] text-[#FFFFFF] lg:max-w-[50em] mx-auto"
-                    >
-                        {item.type === "paragraph" && (
-                            <div
-                                className="blog-content prose prose-invert text-[#FFFFFF]"
-                                style={{ whiteSpace: "pre-wrap" }}
-                                dangerouslySetInnerHTML={{ __html: item.value }}
-                            />
-                        )}
-                        {item.type === "image" && item.value && (
-                            <div className="content-image-container">
-                                <Image
-                                    src={item.value}
-                                    width={900}
-                                    height={900}
-                                    alt={`Content image ${index}`}
-                                    className="content-image"
-                                    style={{
-                                        maxWidth: "50%",
-                                        height: "auto",
-                                        display: "block",
-                                        borderRadius: "8px",
-                                    }}
-                                />
-                            </div>
-                        )}
-                        {item.type === "code" && (
-                            <SyntaxHighlighter
-                                language={item.language || "javascript"}
-                                style={vscDarkPlus}
-                                className="rounded-lg mt-4"
-                                customStyle={{
-                                    fontSize: "14px",
-                                    lineHeight: "1.5",
-                                    padding: "1em",
-                                }}
-                            >
-                                {item.value}
-                            </SyntaxHighlighter>
-                        )}
-                    </div>
-                ))}
-                <div className="pt-[3em] lg:max-w-[50em] mx-auto">
-                    <button className="text-[16px] cursor-pointer hover:border-[#bcbcc0] hover:text-[#bcbcc0] font-bold border border-gray-400 px-4 py-2 rounded-lg transition-colors">
-                        <Link href="/Blog">← Back to blog</Link>
-                    </button>
-                </div>
-
-                <div style={{ fontFamily: "Poppins, sans-serif" }} className="py-[5em]">
-                    <h2 className="text-[36px] font-semibold mb-15">Featured articles</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {randomBlogs.length > 0 ? (
-                            randomBlogs.map((card) => (
-                                <div
-                                    key={card._id}
-                                    className="flex flex-col min-h-[500px] bg-[#242425] rounded-xl overflow-hidden relative"
-                                >
-                                    <Image
-                                        src={card.primaryImage || "/default-image.jpg"}
-                                        width={900}
-                                        height={900}
-                                        alt={card.title}
-                                        className="h-[250px] w-full object-cover"
-                                        sizes="(max-width: 768px) 100vw, 33vw"
-                                    />
-                                    <div className="flex flex-col gap-4">
-                                        <div className="p-7 flex flex-col gap-4 flex-grow">
-                                            <p className="text-[#bcbcc0] text-[16px]">
-                                                {card.category || "Uncategorized"}
-                                            </p>
-                                            <h2
-                                                style={{ fontFamily: "Poppins, sans-serif" }}
-                                                className="text-[24px] font-semibold leading-tight line-clamp-3"
-                                            >
-                                                {card.title}
-                                            </h2>
-                                        </div>
-                                        <div className="pb-10">
-                                            <Link href={`/blogs/${card._id}`}>
-                                                <button className="text-[16px] cursor-pointer hover:border-[#bcbcc0] hover:text-[#bcbcc0] font-bold border border-gray-400 px-4 py-2 rounded-lg absolute bottom-4 right-5 transition-colors">
-                                                    Read ➔
-                                                </button>
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div
-                                style={{ fontFamily: "Poppins, sans-serif" }}
-                                className="col-span-full flex items-center justify-center text-center text-gray-600 lg:text-[5em] text-[2em] font-bold"
-                            >
-                                No other blog posts found.
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                <Footer />
-            </div>
+      <div className="min-h-screen p-8 bg-gray-900 text-white flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Blog Not Found</h2>
+          <p className="text-lg text-gray-400">
+            The requested blog post could not be found.
+          </p>
         </div>
+      </div>
     );
+  }
+
+  return (
+    <div className="min-h-screen p-8 bg-[#191A1B] text-[#FFFFFF]">
+      <style jsx global>{CKEditorStyles}</style>
+      <ScrollProgress className="md:top-[76px] lg:top-[80px]" />
+      <div className="max-w-[80em] mx-auto pt-[5em]">
+        <div className="flex gap-4 lg:text-[16px] lg:leading-[32px] font-normal text-gray-400 mb-4">
+          <span>{blog.category || "Uncategorized"}</span>
+          <span>-</span>
+          <span>
+            {blog.createdAt
+              ? new Date(blog.createdAt).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })
+              : "Date not available"}
+          </span>
+        </div>
+        <div>
+          <h1 className="lg:text-[36px] text-[36px] leading-[43px] lg:leading-[43px] font-semibold">
+            {blog.title}
+          </h1>
+        </div>
+        <div className="flex gap-2 lg:text-[16px] lg:leading-[32px] text-gray-400 font-normal mb-8 mt-4">
+          <User />
+          <span>{blog.author || "Unknown Author"}</span>
+        </div>
+        {blog.primaryImage && (
+          <div className="relative rounded-lg">
+            <Image
+              src={blog.primaryImage}
+              alt={blog.title}
+              height={900}
+              width={900}
+              className="w-[100vw] h-[800px] rounded-xl"
+            />
+          </div>
+        )}
+        {blog.content?.map((item, index) => (
+          <div
+            key={index}
+            className="mb-8 pt-[4em] text-[#FFFFFF] lg:max-w-[50em] mx-auto"
+          >
+            {item.type === "paragraph" && (
+              <div
+                className="blog-content prose prose-invert text-[#FFFFFF]"
+                style={{ whiteSpace: "pre-wrap" }}
+                dangerouslySetInnerHTML={{ __html: item.value }}
+              />
+            )}
+            {item.type === "image" && item.value && (
+              <div className="content-image-container">
+                <Image
+                  src={item.value}
+                  width={900}
+                  height={900}
+                  alt={`Content image ${index}`}
+                  className="content-image"
+                  style={{
+                    maxWidth: "50%",
+                    height: "auto",
+                    display: "block",
+                    borderRadius: "8px",
+                  }}
+                />
+              </div>
+            )}
+            {item.type === "code" && (
+              <SyntaxHighlighter
+                language={item.language || "javascript"}
+                style={vscDarkPlus}
+                className="rounded-lg mt-4"
+                customStyle={{
+                  fontSize: "14px",
+                  lineHeight: "1.5",
+                  padding: "1em",
+                }}
+              >
+                {item.value}
+              </SyntaxHighlighter>
+            )}
+          </div>
+        ))}
+        <div className="pt-[3em] lg:max-w-[50em] mx-auto">
+          <button className="text-[16px] cursor-pointer hover:border-[#bcbcc0] hover:text-[#bcbcc0] font-bold border border-gray-400 px-4 py-2 rounded-lg transition-colors">
+            <Link href="/Blog">← Back to blog</Link>
+          </button>
+        </div>
+
+        <div style={{ fontFamily: "Poppins, sans-serif" }} className="py-[5em]">
+          <h2 className="text-[36px] font-semibold mb-15">Featured articles</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {randomBlogs.length > 0 ? (
+              randomBlogs.map((card) => (
+                <div
+                  key={card._id}
+                  className="flex flex-col min-h-[500px] bg-[#242425] rounded-xl overflow-hidden relative"
+                >
+                  <Image
+                    src={card.primaryImage || "/default-image.jpg"}
+                    width={900}
+                    height={900}
+                    alt={card.title}
+                    className="h-[250px] w-full object-cover"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
+                  <div className="flex flex-col gap-4">
+                    <div className="p-7 flex flex-col gap-4 flex-grow">
+                      <p className="text-[#bcbcc0] text-[16px]">
+                        {card.category || "Uncategorized"}
+                      </p>
+                      <h2
+                        style={{ fontFamily: "Poppins, sans-serif" }}
+                        className="text-[24px] font-semibold leading-tight line-clamp-3"
+                      >
+                        {card.title}
+                      </h2>
+                    </div>
+                    <div className="pb-10">
+                      <Link href={`/blogs/${card._id}`}>
+                        <button className="text-[16px] cursor-pointer hover:border-[#bcbcc0] hover:text-[#bcbcc0] font-bold border border-gray-400 px-4 py-2 rounded-lg absolute bottom-4 right-5 transition-colors">
+                          Read ➔
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div
+                style={{ fontFamily: "Poppins, sans-serif" }}
+                className="col-span-full flex items-center justify-center text-center text-gray-600 lg:text-[5em] text-[2em] font-bold"
+              >
+                No other blog posts found.
+              </div>
+            )}
+          </div>
+        </div>
+
+        <Footer />
+      </div>
+    </div>
+  );
 }

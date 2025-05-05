@@ -9,9 +9,15 @@ interface Blog {
   _id: string;
   title: string;
   author: string;
-  primaryImage: string;
+  primaryImage?: string;
   category: string;
-  content: any[];
+  content: {
+    type: "paragraph" | "image" | "code";
+    value: string;
+    language?: string;
+    imageUrls?: string[];
+  }[];
+  createdAt?: string;
 }
 
 const EditBlogPage: React.FC = () => {
@@ -41,7 +47,7 @@ const EditBlogPage: React.FC = () => {
         if (!response.ok) {
           throw new Error(`HTTP error: ${response.status} ${response.statusText}`);
         }
-        const data = await response.json();
+        const data: Blog = await response.json();
         console.log("EditBlogPage: Fetched blog data:", JSON.stringify(data, null, 2));
         if (!data._id || !data.title) {
           throw new Error("Invalid blog data: missing _id or title");
@@ -67,16 +73,7 @@ const EditBlogPage: React.FC = () => {
     return <div className="text-white text-center pt-20">Loading blog data...</div>;
   }
 
-  return (
-    <BlogForm
-      blogData={blogData}
-      onUpdate={() => {
-        toast.success("Blog updated successfully!");
-        router.push("/admin");
-      }}
-      onCancel={() => router.push("/admin")}
-    />
-  );
+  return <BlogForm blogData={blogData} />;
 };
 
 export default EditBlogPage;

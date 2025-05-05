@@ -150,7 +150,7 @@ const Footer = () => {
 
       <div className='lg:flex items-center justify-between mt-20'>
         <p className='text-[#BCBCC0] text-[14px]'>2025 © Rootstrap, Inc. All Rights Reserved.</p>
-      <Link href={"/PrivacyPolicy"}>
+      <Link href={"/PrivacyPolicy/#cookies"}>
       <p className='text-[#BCBCC0] text-[14px]'>Privacy Policy</p>
       </Link>
       </div>

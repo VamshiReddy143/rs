@@ -216,7 +216,9 @@ const SuccessPage: React.FC = () => {
 
         <div className='lg:flex items-center justify-between mt-15'>
           <p className='text-[#969699] text-[14px]'>2025 © Rootstrap, Inc. All Rights Reserved.</p>
+          <Link href={"/PrivacyPolicy/#cookies"}>
           <p className='text-[#969699] text-[14px]'>Privacy Policy</p>
+          </Link>
         </div>
       </div>
     </div>
