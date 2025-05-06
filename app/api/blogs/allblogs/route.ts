@@ -53,7 +53,7 @@ export async function GET() {
       _id: blog._id.toString(),
       title: blog.title || "",
       category: blog.category || "Uncategorized",
-      primaryImage: blog.primaryImage || "/default-image.jpg",
+      primaryImage: blog.primaryImage || "/blogimg.jpg",
       author: blog.author || "",
       content: Array.isArray(blog.content) ? blog.content : [],
       createdAt: blog.createdAt ? new Date(blog.createdAt).toISOString() : undefined,

@@ -279,7 +279,7 @@ export default function BlogContentClient({
                                     className="flex flex-col min-h-[500px] bg-[#242425] rounded-xl overflow-hidden relative"
                                 >
                                     <Image
-                                        src={card.primaryImage || "/default-image.jpg"}
+                                        src={card.primaryImage || "/blogimg.jpg"}
                                         width={900}
                                         height={900}
                                         alt={card.title}

@@ -1,4 +1,3 @@
-// components/BlogForm.tsx
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -9,7 +8,7 @@ import { useDropzone } from "react-dropzone";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { GrFormTrash } from "react-icons/gr";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { v4 as uuidv4 } from "uuid";
 import { motion } from "framer-motion";
@@ -300,12 +299,28 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData, onUpdate, onCancel }) => 
       if (isEditing && onUpdate) {
         onUpdate(updatedBlog);
       } else {
-        toast.success(`Blog ${isEditing ? "updated" : "created"} successfully!`);
-        router.push("/admin");
+        toast.success("Blog created successfully!", {
+          position: "top-right",
+          autoClose: 100,
+          hideProgressBar: false,
+          closeOnClick: true,
+          theme: "dark",
+          onClose: () => {
+            setTimeout(() => {
+              router.push("/admin");
+            }, 300); // Additional delay after toast closes
+          },
+        });
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
-      toast.error(`Error: ${message}`);
+      toast.error(`Error: ${message}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        theme: "dark",
+      });
       console.error("BlogForm: Submission error:", message);
     } finally {
       setLoading(false);
@@ -319,7 +334,13 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData, onUpdate, onCancel }) => 
         if (file && file.type.startsWith("image/")) {
           handleContentChange(index, "value", file);
         } else {
-          toast.error("Please select a valid image file (JPEG, PNG, or GIF)");
+          toast.error("Please select a valid image file (JPEG, PNG, or GIF)", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            theme: "dark",
+          });
         }
       },
       [index]
@@ -334,11 +355,29 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData, onUpdate, onCancel }) => 
         fileRejections.forEach((rejection) => {
           const error = rejection.errors[0]?.code;
           if (error === "file-too-large") {
-            toast.error("Image must be smaller than 5MB");
+            toast.error("Image must be smaller than 5MB", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              theme: "dark",
+            });
           } else if (error === "file-invalid-type") {
-            toast.error("Only JPEG, PNG, or GIF images are allowed");
+            toast.error("Only JPEG, PNG, or GIF images are allowed", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              theme: "dark",
+            });
           } else {
-            toast.error("Failed to upload image");
+            toast.error("Failed to upload image", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              theme: "dark",
+            });
           }
         });
       },
@@ -374,9 +413,15 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData, onUpdate, onCancel }) => 
               width={900}
               height={900}
               style={{ maxWidth: "300px", height: "200px", objectFit: "cover" }}
-              className="mx-auto rounded-lg h-40 w-40 lg:h-60 lg:w-60 shadow-md"
+              className="mx-auto rounded-lg h-40 w-40 lg:h-60 lg:w-90 shadow-md"
               onError={() => {
-                toast.error(`Failed to load image preview for content item ${index + 1}`);
+                toast.error(`Failed to load image preview for content item ${index + 1}`, {
+                  position: "top-right",
+                  autoClose: 100,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  theme: "dark",
+                });
                 handleContentChange(index, "value", null);
               }}
             />
@@ -398,10 +443,19 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData, onUpdate, onCancel }) => 
 
   return (
     <div
-      className={`text-white max-w-3xl bg-[#191A1B] shadow-md p-9 mx-auto flex ${
+      className={`text-white max-w-5xl bg-[#191A1B] shadow-md p-9 mx-auto flex ${
         isEditing ? "pt-0 pb-0" : "pt-[6em] pb-[3em]"
       } justify-center`}
     >
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        closeOnClick
+        theme="dark"
+        style={{ zIndex: 9999, fontFamily: "Poppins, sans-serif" }}
+        toastStyle={{ backgroundColor: "#3d3d3f", color: "#f6ff7a" }}
+      />
       <div className="w-full">
         <h1 className="text-2xl sm:text-3xl font-bold text-[#f6ff7a] mb-6">
           {isEditing ? "Edit Blog" : "Create Blog"}
@@ -494,7 +548,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData, onUpdate, onCancel }) => 
                   alt="Primary Preview"
                   width={900}
                   height={900}
-                  className="max-w-xs mx-auto h-40 w-40 lg:h-90 lg:w-full rounded-lg shadow-md object-cover"
+                  className="max-w-xs mx-auto h-40 w-40 lg:h-90 lg:w-[800px] rounded-lg shadow-md "
                 />
                 <button
                   type="button"
@@ -579,7 +633,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData, onUpdate, onCancel }) => 
                 <option value="">Select content to add</option>
                 <option value="paragraph">Add Paragraph</option>
                 <option value="code">Add Code</option>
-               
+              
               </select>
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -589,7 +643,13 @@ const BlogForm: React.FC<BlogFormProps> = ({ blogData, onUpdate, onCancel }) => 
                   if (newContentType && ["paragraph", "image", "code"].includes(newContentType)) {
                     addBlogContentItem(newContentType as ContentItem["type"]);
                   } else {
-                    toast.error("Please select a valid content type");
+                    toast.error("Please select a valid content type", {
+                      position: "top-right",
+                      autoClose: 5000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      theme: "dark",
+                    });
                   }
                 }}
                 disabled={!newContentType}

@@ -50,7 +50,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       _id: blog._id.toString(),
       title: blog.title || "",
       category: blog.category || "Uncategorized",
-      primaryImage: blog.primaryImage || "/default-image.jpg",
+      primaryImage: blog.primaryImage || "/blogimg.jpg",
       author: blog.author || "",
       content: Array.isArray(blog.content) ? blog.content : [],
       createdAt: blog.createdAt ? new Date(blog.createdAt).toISOString() : undefined,
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       _id: b._id.toString(),
       title: b.title || "",
       category: b.category || "Uncategorized",
-      primaryImage: b.primaryImage || "/default-image.jpg",
+      primaryImage: b.primaryImage || "/blogimg.jpg",
     }));
 
     const response: ApiResponse = {
@@ -258,7 +258,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       _id: updatedBlog._id.toString(),
       title: updatedBlog.title || "",
       category: updatedBlog.category || "Uncategorized",
-      primaryImage: updatedBlog.primaryImage || "/default-image.jpg",
+      primaryImage: updatedBlog.primaryImage || "/blogimg.jpg",
       author: updatedBlog.author || "",
       content: Array.isArray(updatedBlog.content) ? updatedBlog.content : [],
       createdAt: updatedBlog.createdAt ? new Date(updatedBlog.createdAt).toISOString() : undefined,

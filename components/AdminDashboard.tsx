@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Subscribers from "@/components/Subscribers/Subscribers";
 import Image from "next/image";
 import { toast, ToastContainer } from "react-toastify";
@@ -11,17 +11,10 @@ import { FaEye, FaTrash, FaTimes } from "react-icons/fa";
 import { GrAnnounce, GrAddCircle } from "react-icons/gr";
 import { AiOutlineClose } from "react-icons/ai";
 import { motion } from "framer-motion";
-import CreateBlogPage from "@/app/admin/blogs/create/page";
-import EditJobModal from "@/components/EditJobModal/editjob";
-import EditTeamModal from "@/components/EditTeam/editteam";
 import Link from "next/link";
 import AdminReviews from "@/components/AdminReviews/AdminReviews";
-import BlogForm from "@/components/BlogForm";
 import { Blog } from "@/types/blog";
 import { Job } from "@/types/job";
-import { useSearchParams } from "next/navigation";
-
-// Interfaces for data models
 
 
 interface TeamMember {
@@ -31,8 +24,6 @@ interface TeamMember {
   name: string;
   role: string;
 }
-
-
 
 interface Application {
   _id: string;
@@ -48,7 +39,6 @@ interface Application {
   submittedAt: string;
 }
 
-// Pagination component
 const Pagination: React.FC<{
   currentPage: number;
   totalItems: number;
@@ -147,9 +137,6 @@ const AdminDashboard: React.FC = () => {
   const [teamPage, setTeamPage] = useState(1);
   const [jobPage, setJobPage] = useState(1);
   const [viewingApplicationsForJob, setViewingApplicationsForJob] = useState<string | null>(null);
-  const [showEditBlogModal, setShowEditBlogModal] = useState<Blog | null>(null);
-  const [showEditJobModal, setShowEditJobModal] = useState<Job | null>(null);
-  const [showEditTeamModal, setShowEditTeamModal] = useState<TeamMember | null>(null);
   const [blogSearchQuery, setBlogSearchQuery] = useState("");
   const [teamSearchQuery, setTeamSearchQuery] = useState("");
   const [jobSearchQuery, setJobSearchQuery] = useState("");
@@ -157,39 +144,24 @@ const AdminDashboard: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
   const scrollRef = useRef<HTMLDivElement>(null);
-
   const searchParams = useSearchParams();
 
-  // Scroll handling for modals
-
-
-  // Handle route changes to ensure activeTab is set correctly
   useEffect(() => {
     if (pathname === "/admin") {
       setActiveTab("Blogs");
     }
   }, [pathname]);
 
-
   useEffect(() => {
     const tab = searchParams.get("tab");
-    console.log("Query tab:", tab); // Debug: Log query parameter
     const validTabs = ["Blogs", "team", "jobs", "Subscribers", "Projects", "Reviews"];
-
     if (tab && validTabs.includes(tab)) {
-      console.log("Setting activeTab to:", tab); // Debug: Log tab being set
       setActiveTab(tab as "Blogs" | "team" | "jobs" | "Subscribers" | "Projects" | "Reviews");
     } else {
-      console.log("No valid tab, setting default to Blogs"); // Debug: Log default
       setActiveTab("Blogs");
     }
   }, [searchParams]);
-  // Debug: Log activeTab changes
-  useEffect(() => {
-    console.log("Current activeTab:", activeTab);
-  }, [activeTab]);
 
-  // Fetch data for blogs, team, and jobs
   useEffect(() => {
     const fetchData = async () => {
       if (activeTab === "Blogs") {
@@ -202,7 +174,7 @@ const AdminDashboard: React.FC = () => {
             title: blog.title || "",
             category: blog.category || "",
             author: blog.author || "",
-            primaryImage: blog.primaryImage  || "",
+            primaryImage: blog.primaryImage || "",
             content: Array.isArray(blog.content) ? blog.content : [],
           }));
           setBlogs(sanitizedData);
@@ -246,7 +218,6 @@ const AdminDashboard: React.FC = () => {
     fetchData();
   }, [activeTab]);
 
-  // Filter blogs based on search query
   useEffect(() => {
     const filtered = blogs.filter(
       (blog) =>
@@ -258,7 +229,6 @@ const AdminDashboard: React.FC = () => {
     setBlogPage(1);
   }, [blogSearchQuery, blogs]);
 
-  // Filter team members based on search query
   useEffect(() => {
     const filtered = teamMembers.filter(
       (member) =>
@@ -270,7 +240,6 @@ const AdminDashboard: React.FC = () => {
     setTeamPage(1);
   }, [teamSearchQuery, teamMembers]);
 
-  // Filter jobs based on search query
   useEffect(() => {
     const filtered = jobs.filter(
       (job) =>
@@ -399,39 +368,6 @@ const AdminDashboard: React.FC = () => {
   const getPaginatedItems = <T,>(items: T[], page: number) => {
     const startIndex = (page - 1) * itemsPerPage;
     return items.slice(startIndex, startIndex + itemsPerPage);
-  };
-
-  const handleBlogUpdate = (updatedBlog: Blog) => {
-    setBlogs((prev) =>
-      prev.map((blog) => (blog._id === updatedBlog._id ? { ...blog, ...updatedBlog } : blog))
-    );
-    setFilteredBlogs((prev) =>
-      prev.map((blog) => (blog._id === updatedBlog._id ? { ...blog, ...updatedBlog } : blog))
-    );
-    setShowEditBlogModal(null);
-    toast.success("Blog updated successfully!");
-  };
-
-  const handleJobUpdate = (updatedJob: Job) => {
-    setJobs((prev) =>
-      prev.map((job) => (job._id === updatedJob._id ? { ...job, ...updatedJob } : job))
-    );
-    setFilteredJobs((prev) =>
-      prev.map((job) => (job._id === updatedJob._id ? { ...job, ...updatedJob } : job))
-    );
-    setShowEditJobModal(null);
-  
-  };
-
-  const handleTeamUpdate = (updatedTeam: TeamMember) => {
-    setTeamMembers((prev) =>
-      prev.map((member) => (member._id === updatedTeam._id ? { ...member, ...updatedTeam } : member))
-    );
-    setFilteredTeamMembers((prev) =>
-      prev.map((member) => (member._id === updatedTeam._id ? { ...member, ...updatedTeam } : member))
-    );
-    setShowEditTeamModal(null);
-    toast.success("Team member updated successfully!");
   };
 
   return (
@@ -630,87 +566,71 @@ const AdminDashboard: React.FC = () => {
         .application-item {
           transition: background-color 0.2s ease;
         }
-          /* Ensure html always has a scrollbar to prevent width changes */
-html {
-  overflow-y: scroll; /* Forces scrollbar to always be present */
-}
-
-/* Prevent body layout shift when modal opens */
-body.no-scroll {
-  overflow: hidden;
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  padding-right: var(--scrollbar-width, 0); /* Compensate for scrollbar */
-}
-
-/* Modal overlay for centering */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 20px;
-}
-
-/* Modal content */
-.modal-content {
-  position: relative;
-  background: #191a1b;
-  padding: 24px;
-  border-radius: 8px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-}
-
-/* Specific modal widths */
-.modal-content.max-w-4xl {
-  max-width: 896px; /* Matches Tailwind's max-w-4xl */
-}
-.modal-content.max-w-2xl {
-  max-width: 672px; /* Matches Tailwind's max-w-2xl */
-}
-
-/* Scrollbar styling for modal */
-.modal-content::-webkit-scrollbar {
-  width: 6px;
-}
-.modal-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-.modal-content::-webkit-scrollbar-thumb {
-  background: rgba(246, 255, 122, 0.8);
-  border-radius: 3px;
-}
-.modal-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(246, 255, 122, 1);
-}
-
-/* Ensure dashboard stays centered */
-.admin-dashboard {
-  width: 100%;
-  max-width: 1024px; /* Matches your max-w-4xl for the dashboard container */
-  margin: 0 auto;
-  box-sizing: border-box;
-  position: relative;
-}
-
-/* Prevent container shifts */
-.container {
-  width: 100%;
-  max-width: 100%;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-          
+        html {
+          overflow-y: scroll;
+        }
+        body.no-scroll {
+          overflow: hidden;
+          position: fixed;
+          width: 100%;
+          height: 100%;
+          padding-right: var(--scrollbar-width, 0);
+        }
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.5);
+          backdrop-filter: blur(4px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+          padding: 20px;
+        }
+        .modal-content {
+          position: relative;
+          background: #191a1b;
+          padding: 24px;
+          border-radius: 8px;
+          width: 100%;
+          max-height: 90vh;
+          overflow-y: auto;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        .modal-content.max-w-4xl {
+          max-width: 896px;
+        }
+        .modal-content.max-w-2xl {
+          max-width: 672px;
+        }
+        .modal-content::-webkit-scrollbar {
+          width: 6px;
+        }
+        .modal-content::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+          background: rgba(246, 255, 122, 0.8);
+          border-radius: 3px;
+        }
+        .modal-content::-webkit-scrollbar-thumb:hover {
+          background: rgba(246, 255, 122, 1);
+        }
+        .admin-dashboard {
+          width: 100%;
+          max-width: 1024px;
+          margin: 0 auto;
+          box-sizing: border-box;
+          position: relative;
+        }
+        .container {
+          width: 100%;
+          max-width: 100%;
+          margin: 0 auto;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
       `}</style>
       <div className="max-w-4xl mx-auto bg-[#191a1b] rounded-xl shadow-2xl p-8 relative">
         <button
@@ -819,76 +739,6 @@ body.no-scroll {
                   Cancel
                 </motion.button>
               </div>
-            </div>
-          </div>
-        )}
-      {showEditBlogModal && (
-        <div
-  className="fixed inset-0 bg-black/50  mx-auto flex items-center justify-center z-[1000]"
-  onClick={() => setShowEditBlogModal(null)}
->
-
-    <div
-      className="modal-content w-full max-w-4xl min-h-[50vh]"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <button
-        onClick={() => setShowEditBlogModal(null)}
-        className="absolute top-4 right-4 text-gray-200 hover:text-[#f6ff7a] z-10"
-      >
-        <FaTimes size={24} />
-      </button>
-      <BlogForm
-        blogData={showEditBlogModal}
-        onUpdate={handleBlogUpdate}
-        onCancel={() => setShowEditBlogModal(null)}
-      />
-    </div>
-  </div>
-)}
-        {showEditJobModal && (
-          <div
-  className="fixed inset-0 bg-black/50 backdrop-blur- mx-auto flex items-center justify-center z-[1000]"
-            onClick={() => setShowEditJobModal(null)}
-          >
-            <div
-              className="modal-content w-full max-w-2xl min-h-[50vh]"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={() => setShowEditJobModal(null)}
-                className="absolute top-4 right-4 text-gray-200 hover:text-[#f6ff7a] z-10"
-              >
-                <FaTimes size={24} />
-              </button>
-              <EditJobModal
-                jobData={showEditJobModal}
-                onUpdate={handleJobUpdate}
-                onCancel={() => setShowEditJobModal(null)}
-              />
-            </div>
-          </div>
-        )}
-        {showEditTeamModal && (
-          <div
-  className="fixed inset-0 bg-black/50 backdrop-blur- flex items-center justify-center z-[1000]"
-            onClick={() => setShowEditTeamModal(null)}
-          >
-            <div
-              className="modal-content w-full max-w-2xl mx-auto min-h-[50vh]"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={() => setShowEditTeamModal(null)}
-                className="absolute top-4 right-4 text-gray-200 hover:text-[#f6ff7a] z-10"
-              >
-                <FaTimes size={24} />
-              </button>
-              <EditTeamModal
-                teamData={showEditTeamModal}
-                onUpdate={handleTeamUpdate}
-                onCancel={() => setShowEditTeamModal(null)}
-              />
             </div>
           </div>
         )}
@@ -1006,7 +856,7 @@ body.no-scroll {
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                       {blog.primaryImage && (
                         <Image
-                          src={blog.primaryImage}
+                          src={blog.primaryImage || "/blogimg.jpg" }
                           alt={blog.title}
                           width={80}
                           height={80}
@@ -1020,24 +870,15 @@ body.no-scroll {
                       </div>
                     </div>
                     <div className="flex gap-2 mt-4 sm:mt-6 justify-end lg:justify-start">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={async () => {
-                          try {
-                            const response = await fetch(`/api/blogs/${blog._id}`);
-                            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-                            const { blog: fullBlog } = await response.json();
-                            setShowEditBlogModal(fullBlog);
-                          } catch (error) {
-                            const message = error instanceof Error ? error.message : "Unknown error";
-                            toast.error(`Failed to load blog for editing: ${message}`);
-                          }
-                        }}
-                        className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] hover:bg-[#AAB418] text-black font-semibold rounded-lg text-sm sm:text-base"
-                      >
-                        Edit
-                      </motion.button>
+                      <Link href={`/admin/blogs/edit/${blog._id}`}>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] hover:bg-[#AAB418] text-black font-semibold rounded-lg text-sm sm:text-base"
+                        >
+                          Edit
+                        </motion.button>
+                      </Link>
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -1115,24 +956,15 @@ body.no-scroll {
                       </div>
                     </div>
                     <div className="flex gap-2 mt-4 sm:mt-6 justify-end">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={async () => {
-                          try {
-                            const response = await fetch(`/api/team/${member._id}`);
-                            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-                            const memberData = await response.json();
-                            setShowEditTeamModal(memberData);
-                          } catch (error) {
-                            const message = error instanceof Error ? error.message : "Unknown error";
-                            toast.error(`Failed to load team member for editing: ${message}`);
-                          }
-                        }}
-                        className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] hover:bg-[#AAB418] text-black font-semibold rounded-lg text-sm sm:text-base"
-                      >
-                        Edit
-                      </motion.button>
+                      <Link href={`/admin/team/edit/${member._id}`}>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] hover:bg-[#AAB418] text-black font-semibold rounded-lg text-sm sm:text-base"
+                        >
+                          Edit
+                        </motion.button>
+                      </Link>
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -1212,24 +1044,15 @@ body.no-scroll {
                       >
                         View Applications
                       </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={async () => {
-                          try {
-                            const response = await fetch(`/api/jobs/${job._id}`);
-                            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-                            const jobData = await response.json();
-                            setShowEditJobModal(jobData);
-                          } catch (error) {
-                            const message = error instanceof Error ? error.message : "Unknown error";
-                            toast.error(`Failed to load job for editing: ${message}`);
-                          }
-                        }}
-                        className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] hover:bg-[#AAB418] text-black font-semibold rounded-lg text-sm sm:text-base"
-                      >
-                        Edit
-                      </motion.button>
+                      <Link href={`/admin/jobs/edit/${job._id}`}>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#f6ff7a] hover:bg-[#AAB418] text-black font-semibold rounded-lg text-sm sm:text-base"
+                        >
+                          Edit
+                        </motion.button>
+                      </Link>
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
